@@ -84,9 +84,6 @@ namespace SRVR.Patches
                 rightHand.AddComponent<SteamVR_Behaviour_Pose>().poseAction = SteamVR_Actions.slimecontrols_poser;
                 rightHand.SetActive(true);
             }
-
-            var instancePlayer = SRSingleton<SceneContext>.Instance.Player;
-            var vrLookToMoveUfps = instancePlayer.AddComponent<VRLookToMoveUFPS>();
             
             var vacShapeCache = GameObject.Find("SimplePlayer/FPSCamera/vac shape").transform;
             var _vacconeCache = vacShapeCache.transform.Find("Vaccone Prefab");
