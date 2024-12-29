@@ -162,7 +162,7 @@ namespace SRVR
             // MeshTextStyler
         }
 
-        public override void Update()
+        /*public override void Update()
         {
             if (Camera.main != EntryPoint.mainCamera && Levels.IsLevel(Levels.WORLD))
             {
@@ -170,7 +170,7 @@ namespace SRVR
                 EntryPoint.mainCamera.gameObject.AddComponent<SteamVR_CameraHelper>();
                 // EntryPoint.mainCamera.gameObject.AddComponent<PosHMD>();
             }
-        }
+        }*/
 
         
     }
