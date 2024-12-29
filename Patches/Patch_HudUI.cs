@@ -81,7 +81,7 @@ namespace SRVR.Patches
                 scaler.SetParent(rightHand.transform, false);// Parent it to Scaler
                 scaler.transform.localPosition = Vector3.zero;
                 rightHand.SetActive(false);
-                rightHand.AddComponent<SteamVR_Behaviour_Pose>().poseAction = SteamVR_Actions.slimecontrols_poser;
+                rightHand.AddComponent<PosHand>();
                 rightHand.SetActive(true);
             }
             

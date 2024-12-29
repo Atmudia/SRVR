@@ -1,5 +1,6 @@
 ﻿using InControl;
 using SRML.Console;
+using SRVR.Patches;
 using UnityEngine;
 using Valve.VR;
 
@@ -63,10 +64,13 @@ namespace SRVR
                 UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
                 UpdateWithState(InputControlType.Action2, SteamVR_Actions.slimecontrols.pulse.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
                 UpdateWithState(InputControlType.DPadRight, SteamVR_Actions.slimecontrols.map.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+
+                if (!SceneContext.Instance?.TimeDirector?.HasPauser() ?? false)
+                {
+                    Patch_vp_FPInput.adjustmentDegrees += RightStickX.Value;
+                    Patch_vp_FPInput.adjustmentDegrees %= 360;
+                }
             }
-          
-            
-            
         }
 
         public static void RegisterCallbacks()
