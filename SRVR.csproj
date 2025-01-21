@@ -39,12 +39,15 @@
       <Compile Include="Patches\Patch_GamepadPanel.cs" />
       <Compile Include="Patches\Patch_HudUI.cs" />
       <Compile Include="Patches\Patch_MainMenuUI.cs" />
+      <Compile Include="Patches\Patch_QuicksilverEnergyGenerator.cs" />
+      <Compile Include="Patches\Patch_RanchHouseUI.cs" />
       <Compile Include="Patches\Patch_SRInput.cs" />
       <Compile Include="Patches\Patch_UIDetector.cs" />
       <Compile Include="Patches\Patch_vp_FPInput.cs" />
       <Compile Include="Patches\UICatcher.cs" />
       <Compile Include="UIPositioner.cs" />
       <Compile Include="VRInput.cs" />
+      <Compile Include="VRInstaller.cs" />
       <Compile Include="VRIntializator.cs" />
     </ItemGroup>
     <ItemGroup>
@@ -56,6 +59,9 @@
       </Reference>
       <Reference Include="Assembly-CSharp">
         <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Assembly-CSharp.dll</HintPath>
+      </Reference>
+      <Reference Include="Assembly-CSharp-firstpass">
+        <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       </Reference>
       <Reference Include="AssetsLib">
         <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SRML\Mods\AssetsLib.dll</HintPath>
@@ -120,9 +126,6 @@
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Files\VRPlaygroudSkip\" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="Files\Managed\SteamVR.dll" />

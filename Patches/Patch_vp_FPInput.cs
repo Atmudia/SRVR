@@ -28,6 +28,32 @@ namespace SRVR.Patches
                 return true;
             return InputDirector.UsingGamepad();
         }
+        public static Vector2 Rotate_V2(Vector2 v, float delta) {
+            delta *= Mathf.Deg2Rad;
+            return new Vector2(
+                v.x * Mathf.Cos(delta) - v.y * Mathf.Sin(delta),
+                v.x * Mathf.Sin(delta) + v.y * Mathf.Cos(delta)
+            );
+        }
+
+        
+        [HarmonyPostfix, HarmonyPatch(typeof(vp_FPInput), nameof(vp_FPInput.InputMove))]
+        public static void InputMove(vp_FPInput __instance)
+        {
+            if (!EntryPoint.EnabledVR)
+                return;
+            Vector2 vector = new Vector2(SRInput.Actions.horizontal, SRInput.Actions.vertical);
+            Vector2 o = (InputDirector.UsingGamepad() ? __instance.ApplyRadialDeadZone(vector, __instance.inputDir.ControllerStickDeadZone) : vector);
+        
+            UnityEngine.XR.InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+            if (head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rot))
+            {
+                 o = Rotate_V2(o, rot.eulerAngles.z);
+                
+            }
+        
+            __instance.FPPlayer.InputMoveVector.Set(o);
+        }
 
         [HarmonyTranspiler, HarmonyPatch(typeof(vp_FPInput), nameof(vp_FPInput.GetMouseLook))]
 
@@ -55,8 +81,9 @@ namespace SRVR.Patches
 
         public static bool LateUpdate(vp_FPCamera __instance)
         {
+            if (!EntryPoint.EnabledVR)
+                return true;
             UnityEngine.XR.InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
-
             if (head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rot))
             {
                 Vector3 eulerAngles = rot.eulerAngles;

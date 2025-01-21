@@ -41,6 +41,16 @@ namespace SRVR.Patches
             
             hudUIContainer.Find("Targeting").GetComponent<RectTransform>().SetAnchoredPosition2D(-769f, -485.9f);
             
+            hudUIContainer.Find("PartnerArea").GetComponent<RectTransform>().SetAnchoredPosition2D(580, -552.0001f);
+            
+            hudUIContainer.Find("TimeIcon").GetComponent<RectTransform>().SetAnchoredPosition2D(580, -502.0001f);
+            
+            hudUIContainer.Find("CurrentDay").GetComponent<RectTransform>().SetAnchoredPosition2D(580, -446.0001f);
+            
+            hudUIContainer.Find("CurrentTime").GetComponent<RectTransform>().SetAnchoredPosition2D(632f, -498);
+            
+            
+            
             hudUIContainer.Find("crossHair").gameObject.SetActive(false);
             
             var model_vac_prefab = __instance.transform.GetChild(0);
@@ -55,19 +65,18 @@ namespace SRVR.Patches
             // hudUITransform.SetParent(model_vac_prefab, false);
             var scaler2 = new GameObject("Scaler")
             {
-                transform = { localScale = new Vector3(0.04f, 0.04f, 0.04f) }
+                transform = { localScale = new Vector3(0.03f, 0.03f, 0.03f) }
             };
             scaler2.transform.SetParent(bone_vac, false);
 
             hudUITransform.SetParent(scaler2.transform, true);
-            // hudUITransform.localPosition = new Vector3(-0.1545f, 0.4708f, 0.0003f);
             hudUITransform.localPosition = new Vector3(0.1455f, 0.3708f, 0.0003f);
-            // hudUITransform.localRotation = Quaternion.Euler(new Vector3(2.3379f, 72.3335f, 0.2003f));
             hudUITransform.localRotation = Quaternion.Euler(new Vector3(36.823f, 90.00001f, 0));
             hudUITransform.gameObject.layer = LayerMask.NameToLayer("Weapon");
             var canvas = hudUITransform.GetComponentInParent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.worldCamera = Camera.main;
+           
             hudUITransform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
             
 
@@ -76,14 +85,16 @@ namespace SRVR.Patches
                 transform = { parent = GameObject.Find("SimplePlayer").transform}
             };
             FPWeapon = rightHand;
+            scaler.SetParent(rightHand.transform, false);// Parent it to Scaler
+            scaler.transform.localPosition = Vector3.zero;
+            rightHand.SetActive(false);
             if (EntryPoint.EnabledVR)
-            {
-                scaler.SetParent(rightHand.transform, false);// Parent it to Scaler
-                scaler.transform.localPosition = Vector3.zero;
-                rightHand.SetActive(false);
                 rightHand.AddComponent<PosHand>();
-                rightHand.SetActive(true);
+            else
+            {
+                rightHand.transform.position = GameObject.Find("SimplePlayer").transform.position;
             }
+            rightHand.SetActive(true);
             
             var vacShapeCache = GameObject.Find("SimplePlayer/FPSCamera/vac shape").transform;
             var _vacconeCache = vacShapeCache.transform.Find("Vaccone Prefab");

@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using HarmonyLib;
-using InControl;
 using SRML;
 using SRML.Console;
 using SRML.SR;
 using SRVR.Patches;
-using Unity.XR.OpenVR;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.XR;
-using Valve.VR;
 using Console = SRML.Console.Console;
-using InputDevice = UnityEngine.XR.InputDevice;
 using Object = UnityEngine.Object;
 
 namespace SRVR
@@ -24,134 +15,79 @@ namespace SRVR
     {
         public static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
         public static bool EnabledVR = true;
-        public static Camera mainCamera;
         
-
-
-        public static bool PreInitializedLoaded = false;
-
         public EntryPoint()
         {
-            
-           DirectoryInfo unitySubsystemsDirectory = new DirectoryInfo(Path.Combine(Application.dataPath, "UnitySubsystems"));
-            DirectoryInfo pluginsDirectory = new DirectoryInfo(Path.Combine(Application.dataPath, "Plugins", "x86_64"));
-            DirectoryInfo libsPath = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "SRML", "Libs"));
-            bool steamVRExist = File.Exists(Path.Combine(libsPath.FullName, "SteamVR.dll"));
-
-            var execAssembly = typeof(EntryPoint).Assembly;
-
-            if (!unitySubsystemsDirectory.Exists || !pluginsDirectory.Exists || !steamVRExist)
-            {
-                PreInitializedLoaded = false;
-                unitySubsystemsDirectory.Create();
-                libsPath.Create();
-
-                // Create the "SteamVR" directory under StreamingAssets
-                DirectoryInfo streamingAssetsDirectory =
-                    new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "SteamVR"));
-                if (!streamingAssetsDirectory.Exists)
-                    streamingAssetsDirectory.Create();
-
-                // Loop through all resource names
-                foreach (var manifestResourceName in execAssembly.GetManifestResourceNames())
-                {
-                    if (manifestResourceName.Contains("UnitySubsystems"))
-                    {
-                        string UnitySubSystems = "UnitySubsystemsManifest.json";
-                        var manifestResourceStream = execAssembly.GetManifestResourceStream(manifestResourceName);
-                        byte[] ba = new byte[manifestResourceStream.Length];
-                        _ = manifestResourceStream.Read(ba, 0, ba.Length);
-                        manifestResourceStream.Close(); // Ensure the stream is closed after reading
-
-                        // Combine path for UnitySubsystems
-                        var xrSdkOpenVrDirectory = unitySubsystemsDirectory.CreateSubdirectory("XRSDKOpenVR");
-                        var filePath = Path.Combine(xrSdkOpenVrDirectory.FullName, UnitySubSystems);
-                        Debug.Log(filePath);
-                        File.WriteAllBytes(filePath, ba);
-                    }
-
-                    if (manifestResourceName.Contains("Plugins"))
-                    {
-                        string nameOfFile = manifestResourceName.Replace("SRVR.Files.Plugins.", string.Empty);
-                        var manifestResourceStream = execAssembly.GetManifestResourceStream(manifestResourceName);
-                        byte[] ba = new byte[manifestResourceStream.Length];
-                        _ = manifestResourceStream.Read(ba, 0, ba.Length);
-                        manifestResourceStream.Close();
-
-                        // Ensure the plugin directory exists
-                        if (!pluginsDirectory.Exists)
-                            pluginsDirectory.Create();
-
-                        var filePath = Path.Combine(pluginsDirectory.FullName, nameOfFile);
-                        File.WriteAllBytes(filePath, ba);
-                    }
-
-                    if (manifestResourceName.Contains("SteamVRFiles"))
-                    {
-                        string nameOfFile = manifestResourceName.Replace("SRVR.Files.SteamVRFiles.", string.Empty);
-                        var manifestResourceStream = execAssembly.GetManifestResourceStream(manifestResourceName);
-                        byte[] ba = new byte[manifestResourceStream.Length];
-                        _ = manifestResourceStream.Read(ba, 0, ba.Length);
-                        manifestResourceStream.Close();
-
-                        // Ensure the streamingAssetsDirectory exists
-                        if (!streamingAssetsDirectory.Exists)
-                            streamingAssetsDirectory.Create();
-
-                        var filePath = Path.Combine(streamingAssetsDirectory.FullName, nameOfFile);
-                        File.WriteAllBytes(filePath, ba);
-                    }
-                    if (manifestResourceName.Contains("Managed"))
-                    {
-                        string nameOfFile = manifestResourceName.Replace("SRVR.Files.Managed.", string.Empty);
-                        var manifestResourceStream = execAssembly.GetManifestResourceStream(manifestResourceName);
-                        byte[] ba = new byte[manifestResourceStream.Length];
-                        manifestResourceStream.Read(ba, 0, ba.Length);
-                    
-                        var filePath = Path.Combine(libsPath.FullName, nameOfFile);
-                        File.WriteAllBytes(filePath, ba);
-                    }
-                }
-            }
-            else
-            {
-                PreInitializedLoaded = true;
-            }
-            
-
-
-
+          VRInstaller.Install();
         }
 
         public override void PreLoad()
         {
-            if (!PreInitializedLoaded)
+            if (!VRInstaller.IsAfterInstall)
             {
                 SRCallbacks.OnMainMenuLoaded += menu =>
-                { 
-                    var errorDialog = Object.FindObjectOfType<UITemplates>().CreateErrorDialog("Please restart your game to fully initialize VR. This is only on first install. The button below will quit the game.");
-                    var button = errorDialog.transform.Find("MainPanel/OKButton").GetComponent<Button>();
-                    button.onClick = new Button.ButtonClickedEvent();
-                    button.onClick.AddListener(() =>
-                    {
-                        Debug.LogError("   ");
-                        Debug.LogError("   ");
-                        Debug.LogError("[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation.");
-                        Debug.LogError("   ");
-                        Debug.LogError("   ");
-                        Application.Quit();
+                {
+                    
+                    var findObjectOfType = Object.FindObjectOfType<UITemplates>();
 
-                    });
+                    var steamManager = AccessTools.TypeByName("SteamManager");
+                    if (steamManager != null)
+                    {
+                        if ((bool)steamManager.GetProperty("Initialized").GetValue(null))
+                        {
+                            var steamApps = AccessTools.TypeByName("SteamApps");
+                            var invoke = Activator.CreateInstance(AccessTools.TypeByName("AppId_t"), 939480u);
+                            if ((bool)AccessTools.Method(steamApps, "BIsDlcInstalled").Invoke(null, new[]
+                                {
+                                    invoke
+                                }))
+                            {
+                                var confirmDialog = findObjectOfType.CreateConfirmDialog("Slime Rancher: VR Playground is installed!\n Do you want to uninstall it to have the ability to run Slime Rancher from SteamVR?",
+                                    () =>
+                                    {
+                                        AccessTools.Method(steamApps, "UninstallDLC").Invoke(null, new []
+                                        {
+                                            invoke
+                                        });
+                                        Shutdown();
+                                    });
+                                var buttonClickedEvent = new Button.ButtonClickedEvent();
+                                confirmDialog.transform.Find("MainPanel/CancelButton").GetComponent<Button>().onClick = buttonClickedEvent;
+                                buttonClickedEvent.AddListener(Shutdown);
+                                return;
+                            }
+                        }
+                    }
+                    Shutdown();
+                    return;
+
+
+                    void Shutdown()
+                    {
+                        var errorDialog = findObjectOfType.CreateErrorDialog("Please restart your game to fully initialize VR. This is only on first install. The button below will quit the game.");
+                        var button = errorDialog.transform.Find("MainPanel/OKButton").GetComponent<Button>();
+                        button.onClick = new Button.ButtonClickedEvent();
+                        button.onClick.AddListener(() =>
+                        {
+                            Debug.LogError("   ");
+                            Debug.LogError("   ");
+                            Debug.LogError("[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation.");
+                            Debug.LogError("   ");
+                            Debug.LogError("   ");
+                            Application.Quit();
+                        });
+                    }
                 };
                 return;
             }
             
-            HarmonyInstance.PatchAll();
             Console.RegisterCommand(new ContinueGameCommand());
             Console.RegisterCommand(new UnparentVacGun());
             Console.RegisterCommand(new ParentVacGun());
-
+            HarmonyInstance.PatchAll();
+            TranslationPatcher.AddUITranslation("b.uninstall_vr", "Uninstall VR");
             if (EnabledVR)
+            {
                 if (VRManager.InitializeVR())
                 {
                     if (VRManager.StartVR())
@@ -159,6 +95,11 @@ namespace SRVR
                         VRInput.RegisterCallbacks();
                     }
                 }
+            }
+            
+            
+              
+            
             // MeshTextStyler
         }
 

@@ -15,12 +15,6 @@ namespace SRVR
 
         public static bool InitializeVR()
         {
-            // if (!VRAssetManager.Initialize())
-            // {
-            //     LogError("Failed to load required assets!.");
-            //     return false;
-            //
-            // }
             SteamVR_Actions.PreInitialize();
             if (!InitXRSDK())
             {
@@ -55,15 +49,6 @@ namespace SRVR
                 EntryPoint.ConsoleInstance.LogError("Problem Initializing SteamVR_Input");
                 return false;
             }
-
-            /*ApplicationManifestHelper.UpdateManifest(Path.Combine(Application.streamingAssetsPath, "valheim.vrmanifest"),
-                                                    "steam.app.892970",
-                                                    "https://steamcdn-a.akamaihd.net/steam/apps/892970/header.jpg",
-                                                    "Valheim VR",
-                                                    "VR mod for Valheim",
-                                                    steamBuild: true,
-                                                    steamAppId: 892970);
-                                                    */
             return true;
         }
 
@@ -109,18 +94,18 @@ namespace SRVR
         private static XRGeneralSettings LoadXRSettingsFromAssetBundle()
         {
            
-            EntryPoint.ConsoleInstance.LogError("Creating XRGeneralSettings");
+            EntryPoint.ConsoleInstance.Log("Creating XRGeneralSettings");
             var general = ScriptableObject.CreateInstance<XRGeneralSettings>();
-            EntryPoint.ConsoleInstance.LogError("Creating XRManagerSettings");
+            EntryPoint.ConsoleInstance.Log("Creating XRManagerSettings");
             var managerSettings = ScriptableObject.CreateInstance<XRManagerSettings>();
-            EntryPoint.ConsoleInstance.LogError("Creating OpenVRLoader");
+            EntryPoint.ConsoleInstance.Log("Creating OpenVRLoader");
 
             var xrLoader = ScriptableObject.CreateInstance<OpenVRLoader>();
             general.Manager = managerSettings;
             managerSettings.loaders.Clear();
             managerSettings.loaders.Add(xrLoader);
             XRGeneralSettings instance = XRGeneralSettings.Instance;
-            if (instance == null)
+            if (!instance)
             {
                 EntryPoint.ConsoleInstance.LogError("XRGeneralSettings Instance is null!");
                 return null;
@@ -132,13 +117,13 @@ namespace SRVR
         private static bool InitializeXRSDKLoaders(XRManagerSettings managerSettings)
         {
             EntryPoint.ConsoleInstance.Log("Initializing XRSDK Loaders...");
-            if (managerSettings == null)
+            if (!managerSettings)
             {
                 EntryPoint.ConsoleInstance.LogError("XRManagerSettings instance is null, cannot initialize loader.");
                 return false;
             }
             managerSettings.InitializeLoaderSync();
-            if (managerSettings.activeLoader == null)
+            if (!managerSettings.activeLoader)
             {
                 EntryPoint.ConsoleInstance.LogError("XRManager.activeLoader is null! Cannot initialize VR!");
                 return false;
@@ -164,11 +149,6 @@ namespace SRVR
                 EntryPoint.ConsoleInstance.Log("Recentering Input Subsystem: " + subsystem);
                 subsystem.TryRecenter();
             }
-
-            
-            
-
-            // Trigger recentering head position on player body
         }
 
         private static void PrintSteamVRSettings()

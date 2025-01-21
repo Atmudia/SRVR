@@ -16,21 +16,13 @@ namespace SRVR
             transform.rotation = Camera.main.transform.rotation;
         }
     }
-     public class PosHMD : MonoBehaviour
-     {
-         public SteamVR_Action_Pose Pose;
-         public void LateUpdate()
-         {
-             // // // this.transform.localRotation =  UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head);
-             // this.transform.localPosition =  UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head);
-             // this.transform.localRotation =  UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head);
-         }
-     }
 
     public class PosHand : MonoBehaviour
     {
+        public Hand hand;
         public void LateUpdate()
         {
+
             // TODO: cache
             // need to figure out how to know if input device has changed first
             InputDevice rightHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);

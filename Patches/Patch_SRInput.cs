@@ -1,17 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
+using InControl;
+using MonomiPark.SlimeRancher;
+using MonomiPark.SlimeRancher.Persist;
 using Valve.VR;
 
 namespace SRVR.Patches
 {
-    [HarmonyPatch(typeof(SRInput))]
+    [HarmonyPatch]
     public static class Patch_SRInput
     {
         [HarmonyPatch(typeof(SRInput), nameof(SRInput.SetInputMode), typeof(SRInput.InputMode)), HarmonyPrefix]
         public static void SetInputMode(SRInput.InputMode mode)
         {
+            if (!EntryPoint.EnabledVR)
+                return;
             EntryPoint.ConsoleInstance.Log("SetInputMode: " + mode);
             VRInput.Mode = mode;
+            
 
             // Activate or deactivate SteamVR action based on mode
             if (mode == SRInput.InputMode.DEFAULT)
@@ -44,6 +51,24 @@ namespace SRVR.Patches
                 SteamVR_Actions.slimecontrols.Deactivate();
             }
             
+        }
+
+        
+        [HarmonyPatch(typeof(SavedProfile), nameof(SavedProfile.PullBindings)), HarmonyPrefix]
+        public static bool PullBindings(ref BindingsV05 bindings, IEnumerable<PlayerAction> actions)
+        {
+            bindings = CachedBindings;
+            return false;
+        }
+
+        public static BindingsV05 CachedBindings;
+        [HarmonyPatch(typeof(SavedProfile), nameof(SavedProfile.PushBindings)), HarmonyPrefix]
+        public static bool PushBindings(BindingsV05 bindingsData, InputDirector inputDir)
+        {
+            CachedBindings = bindingsData;
+            inputDir.ResetKeyMouseDefaults();
+            inputDir.ResetGamepadDefaults();
+            return false;
         }
         
     }

@@ -2,7 +2,9 @@
 using SRML.Console;
 using SRVR.Patches;
 using UnityEngine;
+using UnityEngine.XR;
 using Valve.VR;
+using InputDevice = InControl.InputDevice;
 
 namespace SRVR
 {

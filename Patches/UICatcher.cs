@@ -12,7 +12,8 @@ namespace SRVR.Patches
         private static RenderTexture uGuiTexture;
         public static void Prefix(CanvasScaler __instance)
         {
-            // }
+            if (!EntryPoint.EnabledVR)
+                return;
             var canvas = __instance.GetComponent<Canvas>();
             if (!Camera.main || IsCanvasToIgnore(__instance.name)) return;
             if (!canvas) return;
