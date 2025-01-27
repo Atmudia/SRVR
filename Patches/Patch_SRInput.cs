@@ -33,9 +33,9 @@ namespace SRVR.Patches
             }
             if (mode == SRInput.InputMode.PAUSE)
             {
-                if (Patch_HudUI.FPWeapon)
+                if (Patch_vp_FPWeapon.FPWeapon)
                 {
-                    Patch_HudUI.FPWeapon.SetActive(false);
+                    Patch_vp_FPWeapon.FPWeapon.SetActive(false);
                 }
 
                 // Activate the action if mode is DEFAULT
@@ -43,9 +43,9 @@ namespace SRVR.Patches
             }
             else
             {
-                if (Patch_HudUI.FPWeapon)
+                if (Patch_vp_FPWeapon.FPWeapon)
                 {
-                    Patch_HudUI.FPWeapon.SetActive(true);
+                    Patch_vp_FPWeapon.FPWeapon.SetActive(true);
                 }
                 // Deactivate the action if mode is not DEFAULT
                 SteamVR_Actions.slimecontrols.Deactivate();

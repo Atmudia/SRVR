@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
 using HarmonyLib;
 using SRML;
 using SRML.Console;
 using SRML.SR;
+using SRML.Utils;
 using SRVR.Patches;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
 using Console = SRML.Console.Console;
 using Object = UnityEngine.Object;
 
@@ -14,7 +17,8 @@ namespace SRVR
     public class EntryPoint : ModEntryPoint
     {
         public static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
-        public static bool EnabledVR = true;
+        public static AssetBundle VRAssets = AssetBundle.LoadFromFile("C:\\Users\\Atmudia\\VR\\Assets\\AssetBundles\\vrassets"); //Temporary
+        public static bool EnabledVR = false;
         
         public EntryPoint()
         {
@@ -27,9 +31,7 @@ namespace SRVR
             {
                 SRCallbacks.OnMainMenuLoaded += menu =>
                 {
-                    
                     var findObjectOfType = Object.FindObjectOfType<UITemplates>();
-
                     var steamManager = AccessTools.TypeByName("SteamManager");
                     if (steamManager != null)
                     {
@@ -42,36 +44,41 @@ namespace SRVR
                                     invoke
                                 }))
                             {
-                                var confirmDialog = findObjectOfType.CreateConfirmDialog("Slime Rancher: VR Playground is installed!\n Do you want to uninstall it to have the ability to run Slime Rancher from SteamVR?",
+                                var confirmDialog = findObjectOfType.CreateConfirmDialog(
+                                    "Slime Rancher: VR Playground is installed!\n Do you want to uninstall it to have the ability to run Slime Rancher from SteamVR?",
                                     () =>
                                     {
-                                        AccessTools.Method(steamApps, "UninstallDLC").Invoke(null, new []
+                                        AccessTools.Method(steamApps, "UninstallDLC").Invoke(null, new[]
                                         {
                                             invoke
                                         });
                                         Shutdown();
                                     });
                                 var buttonClickedEvent = new Button.ButtonClickedEvent();
-                                confirmDialog.transform.Find("MainPanel/CancelButton").GetComponent<Button>().onClick = buttonClickedEvent;
+                                confirmDialog.transform.Find("MainPanel/CancelButton").GetComponent<Button>().onClick =
+                                    buttonClickedEvent;
                                 buttonClickedEvent.AddListener(Shutdown);
                                 return;
                             }
                         }
                     }
+
                     Shutdown();
                     return;
 
 
                     void Shutdown()
                     {
-                        var errorDialog = findObjectOfType.CreateErrorDialog("Please restart your game to fully initialize VR. This is only on first install. The button below will quit the game.");
+                        var errorDialog = findObjectOfType.CreateErrorDialog(
+                            "Please restart your game to fully initialize VR. This is only on first install. The button below will quit the game.");
                         var button = errorDialog.transform.Find("MainPanel/OKButton").GetComponent<Button>();
                         button.onClick = new Button.ButtonClickedEvent();
                         button.onClick.AddListener(() =>
                         {
                             Debug.LogError("   ");
                             Debug.LogError("   ");
-                            Debug.LogError("[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation.");
+                            Debug.LogError(
+                                "[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation.");
                             Debug.LogError("   ");
                             Debug.LogError("   ");
                             Application.Quit();
@@ -80,40 +87,101 @@ namespace SRVR
                 };
                 return;
             }
-            
+
             Console.RegisterCommand(new ContinueGameCommand());
             Console.RegisterCommand(new UnparentVacGun());
             Console.RegisterCommand(new ParentVacGun());
             HarmonyInstance.PatchAll();
             TranslationPatcher.AddUITranslation("b.uninstall_vr", "Uninstall VR");
-            if (EnabledVR)
+            if (!EnabledVR) return;
+            if (!VRManager.InitializeVR()) return;
+            if (!VRManager.StartVR()) return;
+            VRInput.RegisterCallbacks();
+
+            return;
+            Controllers = new GameObject(nameof(Controllers));
+            Controllers.transform.localPosition = new Vector3(0, 0, 2.1055f);
+            var arms = VRAssets.LoadAsset<Mesh>("arms");
+            var handsMaterial = VRAssets.LoadAsset<Material>("Hands Material 1");
+            var leftController = new GameObject("Left Controller")
             {
-                if (VRManager.InitializeVR())
+                transform =
                 {
-                    if (VRManager.StartVR())
+                    parent = Controllers.transform,
+                    transform =
                     {
-                        VRInput.RegisterCallbacks();
+                        position = new Vector3(0, 0, -0.07899475f),
+                        rotation = Quaternion.Euler(0, -5.122642e-06f, 0),
+                        localScale = new Vector3(-1, 1, 1)
                     }
                 }
-            }
-            
-            
-              
-            
-            // MeshTextStyler
+            };
+            var lefthand_alone = new GameObject("Left Hand")
+            {
+                transform = { parent = leftController.transform }
+            };
+            lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            lefthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
+            leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
+            var rightController = new GameObject("Right Controller")
+            {
+                transform = { parent = Controllers.transform }
+            };
+            var righthand_alone = new GameObject("Right Hand")
+            {
+                transform = { parent = rightController.transform }
+            };
+            righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
+            rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
+
+            SRCallbacks.OnMainMenuLoaded += menu =>
+            {
+                var fpsCamera = GameObject.Find("FPSCamera");
+                var camera = new GameObject("Camera")
+                {
+                    transform =
+                    {
+                        position = fpsCamera.transform.position,
+                        rotation = Quaternion.Euler(196.595f, 77.11299f, 175.565f),
+                    }
+                };
+                fpsCamera.transform.parent = camera.transform;
+                Controllers.transform.SetParent(camera.transform, false);
+                vp_Layer.Set(Controllers, vp_Layer.Actor, true);
+                fpsCamera.AddComponent<RotHMD>();
+                // return;
+                var mainMenuUI = GameObject.Find("MainMenuUI").GetComponent<Canvas>();
+                mainMenuUI.renderMode = RenderMode.WorldSpace;
+                mainMenuUI.transform.localScale = new Vector3(0.003f, 0.003f, 0.003f);
+                mainMenuUI.transform.localPosition = new Vector3(12.3258f, 1.8956f, 3.7663f);
+                mainMenuUI.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+            };
+
+
         }
 
-        /*public override void Update()
+        public class RotHMD : MonoBehaviour
         {
-            if (Camera.main != EntryPoint.mainCamera && Levels.IsLevel(Levels.WORLD))
+            public void Update()
             {
-                EntryPoint.mainCamera = Camera.main;
-                EntryPoint.mainCamera.gameObject.AddComponent<SteamVR_CameraHelper>();
-                // EntryPoint.mainCamera.gameObject.AddComponent<PosHMD>();
+                InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+                if (head.TryGetFeatureValue(CommonUsages.deviceRotation, out var rot))
+                {
+                    this.transform.localRotation = rot;
+                }
+                if (head.TryGetFeatureValue(CommonUsages.devicePosition, out var pos))
+                {
+                    this.transform.localPosition = pos;
+                }
             }
-        }*/
+        }
 
+        public static GameObject Controllers;
         
+
+
+
     }
 
     public class ContinueGameCommand : ConsoleCommand
@@ -136,8 +204,8 @@ namespace SRVR
         public override bool Execute(string[] args)
         {
             if (!ParentVacGun.Parent)
-                ParentVacGun.Parent = Patch_HudUI.FPWeapon.transform.parent;
-            Patch_HudUI.FPWeapon.transform.SetParent(null);
+                ParentVacGun.Parent = Patch_vp_FPWeapon.FPWeapon.transform.parent;
+            Patch_vp_FPWeapon.FPWeapon.transform.SetParent(null);
             return true;
         }
 
@@ -150,7 +218,7 @@ namespace SRVR
         public static Transform Parent;
         public override bool Execute(string[] args)
         {
-            Patch_HudUI.FPWeapon.transform.SetParent(Parent);
+            Patch_vp_FPWeapon.FPWeapon.transform.SetParent(Parent);
             return true;
         }
 

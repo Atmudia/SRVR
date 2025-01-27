@@ -14,6 +14,8 @@ namespace SRVR.Patches
     {
         public static bool Prefix(ref bool __result)
         {
+            if (!EntryPoint.EnabledVR)
+                return true;
             __result = true;
             return false;
         }

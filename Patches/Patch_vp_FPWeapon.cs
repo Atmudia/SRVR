@@ -10,14 +10,12 @@ using Valve.VR;
 namespace SRVR.Patches
 {
     [HarmonyPatch(typeof(vp_FPWeapon))]
-    public class Patch_HudUI
+    public class Patch_vp_FPWeapon
     {
         public static GameObject FPWeapon;
         [HarmonyPatch(nameof(vp_FPWeapon.Start))]
         public static void Postfix(vp_FPWeapon __instance)
         {
-            // SolarShieldUpgrader
-          
             __instance.enabled = false;
             RectTransform hudUITransform = (RectTransform)SRSingleton<HudUI>.Instance.transform;
             var hudUIContainer = SRSingleton<HudUI>.Instance.uiContainer.transform;
@@ -78,33 +76,39 @@ namespace SRVR.Patches
             canvas.worldCamera = Camera.main;
            
             hudUITransform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-            
 
+
+            var simplePlayer = GameObject.Find("SimplePlayer");
             var rightHand = new GameObject("Controller (Right)")
             {
-                transform = { parent = GameObject.Find("SimplePlayer").transform}
+                transform = { parent = simplePlayer.transform}
             };
             FPWeapon = rightHand;
-            scaler.SetParent(rightHand.transform, false);// Parent it to Scaler
+            scaler.SetParent(rightHand.transform, false);// Parent it to right hand
             scaler.transform.localPosition = Vector3.zero;
             rightHand.SetActive(false);
             if (EntryPoint.EnabledVR)
                 rightHand.AddComponent<PosHand>();
             else
             {
-                rightHand.transform.position = GameObject.Find("SimplePlayer").transform.position;
+                rightHand.transform.position = simplePlayer.transform.position + new Vector3(0, 1f, 0);
             }
             rightHand.SetActive(true);
-            
-            var vacShapeCache = GameObject.Find("SimplePlayer/FPSCamera/vac shape").transform;
-            var _vacconeCache = vacShapeCache.transform.Find("Vaccone Prefab");
+
+            var fpsCamera = simplePlayer.transform.Find("FPSCamera");
+            var vacShapeCache = fpsCamera.transform.Find("vac shape").transform;
+            var vacconePrefab = vacShapeCache.transform.Find("Vaccone Prefab");
 
             vacShapeCache.GetComponent<DynamicBone>().enabled = false;
             vacShapeCache.parent = scaler.transform;
-            vacShapeCache.localRotation = Quaternion.Euler(new Vector3(-7118.613f, -8.3496f, -1.2340469f)); //These 
+            vacShapeCache.localRotation = Quaternion.Euler(new Vector3(-7118.613f, -8.3496f, -1.2340469f)); // Thanks Tranfox for this values
             vacShapeCache.localPosition = new Vector3(0.01f, -0.0071f, 0.0682f);
-            _vacconeCache.localPosition = Vector3.zero;
-            
+            vacconePrefab.localPosition = Vector3.zero;
+
+
+            var heldCamera = fpsCamera.transform.Find("WeaponCamera/HeldCamera");
+            heldCamera.transform.Find("HeldCam Quad").parent = vacShapeCache.transform;
+
             scaler.Find("arms").gameObject.SetActive(false);
             scaler.Find("mesh_l_armextra").gameObject.SetActive(false);
         }

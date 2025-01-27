@@ -37,7 +37,7 @@
       <Compile Include="EntryPoint.cs" />
       <Compile Include="Extension.cs" />
       <Compile Include="Patches\Patch_GamepadPanel.cs" />
-      <Compile Include="Patches\Patch_HudUI.cs" />
+      <Compile Include="Patches\Patch_vp_FPWeapon.cs" />
       <Compile Include="Patches\Patch_MainMenuUI.cs" />
       <Compile Include="Patches\Patch_QuicksilverEnergyGenerator.cs" />
       <Compile Include="Patches\Patch_RanchHouseUI.cs" />

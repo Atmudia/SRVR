@@ -40,7 +40,7 @@ namespace SRVR.Patches
         }
         public static bool CustomRaycast(Ray ray, out RaycastHit hitInfo, float maxDistance)
         {
-            ray = new Ray(Patch_HudUI.FPWeapon.transform.position, Patch_HudUI.FPWeapon.transform.forward);
+            ray = new Ray(Patch_vp_FPWeapon.FPWeapon.transform.position, Patch_vp_FPWeapon.FPWeapon.transform.forward);
             Vector3 halfExtents = Vector3.one; 
 
 ;

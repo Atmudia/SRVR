@@ -45,7 +45,6 @@ namespace SRVR
                         // Combine path for UnitySubsystems
                         var xrSdkOpenVrDirectory = unitySubsystemsDirectory.CreateSubdirectory("XRSDKOpenVR");
                         var filePath = Path.Combine(xrSdkOpenVrDirectory.FullName, UnitySubSystems);
-                        Debug.Log(filePath);
                         File.WriteAllBytes(filePath, ba);
                     }
 
