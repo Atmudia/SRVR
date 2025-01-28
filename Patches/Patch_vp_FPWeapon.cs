@@ -5,6 +5,7 @@ using MonomiPark.SlimeRancher.DataModel;
 using SRML.Console;
 using SRML.SR;
 using UnityEngine;
+using UnityEngine.XR;
 using Valve.VR;
 
 namespace SRVR.Patches
@@ -88,7 +89,7 @@ namespace SRVR.Patches
             scaler.transform.localPosition = Vector3.zero;
             rightHand.SetActive(false);
             if (EntryPoint.EnabledVR)
-                rightHand.AddComponent<PosHand>();
+                rightHand.AddComponent<PosHand>().hand = XRNode.RightHand;
             else
             {
                 rightHand.transform.position = simplePlayer.transform.position + new Vector3(0, 1f, 0);

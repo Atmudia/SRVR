@@ -153,6 +153,9 @@
       <EmbeddedResource Include="Files\SteamVRFiles\OpenVRSettings.asset" />
       <EmbeddedResource Include="Files\UnitySubsystems\UnitySubsystemsManifest.json" />
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="vrassets" />
+    </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
       <PropertyGroup>

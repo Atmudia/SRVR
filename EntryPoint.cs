@@ -17,8 +17,8 @@ namespace SRVR
     public class EntryPoint : ModEntryPoint
     {
         public static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
-        public static AssetBundle VRAssets = AssetBundle.LoadFromFile("C:\\Users\\Atmudia\\VR\\Assets\\AssetBundles\\vrassets"); //Temporary
-        public static bool EnabledVR = false;
+        public static AssetBundle VRAssets = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.vrassets"));//Temporary
+        public static bool EnabledVR = true;
         
         public EntryPoint()
         {
