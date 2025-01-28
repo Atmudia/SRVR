@@ -116,7 +116,7 @@ namespace SRVR
                 {
                     parent = leftController.transform,
                     position = new Vector3(0, 0, -0.1f),
-                    rotation = Quaternion.Euler(0, 270, 0),
+                    rotation = Quaternion.Euler(0, 90, 0),
                 }
             };
             lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
