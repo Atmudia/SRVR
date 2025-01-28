@@ -56,9 +56,8 @@ namespace SRVR.Patches
             var scaler = model_vac_prefab.transform.Find("Scaler");
             var bone_vac = scaler.transform.Find("bone_vac");
             
-            scaler.localScale = new Vector3(25, 25, 25);
+            scaler.localScale = new Vector3(12.5f, 12.5f, 12.5f);
             scaler.localRotation = Quaternion.Euler(15, 10, 0);
-
             
             
             // hudUITransform.SetParent(model_vac_prefab, false);
@@ -86,7 +85,7 @@ namespace SRVR.Patches
             };
             FPWeapon = rightHand;
             scaler.SetParent(rightHand.transform, false);// Parent it to right hand
-            scaler.transform.localPosition = Vector3.zero;
+            //scaler.transform.localPosition = Vector3.zero;
             rightHand.SetActive(false);
             if (EntryPoint.EnabledVR)
                 rightHand.AddComponent<PosHand>().hand = XRNode.RightHand;
@@ -104,14 +103,17 @@ namespace SRVR.Patches
             vacShapeCache.parent = scaler.transform;
             vacShapeCache.localRotation = Quaternion.Euler(new Vector3(-7118.613f, -8.3496f, -1.2340469f)); // Thanks Tranfox for this values
             vacShapeCache.localPosition = new Vector3(0.01f, -0.0071f, 0.0682f);
+            vacShapeCache.localScale = new Vector3(0.08f, 0.08f, 0.08f);
             vacconePrefab.localPosition = Vector3.zero;
 
 
-            var heldCamera = fpsCamera.transform.Find("WeaponCamera/HeldCamera");
-            heldCamera.transform.Find("HeldCam Quad").parent = vacShapeCache.transform;
+            //var heldCamera = fpsCamera.transform.Find("WeaponCamera/HeldCamera");
+            //heldCamera.transform.Find("HeldCam Quad").parent = vacShapeCache.transform;
 
             scaler.Find("arms").gameObject.SetActive(false);
             scaler.Find("mesh_l_armextra").gameObject.SetActive(false);
+            
+            scaler.localPosition = new Vector3(-0.2f, 0.35f, 0.1f);
         }
         
         

@@ -3,10 +3,10 @@ using HarmonyLib;
 using SRML.Console;
 using UnityEngine;
 using UnityEngine.UI;
-//
+
 namespace SRVR.Patches
 {
-    [HarmonyPatch(typeof(CanvasScaler), "OnEnable")]
+    //[HarmonyPatch(typeof(CanvasScaler), "OnEnable")]
     public class UICatcher
     {
         private static RenderTexture uGuiTexture;

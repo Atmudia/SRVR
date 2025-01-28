@@ -44,6 +44,7 @@
       <Compile Include="Patches\Patch_SRInput.cs" />
       <Compile Include="Patches\Patch_UIDetector.cs" />
       <Compile Include="Patches\Patch_vp_FPInput.cs" />
+      <Compile Include="Patches\Patch_WeaponVacuum.cs" />
       <Compile Include="Patches\UICatcher.cs" />
       <Compile Include="UIPositioner.cs" />
       <Compile Include="VRInput.cs" />

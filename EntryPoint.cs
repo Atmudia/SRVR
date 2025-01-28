@@ -98,27 +98,26 @@ namespace SRVR
             if (!VRManager.StartVR()) return;
             VRInput.RegisterCallbacks();
 
-            return;
+            //return;
             Controllers = new GameObject(nameof(Controllers));
-            Controllers.transform.localPosition = new Vector3(0, 0, 2.1055f);
+            Controllers.transform.localPosition = Vector3.zero;
             var arms = VRAssets.LoadAsset<Mesh>("arms");
             var handsMaterial = VRAssets.LoadAsset<Material>("Hands Material 1");
             var leftController = new GameObject("Left Controller")
             {
                 transform =
                 {
-                    parent = Controllers.transform,
-                    transform =
-                    {
-                        position = new Vector3(0, 0, -0.07899475f),
-                        rotation = Quaternion.Euler(0, -5.122642e-06f, 0),
-                        localScale = new Vector3(-1, 1, 1)
-                    }
+                    parent = Controllers.transform
                 }
             };
             var lefthand_alone = new GameObject("Left Hand")
             {
-                transform = { parent = leftController.transform }
+                transform =
+                {
+                    parent = leftController.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 270, 0),
+                }
             };
             lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
             lefthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
@@ -129,7 +128,12 @@ namespace SRVR
             };
             var righthand_alone = new GameObject("Right Hand")
             {
-                transform = { parent = rightController.transform }
+                transform =
+                {
+                    parent = rightController.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 90, 0),
+                }
             };
             righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
             righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
@@ -142,15 +146,15 @@ namespace SRVR
                 {
                     transform =
                     {
-                        position = fpsCamera.transform.position,
-                        rotation = Quaternion.Euler(196.595f, 77.11299f, 175.565f),
+                        position = fpsCamera.transform.position
                     }
                 };
                 fpsCamera.transform.parent = camera.transform;
+                fpsCamera.transform.localEulerAngles = Vector3.zero;
                 Controllers.transform.SetParent(camera.transform, false);
                 vp_Layer.Set(Controllers, vp_Layer.Actor, true);
-                fpsCamera.AddComponent<RotHMD>();
-                // return;
+                fpsCamera.AddComponent<RotHMD>(); 
+                
                 var mainMenuUI = GameObject.Find("MainMenuUI").GetComponent<Canvas>();
                 mainMenuUI.renderMode = RenderMode.WorldSpace;
                 mainMenuUI.transform.localScale = new Vector3(0.003f, 0.003f, 0.003f);
