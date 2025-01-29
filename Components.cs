@@ -7,7 +7,7 @@ using static SECTR_AudioSystem;
 
 namespace SRVR
 {
-    public class UIPositioner : MonoBehaviour
+    public class Components : MonoBehaviour
     {
         public void LateUpdate()
         {

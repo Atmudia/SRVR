@@ -23,7 +23,7 @@ namespace SRVR.Patches
             canvas.transform.localScale = Vector3.one * 0.0005f;
             vp_Layer.Set(canvas.gameObject, LayerMask.NameToLayer("Weapon"), true );
     
-            canvas.gameObject.AddComponent<UIPositioner>();        
+            canvas.gameObject.AddComponent<Components>();        
         }
         private static bool IsCanvasToIgnore(string canvasName)
         {
