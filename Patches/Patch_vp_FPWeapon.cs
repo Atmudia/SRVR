@@ -114,6 +114,8 @@ namespace SRVR.Patches
             scaler.Find("mesh_l_armextra").gameObject.SetActive(false);
             
             scaler.localPosition = new Vector3(-0.2f, 0.35f, 0.1f);
+            
+            fpsCamera.gameObject.AddComponent<PlayerVRPos>();
         }
         
         

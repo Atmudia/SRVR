@@ -185,6 +185,7 @@ namespace SRVR
                 {
                     this.transform.localPosition = pos;
                 }
+                
             }
         }
 

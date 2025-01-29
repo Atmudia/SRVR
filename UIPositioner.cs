@@ -32,4 +32,15 @@ namespace SRVR
                 transform.rotation = Quaternion.Euler(rot.eulerAngles + (Vector3.up * Patch_vp_FPInput.adjustmentDegrees));
         }
     }
+    public class PlayerVRPos : MonoBehaviour
+    {
+        void LateUpdate()
+        {
+            var player = transform.parent.GetComponent<CharacterController>();
+            if (player != null)
+            {
+                player.center = Vector3.up + new Vector3(Patch_vp_FPInput.HMDPosition.x, 0, Patch_vp_FPInput.HMDPosition.z);
+            }
+        }
+    }
 }
