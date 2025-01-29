@@ -14,6 +14,7 @@ namespace SRVR.Patches
     public class Patch_vp_FPWeapon
     {
         public static GameObject FPWeapon;
+        public static GameObject FPInteract;
         [HarmonyPatch(nameof(vp_FPWeapon.Start))]
         public static void Postfix(vp_FPWeapon __instance)
         {
@@ -85,7 +86,6 @@ namespace SRVR.Patches
             };
             FPWeapon = rightHand;
             scaler.SetParent(rightHand.transform, false);// Parent it to right hand
-            //scaler.transform.localPosition = Vector3.zero;
             rightHand.SetActive(false);
             if (EntryPoint.EnabledVR)
                 rightHand.AddComponent<PosHand>().hand = XRNode.RightHand;
@@ -106,16 +106,48 @@ namespace SRVR.Patches
             vacShapeCache.localScale = new Vector3(0.08f, 0.08f, 0.08f);
             vacconePrefab.localPosition = Vector3.zero;
 
-
-            //var heldCamera = fpsCamera.transform.Find("WeaponCamera/HeldCamera");
-            //heldCamera.transform.Find("HeldCam Quad").parent = vacShapeCache.transform;
-
             scaler.Find("arms").gameObject.SetActive(false);
             scaler.Find("mesh_l_armextra").gameObject.SetActive(false);
             
             scaler.localPosition = new Vector3(-0.2f, 0.35f, 0.1f);
             
             fpsCamera.gameObject.AddComponent<PlayerVRPos>();
+            
+            // Interaction
+            
+            // Code from EntryPoint
+            var arms = EntryPoint.VRAssets.LoadAsset<Mesh>("arms");
+            var handsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
+            var leftHand = new GameObject("Controller (Left)")
+            {
+                transform =
+                {
+                    parent = simplePlayer.transform
+                }
+            };
+            var leftHandModel = new GameObject("Model")
+            {
+                transform =
+                {
+                    parent = leftHand.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 90, 0),
+                }
+            };
+            leftHandModel.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            leftHandModel.AddComponent<MeshFilter>().sharedMesh = arms;
+            leftHand.AddComponent<PosHand>().hand = XRNode.LeftHand;
+            
+            FPInteract = leftHand;
+            
+            // Configs
+            // Left handed mode
+            if (VRConfig.SWITCH_HANDS)
+            {
+                rightHand.GetComponent<PosHand>().hand = XRNode.LeftHand;
+                leftHand.GetComponent<PosHand>().hand = XRNode.RightHand;
+                // TODO: Add different interact hand models for both controllers
+            }
         }
         
         

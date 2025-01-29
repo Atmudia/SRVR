@@ -2,6 +2,7 @@
 using System.Linq;
 using HarmonyLib;
 using SRML;
+using SRML.Config.Attributes;
 using SRML.Console;
 using SRML.SR;
 using SRML.Utils;
@@ -14,6 +15,13 @@ using Object = UnityEngine.Object;
 
 namespace SRVR
 {
+    [ConfigFile("VR")]
+    
+    public class VRConfig
+    {
+        public static readonly bool SWITCH_HANDS = false;
+    }
+    
     public class EntryPoint : ModEntryPoint
     {
         public static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
@@ -97,10 +105,47 @@ namespace SRVR
             if (!VRManager.InitializeVR()) return;
             if (!VRManager.StartVR()) return;
             VRInput.RegisterCallbacks();
-
-            //return;
             
-
+            Controllers = new GameObject(nameof(Controllers));
+            Controllers.transform.localPosition = Vector3.zero;
+            var arms = VRAssets.LoadAsset<Mesh>("arms");
+            var handsMaterial = VRAssets.LoadAsset<Material>("Hands Material 1");
+            var leftController = new GameObject("Left Controller")
+            {
+                transform =
+                {
+                    parent = Controllers.transform
+                }
+            };
+            var lefthand_alone = new GameObject("Left Hand")
+            {
+                transform =
+                {
+                    parent = leftController.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 90, 0),
+                }
+            };
+            lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            lefthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
+            leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
+            var rightController = new GameObject("Right Controller")
+            {
+                transform = { parent = Controllers.transform }
+            };
+            var righthand_alone = new GameObject("Right Hand")
+            {
+                transform =
+                {
+                    parent = rightController.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 90, 0),
+                }
+            };
+            righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
+            rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
+            
             SRCallbacks.OnMainMenuLoaded += menu =>
             {
                 var fpsCamera = GameObject.Find("FPSCamera");
@@ -112,48 +157,6 @@ namespace SRVR
                         eulerAngles = new Vector3(0, 260f, 0),
                     }
                 };
-                
-                
-                // IDK why it wasnt moved here instead of the mod load.
-                Controllers = new GameObject(nameof(Controllers));
-                Controllers.transform.localPosition = Vector3.zero;
-                var arms = VRAssets.LoadAsset<Mesh>("arms");
-                var handsMaterial = VRAssets.LoadAsset<Material>("Hands Material 1");
-                var leftController = new GameObject("Left Controller")
-                {
-                    transform =
-                    {
-                        parent = Controllers.transform
-                    }
-                };
-                var lefthand_alone = new GameObject("Left Hand")
-                {
-                    transform =
-                    {
-                        parent = leftController.transform,
-                        position = new Vector3(0, 0, -0.1f),
-                        rotation = Quaternion.Euler(0, 90, 0),
-                    }
-                };
-                lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-                lefthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
-                leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
-                var rightController = new GameObject("Right Controller")
-                {
-                    transform = { parent = Controllers.transform }
-                };
-                var righthand_alone = new GameObject("Right Hand")
-                {
-                    transform =
-                    {
-                        parent = rightController.transform,
-                        position = new Vector3(0, 0, -0.1f),
-                        rotation = Quaternion.Euler(0, 90, 0),
-                    }
-                };
-                righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-                righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
-                rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
                 
                 fpsCamera.transform.parent = camera.transform;
                 fpsCamera.transform.localPosition = Vector3.zero;
