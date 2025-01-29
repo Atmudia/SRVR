@@ -99,7 +99,7 @@ namespace SRVR.Patches
             var vacShapeCache = fpsCamera.transform.Find("vac shape").transform;
             var vacconePrefab = vacShapeCache.transform.Find("Vaccone Prefab");
 
-            vacShapeCache.GetComponent<DynamicBone>().enabled = false;
+            vacShapeCache.GetComponent<DynamicBone>().enabled = false; // I dont see why this is disabled. when enabled in the middle of gameplay it works, but im sure it should work.
             vacShapeCache.parent = scaler.transform;
             vacShapeCache.localRotation = Quaternion.Euler(new Vector3(-7118.613f, -8.3496f, -1.2340469f)); // Thanks Tranfox for this values
             vacShapeCache.localPosition = new Vector3(0.01f, -0.0071f, 0.0682f);

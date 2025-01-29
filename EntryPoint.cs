@@ -144,12 +144,14 @@ namespace SRVR
                 var fpsCamera = GameObject.Find("FPSCamera");
                 var camera = new GameObject("Camera")
                 {
-                    transform =
+                    transform = // rotation Y should be 260 as far as ive seen.
                     {
-                        position = fpsCamera.transform.position
+                        position = new Vector3(14.26f, 1.35f, 3.98f),
+                        eulerAngles = new Vector3(0, 260f, 0),
                     }
                 };
                 fpsCamera.transform.parent = camera.transform;
+                fpsCamera.transform.localPosition = Vector3.zero;
                 fpsCamera.transform.localEulerAngles = Vector3.zero;
                 Controllers.transform.SetParent(camera.transform, false);
                 vp_Layer.Set(Controllers, vp_Layer.Actor, true);
@@ -157,7 +159,7 @@ namespace SRVR
                 
                 var mainMenuUI = GameObject.Find("MainMenuUI").GetComponent<Canvas>();
                 mainMenuUI.renderMode = RenderMode.WorldSpace;
-                mainMenuUI.transform.localScale = new Vector3(0.003f, 0.003f, 0.003f);
+                mainMenuUI.transform.localScale = new Vector3(0.002f, 0.002f, 0.002f);
                 mainMenuUI.transform.localPosition = new Vector3(12.3258f, 1.8956f, 3.7663f);
                 mainMenuUI.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
             };
