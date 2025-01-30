@@ -16,23 +16,29 @@ namespace SRVR
             transform.position = Camera.main.transform.position + Camera.main.transform.forward;
             transform.rotation = Camera.main.transform.rotation;
             
-            if (VRConfig.STATIC_UI_POSITION && !DisableStaticPosition.Contains(gameObject.name)) Destroy(this);
+            if (VRConfig.STATIC_UI_POSITION && !(DisableStaticPosition.Contains(gameObject.name) || IsInCategory(gameObject.name))) Destroy(this);
         }
 
+        public static bool IsInCategory(string name)
+        {
+            foreach (var category in DisableStaticPositionForCategories)
+            {
+                if (name.Contains(category)) return true;
+            }
+            return false;
+        }
+        
         public static readonly string[] DisableStaticPosition = new[]
         {
             "TitleUI",
-            "ActivateUI(Clone)",
-            "ActivateSlimeGateUI(Clone)",
             "GlitchTerminalActivatorUI_Ammo(Clone)",
-            "ActivatePuzzleGateUI(Clone)",
-            "ActivatePuzzleGateLockedUI(Clone)",
-            "ActivateSlimeGateNoKeyUI(Clone)",
-            "ActivateTreasurePodNoKeyUI(Clone)",
-            "ActivateTreasurePodInsufKeyUI(Clone)",
             "ExchangeOfflineUI(Clone)",
-            "ActivateTreasurePodUI(Clone)",
-            "ActivateGadgetModeUI(Clone)",
+        };
+
+        public static readonly string[] DisableStaticPositionForCategories = new[]
+        {
+            "Activate",
+            "Popup",
         };
     }
 

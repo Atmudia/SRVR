@@ -157,12 +157,15 @@ namespace SRVR
             pediaModel.AddComponent<MeshFilter>().mesh = pediaModel.GetComponent<SkinnedMeshRenderer>().sharedMesh;
             Object.Destroy(pediaModel.GetComponent<SkinnedMeshRenderer>());
             
-            var pediaCollider = pediaModel.AddComponent<BoxCollider>();
-            pediaCollider.size = new Vector3(0.35f, 0.2f, 0.1f);
-            pediaCollider.center = new Vector3(-0.125f, 0, 0);
+            var pediaColObj = new GameObject("Collision") { transform = { parent = pediaModel.transform } };
             
-            pediaModel.AddComponent<PediaInteract>();
-            pediaModel.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            pediaColObj.AddComponent<BoxCollider>();
+            pediaColObj.AddComponent<PediaInteract>();
+            pediaColObj.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            
+            pediaColObj.transform.localScale = new Vector3(0.35f, 0.1f, 0.35f);
+            pediaColObj.transform.localPosition = new Vector3(0f, 0.2f, -0.05f);
+            pediaColObj.transform.localEulerAngles = Vector3.zero;
             
             pediaModel.SetActive(false);
             

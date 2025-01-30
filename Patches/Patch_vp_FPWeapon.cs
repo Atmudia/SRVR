@@ -5,6 +5,7 @@ using MonomiPark.SlimeRancher.DataModel;
 using SRML.Console;
 using SRML.SR;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR;
 using Valve.VR;
 
@@ -48,8 +49,8 @@ namespace SRVR.Patches
             hudUIContainer.Find("CurrentDay").GetComponent<RectTransform>().SetAnchoredPosition2D(580, -446.0001f);
             
             hudUIContainer.Find("CurrentTime").GetComponent<RectTransform>().SetAnchoredPosition2D(632f, -498);
-            
-            
+
+            hudUIContainer.Find("Ammo Slots").GetComponent<HorizontalLayoutGroup>().spacing = 80f;
             
             hudUIContainer.Find("crossHair").gameObject.SetActive(false);
             
@@ -163,10 +164,10 @@ namespace SRVR.Patches
             
             var pedia = PediaInteract.pediaModel.Instantiate();
             
-            pedia.transform.SetParent(scaler, false);
-            pedia.transform.localScale = Vector3.one * 0.03f;
-            pedia.transform.localPosition = new Vector3(0.014f, -0.0141f, 0.03f);
-            pedia.transform.localEulerAngles = new Vector3(45.1902f, 134.9989f, 10.6216f);
+            pedia.transform.SetParent(scaler2.transform, false);
+            pedia.transform.localScale = Vector3.one;
+            pedia.transform.localPosition = new Vector3(0.46f, -0.06f, -0.08f);
+            pedia.transform.localEulerAngles = new Vector3(450.6109f, 269.9038f, 57.2968f);
             pedia.SetActive(true);
             pedia.layer = LayerMask.NameToLayer("Weapon");
         }
