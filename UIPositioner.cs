@@ -1,5 +1,6 @@
 ﻿using SRVR.Patches;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR;
 using Valve.VR;
@@ -14,11 +15,30 @@ namespace SRVR
             if (Camera.main == null) return;
             transform.position = Camera.main.transform.position + Camera.main.transform.forward;
             transform.rotation = Camera.main.transform.rotation;
+            
+            if (VRConfig.STATIC_UI_POSITION && !DisableStaticPosition.Contains(gameObject.name)) Destroy(this);
         }
+
+        public static readonly string[] DisableStaticPosition = new[]
+        {
+            "TitleUI",
+            "ActivateUI(Clone)",
+            "ActivateSlimeGateUI(Clone)",
+            "GlitchTerminalActivatorUI_Ammo(Clone)",
+            "ActivatePuzzleGateUI(Clone)",
+            "ActivatePuzzleGateLockedUI(Clone)",
+            "ActivateSlimeGateNoKeyUI(Clone)",
+            "ActivateTreasurePodNoKeyUI(Clone)",
+            "ActivateTreasurePodInsufKeyUI(Clone)",
+            "ExchangeOfflineUI(Clone)",
+            "ActivateTreasurePodUI(Clone)",
+            "ActivateGadgetModeUI(Clone)",
+        };
     }
 
     public class PosHand : MonoBehaviour
     {
+        public float offset = 0f; // use this for when the position is going the wrong direction
         public XRNode hand;
         public void LateUpdate()
         {
@@ -28,6 +48,7 @@ namespace SRVR
 
             if (rightHand.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 pos))
                 transform.position = transform.parent.position + (Quaternion.AngleAxis(Patch_vp_FPInput.adjustmentDegrees, Vector3.up) * pos);
+            
             if (rightHand.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rot))
                 transform.rotation = Quaternion.Euler(rot.eulerAngles + (Vector3.up * Patch_vp_FPInput.adjustmentDegrees));
         }
@@ -40,6 +61,25 @@ namespace SRVR
             if (player != null)
             {
                 player.center = Vector3.up + new Vector3(Patch_vp_FPInput.HMDPosition.x, 0, Patch_vp_FPInput.HMDPosition.z);
+            }
+        }
+    }
+
+    public class PediaInteract : MonoBehaviour
+    {
+        internal static GameObject pediaModel;
+        public void OnCollisionEnter(Collision other)
+        {
+            Debug.Log(other.gameObject.name);
+            if (other.gameObject.name == "Controller (Left)")
+            {
+                PediaDirector.Id pediaId = PediaDirector.Id.BASICS;
+                PediaPopupUI objectOfType = FindObjectOfType<PediaPopupUI>();
+                
+                if (objectOfType)
+                    pediaId = objectOfType.GetId();
+                
+                SceneContext.Instance.PediaDirector.ShowPedia(pediaId);
             }
         }
     }

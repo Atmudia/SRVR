@@ -20,6 +20,7 @@ namespace SRVR
     public class VRConfig
     {
         public static readonly bool SWITCH_HANDS = false;
+        public static readonly bool STATIC_UI_POSITION = true;
     }
     
     public class EntryPoint : ModEntryPoint
@@ -145,6 +146,27 @@ namespace SRVR
             righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
             righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
             rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
+
+            var pediaModel = GameObject.Find("Art").FindChild("BeatrixMainMenu").FindChild("slimepedia").Instantiate();
+            
+            pediaModel.DontDestroyOnLoad();
+            
+            pediaModel.name = "PediaInteract";
+            
+            pediaModel.AddComponent<MeshRenderer>().material = pediaModel.GetComponent<SkinnedMeshRenderer>().material;
+            pediaModel.AddComponent<MeshFilter>().mesh = pediaModel.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            Object.Destroy(pediaModel.GetComponent<SkinnedMeshRenderer>());
+            
+            var pediaCollider = pediaModel.AddComponent<BoxCollider>();
+            pediaCollider.size = new Vector3(0.35f, 0.2f, 0.1f);
+            pediaCollider.center = new Vector3(-0.125f, 0, 0);
+            
+            pediaModel.AddComponent<PediaInteract>();
+            pediaModel.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            
+            pediaModel.SetActive(false);
+            
+            PediaInteract.pediaModel = pediaModel;
             
             SRCallbacks.OnMainMenuLoaded += menu =>
             {
@@ -153,11 +175,12 @@ namespace SRVR
                 {
                     transform = // rotation Y should be 260 as far as ive seen.
                     {
-                        position = new Vector3(14.26f, 1.35f, 3.98f),
+                        position = new Vector3(14.26f, 1.1f, 3.98f),
                         eulerAngles = new Vector3(0, 260f, 0),
                     }
                 };
                 
+                Patch_vp_FPInput.adjustmentDegrees = 260f;
                 fpsCamera.transform.parent = camera.transform;
                 fpsCamera.transform.localPosition = Vector3.zero;
                 fpsCamera.transform.localEulerAngles = Vector3.zero;

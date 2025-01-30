@@ -138,6 +138,18 @@ namespace SRVR.Patches
             leftHandModel.AddComponent<MeshFilter>().sharedMesh = arms;
             leftHand.AddComponent<PosHand>().hand = XRNode.LeftHand;
             
+            leftHand.layer = LayerMask.NameToLayer("Weapon");
+            leftHandModel.layer = LayerMask.NameToLayer("Weapon");
+
+            var leftHandCol = leftHand.AddComponent<BoxCollider>();
+            leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
+            leftHandCol.size = new Vector3(0f, 0f, -0.1f);
+            
+            leftHand.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            
+            var weaponCamera = fpsCamera.transform.Find("WeaponCamera");
+            weaponCamera.GetComponent<Camera>().nearClipPlane = 0.05f;
+            
             FPInteract = leftHand;
             
             // Configs
@@ -148,6 +160,15 @@ namespace SRVR.Patches
                 leftHand.GetComponent<PosHand>().hand = XRNode.RightHand;
                 // TODO: Add different interact hand models for both controllers
             }
+            
+            var pedia = PediaInteract.pediaModel.Instantiate();
+            
+            pedia.transform.SetParent(scaler, false);
+            pedia.transform.localScale = Vector3.one * 0.03f;
+            pedia.transform.localPosition = new Vector3(0.014f, -0.0141f, 0.03f);
+            pedia.transform.localEulerAngles = new Vector3(45.1902f, 134.9989f, 10.6216f);
+            pedia.SetActive(true);
+            pedia.layer = LayerMask.NameToLayer("Weapon");
         }
         
         

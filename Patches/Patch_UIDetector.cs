@@ -42,10 +42,10 @@ namespace SRVR.Patches
         {
             var controller = Patch_vp_FPWeapon.FPInteract.transform;
             ray = new Ray(controller.position, controller.forward);
-            Vector3 halfExtents = Vector3.one * .5f; 
+            Vector3 halfExtents = Vector3.one * 1.5f; 
             
             // Change the max distance if it doesnt seem right ingame.
-            bool hit = Physics.BoxCast(ray.origin, halfExtents, ray.direction, out hitInfo, Quaternion.identity, 1f);
+            bool hit = Physics.BoxCast(ray.origin, halfExtents, ray.direction, out hitInfo, Quaternion.identity, .75f);
 
             return hit;
         }
