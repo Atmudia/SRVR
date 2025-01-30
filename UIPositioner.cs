@@ -74,9 +74,8 @@ namespace SRVR
     public class PediaInteract : MonoBehaviour
     {
         internal static GameObject pediaModel;
-        public void OnCollisionEnter(Collision other)
+        public void OnTriggerEnter(Collider other)
         {
-            Debug.Log(other.gameObject.name);
             if (other.gameObject.name == "Controller (Left)")
             {
                 PediaDirector.Id pediaId = PediaDirector.Id.BASICS;
@@ -86,6 +85,44 @@ namespace SRVR
                     pediaId = objectOfType.GetId();
                 
                 SceneContext.Instance.PediaDirector.ShowPedia(pediaId);
+            }
+        }
+    }
+    public class HUDTouchBounds : MonoBehaviour
+    {
+        public void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.name == "Controller (Left)")
+            {
+                other.transform.localScale = Vector3.one * 0.45f;
+            }
+        }
+
+        public void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.name == "Controller (Left)")
+            {
+                other.transform.localScale = Vector3.one;
+            }
+        }
+    }
+    public class AmmoSlotTouchUI : MonoBehaviour
+    {
+        public int slotIDX = 0;
+
+        public Transform slotObject;
+        
+        public void Update()
+        {
+            transform.position = slotObject.position;
+        }
+        
+        
+        public void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.name == "Controller (Left)")
+            {
+                SceneContext.Instance.PlayerState.Ammo.selectedAmmoIdx = slotIDX;
             }
         }
     }

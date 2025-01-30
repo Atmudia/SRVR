@@ -159,7 +159,7 @@ namespace SRVR
             
             var pediaColObj = new GameObject("Collision") { transform = { parent = pediaModel.transform } };
             
-            pediaColObj.AddComponent<BoxCollider>();
+            pediaColObj.AddComponent<BoxCollider>().isTrigger = true;
             pediaColObj.AddComponent<PediaInteract>();
             pediaColObj.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             
