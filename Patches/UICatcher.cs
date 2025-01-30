@@ -17,7 +17,7 @@ namespace SRVR.Patches
             var canvas = __instance.GetComponent<Canvas>();
             if (!Camera.main || IsCanvasToIgnore(__instance.name)) return;
             if (!canvas) return;
-            if (canvas.renderMode == RenderMode.WorldSpace) return;
+            if (canvas.renderMode == RenderMode.WorldSpace && !VRConfig.STATIC_UI_POSITION) return;
             canvas.renderMode = RenderMode.WorldSpace;
           
             canvas.transform.localScale = Vector3.one * 0.0005f;

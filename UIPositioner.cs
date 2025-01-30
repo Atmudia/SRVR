@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR;
 using Valve.VR;
 using static SECTR_AudioSystem;
@@ -115,6 +116,11 @@ namespace SRVR
         public void Update()
         {
             transform.position = slotObject.position;
+
+            if (SceneContext.Instance.PlayerState.Ammo.selectedAmmoIdx == slotIDX)
+                slotObject.Find("Ammo Slot").Find("Frame").GetComponent<Image>().color = Color.yellow;
+            else
+                slotObject.Find("Ammo Slot").Find("Frame").GetComponent<Image>().color = Color.white;
         }
         
         

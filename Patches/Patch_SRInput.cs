@@ -35,7 +35,7 @@ namespace SRVR.Patches
             {
                 if (Patch_vp_FPWeapon.FPWeapon)
                 {
-                    Patch_vp_FPWeapon.FPWeapon.SetActive(false);
+                    // Patch_vp_FPWeapon.FPWeapon.SetActive(false);
                 }
 
                 // Activate the action if mode is DEFAULT
