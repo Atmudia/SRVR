@@ -1,21 +1,15 @@
-using System.Runtime.CompilerServices;
 using HarmonyLib;
-using InControl;
-using MonomiPark.SlimeRancher.DataModel;
-using SRML.Console;
-using SRML.SR;
+using SRVR.Components;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR;
-using Valve.VR;
 
 namespace SRVR.Patches
 {
     [HarmonyPatch(typeof(vp_FPWeapon))]
     public class Patch_vp_FPWeapon
     {
-        public static GameObject FPWeapon;
-        public static GameObject FPInteract;
+        public static Transform FPWeapon;
+        public static Transform FPInteract;
 
         [HarmonyPatch(nameof(vp_FPWeapon.Start))]
         public static void Postfix(vp_FPWeapon __instance)
@@ -79,25 +73,23 @@ namespace SRVR.Patches
             canvas.worldCamera = Camera.main;
 
             hudUITransform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-
-
+            
+            
             var simplePlayer = GameObject.Find("SimplePlayer");
-            var rightHand = new GameObject("Controller (Right)")
-            {
-                transform = { parent = simplePlayer.transform }
-            };
-            FPWeapon = rightHand;
-            scaler.SetParent(rightHand.transform, false); // Parent it to right hand
-            rightHand.SetActive(false);
-            if (EntryPoint.EnabledVR)
-                rightHand.AddComponent<PosHand>().hand = XRNode.RightHand;
-            else
-            {
-                rightHand.transform.position = simplePlayer.transform.position + new Vector3(0, 1f, 0);
-            }
 
-            rightHand.SetActive(true);
 
+            var controllers = VRManager.InstantiateVRRig();
+            controllers.transform.SetParent(simplePlayer.transform, false);
+            controllers.transform.localPosition = Vector3.zero;
+            var rightController = controllers.transform.Find("Right Controller");
+            var leftController = controllers.transform.Find("Left Controller");
+            var leftHand = leftController.transform.Find("Left Hand");
+            scaler.SetParent(rightController.transform, false); // Parent it to right hand
+            FPWeapon = scaler;
+            if (!EntryPoint.EnabledVR)
+                rightController.transform.position = simplePlayer.transform.position + new Vector3(0, 1f, 0);
+            
+            
             var fpsCamera = simplePlayer.transform.Find("FPSCamera");
             var vacShapeCache = fpsCamera.transform.Find("vac shape").transform;
             var vacconePrefab = vacShapeCache.transform.Find("Vaccone Prefab");
@@ -105,8 +97,7 @@ namespace SRVR.Patches
             vacShapeCache.GetComponent<DynamicBone>().enabled =
                 false; // I dont see why this is disabled. when enabled in the middle of gameplay it works, but im sure it should work.
             vacShapeCache.parent = scaler.transform;
-            vacShapeCache.localRotation =
-                Quaternion.Euler(new Vector3(-7118.613f, -8.3496f, -1.2340469f)); // Thanks Tranfox for this values
+            vacShapeCache.localRotation = Quaternion.Euler(new Vector3(-7118.613f, -8.3496f, -1.2340469f)); // Thanks Tranfox for this values
             vacShapeCache.localPosition = new Vector3(0.01f, -0.0071f, 0.0682f);
             vacShapeCache.localScale = new Vector3(0.08f, 0.08f, 0.08f);
             vacconePrefab.localPosition = Vector3.zero;
@@ -118,53 +109,12 @@ namespace SRVR.Patches
 
             fpsCamera.gameObject.AddComponent<PlayerVRPos>();
 
-            // Interaction
-
-            // Code from EntryPoint
-            var arms = EntryPoint.VRAssets.LoadAsset<Mesh>("arms");
-            var handsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
-            var leftHand = new GameObject("Controller (Left)")
-            {
-                transform =
-                {
-                    parent = simplePlayer.transform
-                }
-            };
-            var leftHandModel = new GameObject("Model")
-            {
-                transform =
-                {
-                    parent = leftHand.transform,
-                    position = new Vector3(0, 0, -0.1f),
-                    rotation = Quaternion.Euler(0, 90, 0),
-                }
-            };
-            leftHandModel.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            leftHandModel.AddComponent<MeshFilter>().sharedMesh = arms;
-            leftHand.AddComponent<PosHand>().hand = XRNode.LeftHand;
-
-            leftHand.layer = LayerMask.NameToLayer("Weapon");
-            leftHandModel.layer = LayerMask.NameToLayer("Weapon");
-
-            var leftHandCol = leftHand.AddComponent<BoxCollider>();
-            leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
-            leftHandCol.size = new Vector3(0f, 0f, -0.1f);
-
-            leftHand.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-
             var weaponCamera = fpsCamera.transform.Find("WeaponCamera");
             weaponCamera.GetComponent<Camera>().nearClipPlane = 0.05f;
-
-            FPInteract = leftHand;
-
-            // Configs
-            // Left handed mode
-            if (VRConfig.SWITCH_HANDS)
-            {
-                rightHand.GetComponent<PosHand>().hand = XRNode.LeftHand;
-                leftHand.GetComponent<PosHand>().hand = XRNode.RightHand;
-                // TODO: Add different interact hand models for both controllers
-            }
+            FPInteract = leftController;
+            
+            
+            // FPInteract = EntryPoint.Controllers.transform.Find("Left Controller").gameObject;
 
             var pedia = PediaInteract.pediaModel.Instantiate();
 
@@ -174,6 +124,8 @@ namespace SRVR.Patches
             pedia.transform.localEulerAngles = new Vector3(450.6109f, 269.9038f, 57.2968f);
             pedia.SetActive(true);
             pedia.layer = LayerMask.NameToLayer("Weapon");
+            fpsCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Held");
+
 
             var uiCollider = new GameObject("UICollider")
             {
@@ -185,21 +137,30 @@ namespace SRVR.Patches
                     localScale = new Vector3(1.3f, 1.2f, 0.4f)
                 }
             };
-            uiCollider.AddComponent<BoxCollider>().isTrigger = true;;
+            uiCollider.AddComponent<BoxCollider>().isTrigger = true;
             uiCollider.AddComponent<HUDTouchBounds>();
 
-            fpsCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Held");
             
             var slots = hudUIContainer.Find("Ammo Slots");
             for (int i = 0; i < slots.childCount; i++)
             {
+                var slot = slots.GetChild(i);
                 var col = new GameObject("SlotCollider")
                 {
-                    transform = { localScale = Vector3.one * 0.03f }
+                    transform =
+                    {
+                        localScale = Vector3.one * 0.03f,
+                    }
                 };
-                col.AddComponent<BoxCollider>().isTrigger = true;;
-                col.AddComponent<AmmoSlotTouchUI>().slotIDX = i;
-                col.GetComponent<AmmoSlotTouchUI>().slotObject = slots.GetChild(i);
+                // col.transform.SetParent(slot.transform, false);
+                var boxCollider = col.AddComponent<BoxCollider>();
+                boxCollider.isTrigger = true;;
+                
+                col.SetActive(false);
+                var ammoSlotTouchUI = col.AddComponent<AmmoSlotTouchUI>();
+                ammoSlotTouchUI.slotIDX = i;
+                ammoSlotTouchUI.slotObject = slot;
+                col.SetActive(true);
             }
         }
     }

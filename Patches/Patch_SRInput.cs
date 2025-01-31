@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using InControl;
 using MonomiPark.SlimeRancher;
@@ -35,7 +34,8 @@ namespace SRVR.Patches
             {
                 if (Patch_vp_FPWeapon.FPWeapon)
                 {
-                    // Patch_vp_FPWeapon.FPWeapon.SetActive(false);
+                    Patch_vp_FPWeapon.FPWeapon.gameObject.SetActive(false);
+                    Patch_vp_FPWeapon.FPWeapon.parent.Find("Right Hand").gameObject.SetActive(true);
                 }
 
                 // Activate the action if mode is DEFAULT
@@ -45,7 +45,9 @@ namespace SRVR.Patches
             {
                 if (Patch_vp_FPWeapon.FPWeapon)
                 {
-                    Patch_vp_FPWeapon.FPWeapon.SetActive(true);
+                    Patch_vp_FPWeapon.FPWeapon.gameObject.SetActive(true);
+                    Patch_vp_FPWeapon.FPWeapon.parent.Find("Right Hand").gameObject.SetActive(false);
+
                 }
                 // Deactivate the action if mode is not DEFAULT
                 SteamVR_Actions.slimecontrols.Deactivate();

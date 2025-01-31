@@ -34,9 +34,16 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Include="Components\AmmoSlotTouchUI.cs" />
+      <Compile Include="Components\HUDTouchBounds.cs" />
+      <Compile Include="Components\PediaInteract.cs" />
+      <Compile Include="Components\PlayerVRPos.cs" />
+      <Compile Include="Components\PosHand.cs" />
+      <Compile Include="Components\UIPositioner.cs" />
       <Compile Include="EntryPoint.cs" />
       <Compile Include="Extension.cs" />
       <Compile Include="Patches\Patch_GamepadPanel.cs" />
+      <Compile Include="Patches\Patch_LoadingUI.cs" />
       <Compile Include="Patches\Patch_Vacuumable.cs" />
       <Compile Include="Patches\Patch_vp_FPWeapon.cs" />
       <Compile Include="Patches\Patch_MainMenuUI.cs" />
@@ -47,10 +54,9 @@
       <Compile Include="Patches\Patch_vp_FPInput.cs" />
       <Compile Include="Patches\Patch_WeaponVacuum.cs" />
       <Compile Include="Patches\UICatcher.cs" />
-      <Compile Include="UIPositioner.cs" />
       <Compile Include="VRInput.cs" />
       <Compile Include="VRInstaller.cs" />
-      <Compile Include="VRIntializator.cs" />
+      <Compile Include="VRManager.cs" />
     </ItemGroup>
     <ItemGroup>
       <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
@@ -75,19 +81,19 @@
         <HintPath>.\Libs\SRML.dll</HintPath>
       </Reference>
       <Reference Include="SteamVR">
-        <HintPath>.\Libs\SteamVR.dll</HintPath>
+        <HintPath>.\Files\Managed\SteamVR.dll</HintPath>
       </Reference>
       <Reference Include="SteamVR_Actions">
-        <HintPath>.\Libs\SteamVR_Actions.dll</HintPath>
+        <HintPath>.\Files\Managed\SteamVR_Actions.dll</HintPath>
       </Reference>
       <Reference Include="Unity.TextMeshPro">
-        <HintPath>.\Libs\Unity.TextMeshPro.dll</HintPath>
+        <HintPath>.\Files\Managed\Unity.TextMeshPro.dll</HintPath>
       </Reference>
       <Reference Include="Unity.XR.Management">
-        <HintPath>.\Libs\Unity.XR.Management.dll</HintPath>
+        <HintPath>.\Files\Managed\Unity.XR.Management.dll</HintPath>
       </Reference>
       <Reference Include="Unity.XR.OpenVR">
-        <HintPath>.\Libs\Unity.XR.OpenVR.dll</HintPath>
+        <HintPath>.\Files\Managed\Unity.XR.OpenVR.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.AssetBundleModule">
         <HintPath>.\Libs\UnityEngine.AssetBundleModule.dll</HintPath>
@@ -99,7 +105,7 @@
         <HintPath>.\Libs\UnityEngine.PhysicsModule.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.SpatialTracking">
-        <HintPath>.\Libs\UnityEngine.SpatialTracking.dll</HintPath>
+        <HintPath>.\Files\Managed\UnityEngine.SpatialTracking.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.SubsystemsModule">
         <HintPath>.\Libs\UnityEngine.SubsystemsModule.dll</HintPath>

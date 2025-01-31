@@ -27,8 +27,6 @@ namespace SRVR.Patches
                 
                 __instance.transform.localScale = originalScale[__instance];
                 originalScale.Remove(__instance);
-                
-                return false;
             }
             else
             {
@@ -47,9 +45,9 @@ namespace SRVR.Patches
                 __instance.transform.localPosition = Vector3.right * 3.35f;
                 
                 __instance.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            
-                return false;
             }
+
+            return false;
         }
     }
 }

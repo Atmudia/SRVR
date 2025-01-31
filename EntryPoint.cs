@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using HarmonyLib;
 using SRML;
 using SRML.Config.Attributes;
 using SRML.Console;
 using SRML.SR;
-using SRML.Utils;
+using SRVR.Components;
 using SRVR.Patches;
 using UnityEngine;
 using UnityEngine.UI;
@@ -96,63 +95,23 @@ namespace SRVR
                 };
                 return;
             }
-
+            
+            
             Console.RegisterCommand(new ContinueGameCommand());
             Console.RegisterCommand(new UnparentVacGun());
             Console.RegisterCommand(new ParentVacGun());
             HarmonyInstance.PatchAll();
             TranslationPatcher.AddUITranslation("b.uninstall_vr", "Uninstall VR");
+
+
             if (!EnabledVR) return;
             if (!VRManager.InitializeVR()) return;
             if (!VRManager.StartVR()) return;
             VRInput.RegisterCallbacks();
             
-            Controllers = new GameObject(nameof(Controllers));
-            Controllers.transform.localPosition = Vector3.zero;
-            var arms = VRAssets.LoadAsset<Mesh>("arms");
-            var handsMaterial = VRAssets.LoadAsset<Material>("Hands Material 1");
-            var leftController = new GameObject("Left Controller")
-            {
-                transform =
-                {
-                    parent = Controllers.transform
-                }
-            };
-            var lefthand_alone = new GameObject("Left Hand")
-            {
-                transform =
-                {
-                    parent = leftController.transform,
-                    position = new Vector3(0, 0, -0.1f),
-                    rotation = Quaternion.Euler(0, 90, 0),
-                }
-            };
-            lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            lefthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
-            leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
-            var rightController = new GameObject("Right Controller")
-            {
-                transform = { parent = Controllers.transform }
-            };
-            var righthand_alone = new GameObject("Right Hand")
-            {
-                transform =
-                {
-                    parent = rightController.transform,
-                    position = new Vector3(0, 0, -0.1f),
-                    rotation = Quaternion.Euler(0, 90, 0),
-                }
-            };
-            righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
-            rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
-
-            var pediaModel = GameObject.Find("Art").FindChild("BeatrixMainMenu").FindChild("slimepedia").Instantiate();
-            
+            var pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
             pediaModel.DontDestroyOnLoad();
-            
             pediaModel.name = "PediaInteract";
-            
             pediaModel.AddComponent<MeshRenderer>().material = pediaModel.GetComponent<SkinnedMeshRenderer>().material;
             pediaModel.AddComponent<MeshFilter>().mesh = pediaModel.GetComponent<SkinnedMeshRenderer>().sharedMesh;
             Object.Destroy(pediaModel.GetComponent<SkinnedMeshRenderer>());
@@ -174,6 +133,7 @@ namespace SRVR
             SRCallbacks.OnMainMenuLoaded += menu =>
             {
                 var fpsCamera = GameObject.Find("FPSCamera");
+                
                 var camera = new GameObject("Camera")
                 {
                     transform = // rotation Y should be 260 as far as ive seen.
@@ -187,15 +147,11 @@ namespace SRVR
                 fpsCamera.transform.parent = camera.transform;
                 fpsCamera.transform.localPosition = Vector3.zero;
                 fpsCamera.transform.localEulerAngles = Vector3.zero;
-                Controllers.transform.SetParent(camera.transform, false);
-                vp_Layer.Set(Controllers, vp_Layer.Actor, true);
+                var controllers = VRManager.InstantiateVRRig();
+                Patch_vp_FPWeapon.FPWeapon = controllers.Find("Right Hand");
+                controllers.transform.SetParent(camera.transform, false);
+                vp_Layer.Set(controllers.gameObject, vp_Layer.Actor, true);
                 fpsCamera.AddComponent<RotHMD>(); 
-                
-                var mainMenuUI = GameObject.Find("MainMenuUI").GetComponent<Canvas>();
-                mainMenuUI.renderMode = RenderMode.WorldSpace;
-                mainMenuUI.transform.localScale = new Vector3(0.002f, 0.002f, 0.002f);
-                mainMenuUI.transform.localPosition = new Vector3(12.3258f, 1.8956f, 3.7663f);
-                mainMenuUI.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
             };
 
 
@@ -217,8 +173,6 @@ namespace SRVR
                 
             }
         }
-
-        public static GameObject Controllers;
         
 
 

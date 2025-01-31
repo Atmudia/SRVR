@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using InControl;
 using UnityEngine;
 using UnityEngine.XR;
-using Valve.VR;
 
 namespace SRVR.Patches
 {

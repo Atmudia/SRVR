@@ -10,8 +10,6 @@ namespace SRVR.Patches
     [HarmonyPatch(typeof(UIDetector))]
     public static class Patch_UIDetector
     {
-        
-        
         [HarmonyTranspiler, HarmonyPatch(nameof(UIDetector.Update))]
         static IEnumerable<CodeInstruction> Update(IEnumerable<CodeInstruction> instructions)
         {
@@ -40,7 +38,8 @@ namespace SRVR.Patches
         }
         public static bool CustomRaycast(Ray ray, out RaycastHit hitInfo, float maxDistance)
         {
-            var controller = Patch_vp_FPWeapon.FPInteract.transform;
+            
+            var controller = Patch_vp_FPWeapon.FPInteract;
             ray = new Ray(controller.position, controller.forward);
             Vector3 halfExtents = Vector3.one * 1.5f; 
             
