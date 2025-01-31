@@ -188,6 +188,8 @@ namespace SRVR.Patches
             uiCollider.AddComponent<BoxCollider>().isTrigger = true;;
             uiCollider.AddComponent<HUDTouchBounds>();
 
+            fpsCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Held");
+            
             var slots = hudUIContainer.Find("Ammo Slots");
             for (int i = 0; i < slots.childCount; i++)
             {
