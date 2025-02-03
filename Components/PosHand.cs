@@ -6,7 +6,6 @@ namespace SRVR.Components
 {
     public class PosHand : MonoBehaviour
     {
-        public float offset = 0f; // use this for when the position is going the wrong direction
         public XRNode hand;
         public void LateUpdate()
         {

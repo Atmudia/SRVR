@@ -49,6 +49,16 @@ namespace SRVR.Patches
 
             hudUIContainer.Find("crossHair").gameObject.SetActive(false);
 
+            var death = hudUIContainer.parent.Find(nameof(DeathObscurer)) as RectTransform;
+            death.gameObject.AddComponent<CanvasScaler>();
+            death.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+            death.localScale = Vector3.one * 99f;
+            death.SetParent(null);
+
+            var deathText = SceneContext.Instance.player.GetComponent<PlayerDeathHandler>().deathUIPrefab;
+            deathText.transform.GetChild(0).localPosition += Vector3.back * 0.05f;
+            deathText.transform.GetChild(1).localPosition += Vector3.back * 0.05f;
+            
             var model_vac_prefab = __instance.transform.GetChild(0);
             var scaler = model_vac_prefab.transform.Find("Scaler");
             var bone_vac = scaler.transform.Find("bone_vac");
@@ -161,6 +171,8 @@ namespace SRVR.Patches
                 ammoSlotTouchUI.slotIDX = i;
                 ammoSlotTouchUI.slotObject = slot;
                 col.SetActive(true);
+                
+                VRDeathHandler.EventAdd();
             }
         }
     }

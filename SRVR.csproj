@@ -54,6 +54,7 @@
       <Compile Include="Patches\Patch_vp_FPInput.cs" />
       <Compile Include="Patches\Patch_WeaponVacuum.cs" />
       <Compile Include="Patches\UICatcher.cs" />
+      <Compile Include="VRDeathHandler.cs" />
       <Compile Include="VRInput.cs" />
       <Compile Include="VRInstaller.cs" />
       <Compile Include="VRManager.cs" />
@@ -71,9 +72,6 @@
       <Reference Include="Assembly-CSharp-firstpass">
         <HintPath>.\Libs\Assembly-CSharp-firstpass.dll</HintPath>
       </Reference>
-      <Reference Include="AssetsLib">
-        <HintPath>.\Libs\AssetsLib.dll</HintPath>
-      </Reference>
       <Reference Include="InControl">
         <HintPath>.\Libs\InControl.dll</HintPath>
       </Reference>
@@ -87,7 +85,7 @@
         <HintPath>.\Files\Managed\SteamVR_Actions.dll</HintPath>
       </Reference>
       <Reference Include="Unity.TextMeshPro">
-        <HintPath>.\Files\Managed\Unity.TextMeshPro.dll</HintPath>
+        <HintPath>.\Libs\Unity.TextMeshPro.dll</HintPath>
       </Reference>
       <Reference Include="Unity.XR.Management">
         <HintPath>.\Files\Managed\Unity.XR.Management.dll</HintPath>

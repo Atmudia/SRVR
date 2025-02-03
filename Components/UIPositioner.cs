@@ -36,6 +36,8 @@ namespace SRVR.Components
         {
             "GlitchTerminalActivatorUI_Ammo(Clone)",
             "ExchangeOfflineUI(Clone)",
+            "DeathObscurer",
+            "KnockedOutUI(Clone)"
         };
 
         public static readonly string[] DisableStaticPositionForCategories = new[]

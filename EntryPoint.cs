@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using HarmonyLib;
 using SRML;
 using SRML.Config.Attributes;
@@ -154,7 +155,7 @@ namespace SRVR
                 fpsCamera.AddComponent<RotHMD>(); 
             };
 
-
+            Patch_LoadingUI.backgroundSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault((x) => x.name == "UISprite");
         }
 
         public class RotHMD : MonoBehaviour
