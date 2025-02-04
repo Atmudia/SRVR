@@ -39,6 +39,7 @@
       <Compile Include="Components\PediaInteract.cs" />
       <Compile Include="Components\PlayerVRPos.cs" />
       <Compile Include="Components\PosHand.cs" />
+      <Compile Include="Components\ActorGlue.cs" />
       <Compile Include="Components\UIPositioner.cs" />
       <Compile Include="EntryPoint.cs" />
       <Compile Include="Extension.cs" />

@@ -182,9 +182,17 @@ namespace SRVR
                 }
             };
             leftHand.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            var leftHandCol = leftHand.AddComponent<BoxCollider>();
-            leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
-            leftHandCol.size = new Vector3(0f, 0f, -0.1f);
+            var colliderLeft = new GameObject("hand col")
+            {
+                transform =
+                {
+                    parent = leftHand.transform, 
+                    localScale = new Vector3(0.096f, 0.1147f, 0.059f),
+                    localPosition = new Vector3(-0.0074f, 0.0002f, -0.0022f)
+                },
+                layer = vp_Layer.PenWalls
+            };
+            var leftHandCol = colliderLeft.AddComponent<BoxCollider>();
             
             
             leftHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? rightHandMesh : leftHandMesh;

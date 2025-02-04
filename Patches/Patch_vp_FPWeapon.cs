@@ -91,10 +91,10 @@ namespace SRVR.Patches
             var controllers = VRManager.InstantiateVRRig();
             controllers.transform.SetParent(simplePlayer.transform, false);
             controllers.transform.localPosition = Vector3.zero;
-            var rightController = controllers.transform.Find("Right Controller");
-            var leftController = controllers.transform.Find("Left Controller");
-            var leftHand = leftController.transform.Find("Left Hand");
-            scaler.SetParent(rightController.transform, false); // Parent it to right hand
+            var rightController = controllers.Find("Right Controller");
+            var leftController = controllers.Find("Left Controller");
+            var leftHand = leftController.Find("Left Hand");
+            scaler.SetParent(rightController, false); // Parent it to right hand
             FPWeapon = scaler;
             if (!EntryPoint.EnabledVR)
                 rightController.transform.position = simplePlayer.transform.position + new Vector3(0, 1f, 0);
@@ -171,9 +171,24 @@ namespace SRVR.Patches
                 ammoSlotTouchUI.slotIDX = i;
                 ammoSlotTouchUI.slotObject = slot;
                 col.SetActive(true);
-                
-                VRDeathHandler.EventAdd();
+               
             }
+            
+             
+            VRDeathHandler.EventAdd();
+
+            var vacCollider = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            vacCollider.transform.SetParent(scaler2.transform, false);
+            vacCollider.transform.localScale = Vector3.one;
+            vacCollider.transform.localPosition = new Vector3(0.35f, -0.1f, 0f);
+            vacCollider.transform.localRotation = Quaternion.Euler(0,0,90);
+            vacCollider.RemoveComponent<MeshRenderer>();
+            vacCollider.layer = vp_Layer.PenWalls;
+            //var glueTrigger = vacCollider.AddComponent<SphereCollider>();
+            //glueTrigger.radius = 0.8f;
+            //glueTrigger.center = new Vector3(2f, -0.1f, 0f);
+            //glueTrigger.isTrigger = true;
+            //vacCollider.AddComponent<ActorGlue>(); // i think this will be funny; balancing largo mini-game
         }
     }
 }
