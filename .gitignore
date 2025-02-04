@@ -5,3 +5,4 @@ obj/*
 Folder.DotSettings.user
 SRVR.sln.DotSettings.user
 /packages/*
+/Libs/*

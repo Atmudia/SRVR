@@ -10,8 +10,6 @@ namespace SRVR.Patches
     [HarmonyPatch(typeof(UIDetector))]
     public static class Patch_UIDetector
     {
-        
-        
         [HarmonyTranspiler, HarmonyPatch(nameof(UIDetector.Update))]
         static IEnumerable<CodeInstruction> Update(IEnumerable<CodeInstruction> instructions)
         {
@@ -40,11 +38,13 @@ namespace SRVR.Patches
         }
         public static bool CustomRaycast(Ray ray, out RaycastHit hitInfo, float maxDistance)
         {
-            ray = new Ray(Patch_vp_FPWeapon.FPWeapon.transform.position, Patch_vp_FPWeapon.FPWeapon.transform.forward);
-            Vector3 halfExtents = Vector3.one; 
-
-;
-            bool hit = Physics.BoxCast(ray.origin, halfExtents, ray.direction, out hitInfo, Quaternion.identity, 10f);
+            
+            var controller = Patch_vp_FPWeapon.FPInteract;
+            ray = new Ray(controller.position, controller.forward);
+            Vector3 halfExtents = Vector3.one * 1.5f; 
+            
+            // Change the max distance if it doesnt seem right ingame.
+            bool hit = Physics.BoxCast(ray.origin, halfExtents, ray.direction, out hitInfo, Quaternion.identity, .75f);
 
             return hit;
         }

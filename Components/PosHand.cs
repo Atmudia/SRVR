@@ -1,22 +1,9 @@
 ﻿using SRVR.Patches;
-using System;
 using UnityEngine;
 using UnityEngine.XR;
-using Valve.VR;
-using static SECTR_AudioSystem;
 
-namespace SRVR
+namespace SRVR.Components
 {
-    public class UIPositioner : MonoBehaviour
-    {
-        public void LateUpdate()
-        {
-            if (Camera.main == null) return;
-            transform.position = Camera.main.transform.position + Camera.main.transform.forward;
-            transform.rotation = Camera.main.transform.rotation;
-        }
-    }
-
     public class PosHand : MonoBehaviour
     {
         public XRNode hand;
@@ -28,6 +15,7 @@ namespace SRVR
 
             if (rightHand.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 pos))
                 transform.position = transform.parent.position + (Quaternion.AngleAxis(Patch_vp_FPInput.adjustmentDegrees, Vector3.up) * pos);
+            
             if (rightHand.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rot))
                 transform.rotation = Quaternion.Euler(rot.eulerAngles + (Vector3.up * Patch_vp_FPInput.adjustmentDegrees));
         }

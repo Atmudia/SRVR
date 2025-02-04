@@ -1,8 +1,5 @@
 ﻿using HarmonyLib;
-using MonomiPark.SlimeRancher.Persist;
 using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
 using Valve.VR;
 
 namespace SRVR.Patches
