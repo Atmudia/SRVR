@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SRVR.Components;
 using Unity.XR.OpenVR;
 using UnityEngine;
 using UnityEngine.XR;
@@ -151,48 +151,68 @@ namespace SRVR
             }
         }
 
-        private static void PrintSteamVRSettings()
+        public static Transform InstantiateVRRig()
         {
-            SteamVR_Settings settings = SteamVR_Settings.instance;
-            if (settings == null)
+            var controllers = new GameObject("Controllers")
             {
-                EntryPoint.ConsoleInstance.LogWarning("SteamVR Settings are null.");
-                return;
-            }
-            EntryPoint.ConsoleInstance.Log("SteamVR Settings:");
-            EntryPoint.ConsoleInstance.Log("  actionsFilePath: " + settings.actionsFilePath);
-            EntryPoint.ConsoleInstance.Log("  editorAppKey: " + settings.editorAppKey);
-            EntryPoint.ConsoleInstance.Log("  activateFirstActionSetOnStart: " + settings.activateFirstActionSetOnStart);
-            EntryPoint.ConsoleInstance.Log("  autoEnableVR: " + settings.autoEnableVR);
-            EntryPoint.ConsoleInstance.Log("  inputUpdateMode: " + settings.inputUpdateMode);
-            EntryPoint.ConsoleInstance.Log("  legacyMixedRealityCamera: " + settings.legacyMixedRealityCamera);
-            EntryPoint.ConsoleInstance.Log("  mixedRealityCameraPose: " + settings.mixedRealityCameraPose);
-            EntryPoint.ConsoleInstance.Log("  lockPhysicsUpdateRateToRenderFrequency: " + settings.lockPhysicsUpdateRateToRenderFrequency);
-            EntryPoint.ConsoleInstance.Log("  mixedRealityActionSetAutoEnable: " + settings.mixedRealityActionSetAutoEnable);
-            EntryPoint.ConsoleInstance.Log("  mixedRealityCameraInputSource: " + settings.mixedRealityCameraInputSource);
-            EntryPoint.ConsoleInstance.Log("  mixedRealityCameraPose: " + settings.mixedRealityCameraPose);
-            EntryPoint.ConsoleInstance.Log("  pauseGameWhenDashboardVisible: " + settings.pauseGameWhenDashboardVisible);
-            EntryPoint.ConsoleInstance.Log("  poseUpdateMode: " + settings.poseUpdateMode);
-            EntryPoint.ConsoleInstance.Log("  previewHandLeft: " + settings.previewHandLeft);
-            EntryPoint.ConsoleInstance.Log("  previewHandRight: " + settings.previewHandRight);
-            EntryPoint.ConsoleInstance.Log("  steamVRInputPath: " + settings.steamVRInputPath);
+                transform =
+                {
+                    localPosition = Vector3.zero
+                }
+            };
+            
+            var leftHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("leftHand");
+            var rightHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("rightHand");
+            
+            var handsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
+            var leftController = new GameObject("Left Controller")
+            {
+                transform =
+                {
+                    parent = controllers.transform,
+                }
+            };
+            var leftHand = new GameObject("Left Hand")
+            {
+                transform =
+                {
+                    parent = leftController.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 90, 0),
+                }
+            };
+            leftHand.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            var leftHandCol = leftHand.AddComponent<BoxCollider>();
+            leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
+            // leftHandCol.size = new Vector3(0f, 0f, -0.1f);
+            
+            
+            leftHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? rightHandMesh : leftHandMesh;
+            leftController.AddComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.RightHand : XRNode.LeftHand;
+            leftController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+
+            leftController.layer = LayerMask.NameToLayer("Weapon");
+            leftHand.layer = LayerMask.NameToLayer("Weapon");
+            var rightController = new GameObject("Right Controller")
+            {
+                transform = { parent = controllers.transform }
+            };
+            var rightHand = new GameObject("Right Hand")
+            {
+                transform =
+                {
+                    parent = rightController.transform,
+                    position = new Vector3(0, 0, -0.1f),
+                    rotation = Quaternion.Euler(0, 90, 0),
+                }
+            };
+            rightHand.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
+            rightHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? leftHandMesh : rightHandMesh;
+            
+            rightController.AddComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.LeftHand : XRNode.RightHand;
+            return controllers.transform;
         }
 
-        private static void PrintOpenVRSettings()
-        {
-            OpenVRSettings settings = OpenVRSettings.GetSettings(false);
-            if (settings == null)
-            {
-                EntryPoint.ConsoleInstance.LogWarning("OpenVRSettings are null.");
-                return;
-            }
-            EntryPoint.ConsoleInstance.Log("OpenVR Settings:");
-            EntryPoint.ConsoleInstance.Log("  StereoRenderingMode: " + settings.StereoRenderingMode);
-            EntryPoint.ConsoleInstance.Log("  InitializationType: " + settings.InitializationType);
-            EntryPoint.ConsoleInstance.Log("  ActionManifestFileRelativeFilePath: " + settings.ActionManifestFileRelativeFilePath);
-            EntryPoint.ConsoleInstance.Log("  MirrorView: " + settings.MirrorView);
-
-        }
         
 
     }

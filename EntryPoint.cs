@@ -2,21 +2,32 @@
 using System.Linq;
 using HarmonyLib;
 using SRML;
+using SRML.Config.Attributes;
 using SRML.Console;
 using SRML.SR;
-using SRML.Utils;
+using SRVR.Components;
 using SRVR.Patches;
+using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using Valve.VR;
 using Console = SRML.Console.Console;
 using Object = UnityEngine.Object;
 
 namespace SRVR
 {
+    [ConfigFile("VR")]
+    
+    public class VRConfig
+    {
+        public static readonly bool SWITCH_HANDS = false;
+        public static readonly bool STATIC_UI_POSITION = true;
+    }
+    
     public class EntryPoint : ModEntryPoint
     {
-        public static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
+        public new static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
         public static AssetBundle VRAssets = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.vrassets"));//Temporary
         public static bool EnabledVR = true;
         
@@ -87,78 +98,78 @@ namespace SRVR
                 };
                 return;
             }
-
-            Console.RegisterCommand(new ContinueGameCommand());
-            Console.RegisterCommand(new UnparentVacGun());
-            Console.RegisterCommand(new ParentVacGun());
+            
             HarmonyInstance.PatchAll();
             TranslationPatcher.AddUITranslation("b.uninstall_vr", "Uninstall VR");
-            if (!EnabledVR) return;
-            if (!VRManager.InitializeVR()) return;
-            if (!VRManager.StartVR()) return;
-            VRInput.RegisterCallbacks();
 
-            return;
-            Controllers = new GameObject(nameof(Controllers));
-            Controllers.transform.localPosition = new Vector3(0, 0, 2.1055f);
-            var arms = VRAssets.LoadAsset<Mesh>("arms");
-            var handsMaterial = VRAssets.LoadAsset<Material>("Hands Material 1");
-            var leftController = new GameObject("Left Controller")
+            if (EnabledVR)
             {
-                transform =
+                if (VRManager.InitializeVR())
                 {
-                    parent = Controllers.transform,
-                    transform =
+                    if (VRManager.StartVR())
                     {
-                        position = new Vector3(0, 0, -0.07899475f),
-                        rotation = Quaternion.Euler(0, -5.122642e-06f, 0),
-                        localScale = new Vector3(-1, 1, 1)
+                        VRInput.RegisterCallbacks();
+                    }
+                    else
+                    {
+                        return;
                     }
                 }
-            };
-            var lefthand_alone = new GameObject("Left Hand")
-            {
-                transform = { parent = leftController.transform }
-            };
-            lefthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            lefthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
-            leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
-            var rightController = new GameObject("Right Controller")
-            {
-                transform = { parent = Controllers.transform }
-            };
-            var righthand_alone = new GameObject("Right Hand")
-            {
-                transform = { parent = rightController.transform }
-            };
-            righthand_alone.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            righthand_alone.AddComponent<MeshFilter>().sharedMesh = arms;
-            rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
-
+                else
+                {
+                    return;
+                }
+            }
+          
+            
+            
+            // EntryPoint.ConsoleInstance.Log(SteamVR.instance.hmd_ModelNumber);
+            var pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
+            pediaModel.DontDestroyOnLoad();
+            pediaModel.name = "PediaInteract";
+            pediaModel.AddComponent<MeshRenderer>().material = pediaModel.GetComponent<SkinnedMeshRenderer>().material;
+            pediaModel.AddComponent<MeshFilter>().mesh = pediaModel.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            Object.Destroy(pediaModel.GetComponent<SkinnedMeshRenderer>());
+            
+            var pediaColObj = new GameObject("Collision") { transform = { parent = pediaModel.transform } };
+            
+            pediaColObj.AddComponent<BoxCollider>().isTrigger = true;
+            pediaColObj.AddComponent<PediaInteract>();
+            pediaColObj.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            
+            pediaColObj.transform.localScale = new Vector3(0.35f, 0.1f, 0.35f);
+            pediaColObj.transform.localPosition = new Vector3(0f, 0.2f, -0.05f);
+            pediaColObj.transform.localEulerAngles = Vector3.zero;
+            
+            pediaModel.SetActive(false);
+            
+            PediaInteract.pediaModel = pediaModel;
+            
             SRCallbacks.OnMainMenuLoaded += menu =>
             {
                 var fpsCamera = GameObject.Find("FPSCamera");
+                
                 var camera = new GameObject("Camera")
                 {
-                    transform =
+                    transform = // rotation Y should be 260 as far as ive seen.
                     {
-                        position = fpsCamera.transform.position,
-                        rotation = Quaternion.Euler(196.595f, 77.11299f, 175.565f),
+                        position = new Vector3(14.26f, 1.1f, 3.98f),
+                        eulerAngles = new Vector3(0, 260f, 0),
                     }
                 };
+                
+                Patch_vp_FPInput.adjustmentDegrees = 260f;
                 fpsCamera.transform.parent = camera.transform;
-                Controllers.transform.SetParent(camera.transform, false);
-                vp_Layer.Set(Controllers, vp_Layer.Actor, true);
-                fpsCamera.AddComponent<RotHMD>();
-                // return;
-                var mainMenuUI = GameObject.Find("MainMenuUI").GetComponent<Canvas>();
-                mainMenuUI.renderMode = RenderMode.WorldSpace;
-                mainMenuUI.transform.localScale = new Vector3(0.003f, 0.003f, 0.003f);
-                mainMenuUI.transform.localPosition = new Vector3(12.3258f, 1.8956f, 3.7663f);
-                mainMenuUI.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+                fpsCamera.transform.localPosition = Vector3.zero;
+                fpsCamera.transform.localEulerAngles = Vector3.zero;
+                var controllers = VRManager.InstantiateVRRig();
+                Patch_vp_FPWeapon.FPWeapon = controllers.Find("Right Hand");
+                controllers.transform.SetParent(camera.transform, false);
+                vp_Layer.Set(controllers.gameObject, vp_Layer.Actor, true);
+                fpsCamera.AddComponent<RotHMD>(); 
             };
 
-
+            Patch_LoadingUI.backgroundSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault((x) => x.name == "UISprite");
         }
 
         public class RotHMD : MonoBehaviour
@@ -174,57 +185,13 @@ namespace SRVR
                 {
                     this.transform.localPosition = pos;
                 }
+                
             }
         }
-
-        public static GameObject Controllers;
         
 
 
 
-    }
-
-    public class ContinueGameCommand : ConsoleCommand
-    {
-        public override bool Execute(string[] args)
-        {
-            GameData.Summary saveToContinue = SRSingleton<GameContext>.Instance.AutoSaveDirector.GetSaveToContinue();
-            SRSingleton<GameContext>.Instance.AutoSaveDirector.BeginLoad(saveToContinue.name, saveToContinue.saveName, (Action) (() =>
-            {
-            }));
-            return true;
-        }
-
-        public override string ID => "continue_game";
-        public override string Usage => ID;
-        public override string Description => ID;
-    }
-    public class UnparentVacGun : ConsoleCommand
-    {
-        public override bool Execute(string[] args)
-        {
-            if (!ParentVacGun.Parent)
-                ParentVacGun.Parent = Patch_vp_FPWeapon.FPWeapon.transform.parent;
-            Patch_vp_FPWeapon.FPWeapon.transform.SetParent(null);
-            return true;
-        }
-
-        public override string ID => "unparent_vacgun";
-        public override string Usage => ID;
-        public override string Description => ID;
-    }
-    public class ParentVacGun : ConsoleCommand
-    {
-        public static Transform Parent;
-        public override bool Execute(string[] args)
-        {
-            Patch_vp_FPWeapon.FPWeapon.transform.SetParent(Parent);
-            return true;
-        }
-
-        public override string ID => "parent_vacgun";
-        public override string Usage => ID;
-        public override string Description => ID;
     }
     
 }

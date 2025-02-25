@@ -1,8 +1,8 @@
-﻿using InControl;
-using SRML.Console;
+﻿using System;
+using InControl;
 using SRVR.Patches;
+using Steamworks;
 using UnityEngine;
-using UnityEngine.XR;
 using Valve.VR;
 using InputDevice = InControl.InputDevice;
 
@@ -40,6 +40,7 @@ namespace SRVR
             this.AddControl(InputControlType.Action2, "Action2");
             
             
+            
             // UpdateWithState(InputControlType.Action1, SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             // UpdateWithState(InputControlType.LeftStickButton, SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             // UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
@@ -52,26 +53,24 @@ namespace SRVR
         
         public override void Update(ulong updateTick, float deltaTime)
         {
-            // if (Mode == SRInput.InputMode.DEFAULT)
-            {
-                UpdateLeftStickWithValue(SteamVR_Actions.slimecontrols.move.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateRightStickWithValue(SteamVR_Actions.slimecontrols.look.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithValue(InputControlType.RightTrigger, SteamVR_Actions.slimecontrols.shoot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithValue(InputControlType.LeftTrigger, SteamVR_Actions.slimecontrols.vac.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithValue(InputControlType.LeftBumper, SteamVR_Actions.slimecontrols.nextslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithValue(InputControlType.RightBumper, SteamVR_Actions.slimecontrols.prevslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             
-                UpdateWithState(InputControlType.Action1, SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithState(InputControlType.LeftStickButton, SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithState(InputControlType.Action2, SteamVR_Actions.slimecontrols.pulse.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                UpdateWithState(InputControlType.DPadRight, SteamVR_Actions.slimecontrols.map.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateLeftStickWithValue(SteamVR_Actions.slimecontrols.move.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateRightStickWithValue(SteamVR_Actions.slimecontrols.look.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithValue(InputControlType.RightTrigger, SteamVR_Actions.slimecontrols.shoot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithValue(InputControlType.LeftTrigger, SteamVR_Actions.slimecontrols.vac.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithValue(InputControlType.LeftBumper, SteamVR_Actions.slimecontrols.nextslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithValue(InputControlType.RightBumper, SteamVR_Actions.slimecontrols.prevslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            
+            UpdateWithState(InputControlType.Action1, SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.LeftStickButton, SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.Action2, SteamVR_Actions.slimecontrols.pulse.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.DPadRight, SteamVR_Actions.slimecontrols.map.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
 
-                if (!SceneContext.Instance?.TimeDirector?.HasPauser() ?? false)
-                {
-                    Patch_vp_FPInput.adjustmentDegrees += RightStickX.Value;
-                    Patch_vp_FPInput.adjustmentDegrees %= 360;
-                }
+            if (!SceneContext.Instance?.TimeDirector?.HasPauser() ?? false)
+            {
+                Patch_vp_FPInput.adjustmentDegrees += RightStickX.Value;
+                Patch_vp_FPInput.adjustmentDegrees %= 360;
             }
         }
 
@@ -79,11 +78,118 @@ namespace SRVR
         {
             Instance = new VRInput();
             InputManager.AttachDevice(Instance);
-            // SteamVR_Actions.slimecontrols.Activate();
-
-           
-
-
         }
+        public enum SteamVRLocalizedOrigin
+        {
+            // Generic Hand Assignments
+            LeftHand,
+            RightHand,
+
+            // Oculus Touch Controllers
+            LeftIndexTrigger,
+            RightIndexTrigger,
+            LeftThumbstick,
+            RightThumbstick,
+            AButton,
+            BButton,
+            XButton,
+            YButton,
+
+            // Valve Index (Knuckles) Controllers
+            LeftTrigger,
+            RightTrigger,
+            LeftTrackpad,
+            RightTrackpad,
+            LeftGrip,
+            RightGrip,
+            LeftBButton,
+            RightBButton,
+            LeftAButton,
+            RightAButton,
+
+            // HTC Vive Controllers
+            LeftMenuButton,
+            RightMenuButton,
+
+            // Windows Mixed Reality Controllers
+            LeftMenu,
+            RightMenu
+        }
+
+        public static bool GetLocalizedOriginEnum(string localizedOrigin, out SteamVRLocalizedOrigin result)
+        {
+            return Enum.TryParse(localizedOrigin.Replace(" ", string.Empty), true, out result);
+        }
+        public static bool GetVRButton(UITemplates uiTemplates, SteamVR_Action_In_Source action , out Sprite result)
+        {
+            string inputSource = action.GetLocalizedOriginPart(EVRInputStringBits.VRInputString_InputSource);
+            string controllerType = action.GetLocalizedOriginPart(EVRInputStringBits.VRInputString_ControllerType);
+            
+            if (GetLocalizedOriginEnum(inputSource, out var localizedOrigin))
+            {
+                EntryPoint.ConsoleInstance.Log($"GetVRButton: {controllerType}, {localizedOrigin}");
+                switch (localizedOrigin)
+                {
+                    case SteamVRLocalizedOrigin.AButton:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action1"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.BButton:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action2"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.XButton:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action3"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.YButton:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action4"];
+                        break;
+                    }
+                  
+                    
+                    case SteamVRLocalizedOrigin.RightTrigger:
+                    case SteamVRLocalizedOrigin.RightIndexTrigger:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightTrigger"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.RightThumbstick:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightStickMove"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.LeftTrigger:
+                    case SteamVRLocalizedOrigin.LeftIndexTrigger:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftTrigger"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.LeftThumbstick:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftStickMove"];
+                        break;
+                    }
+                    
+                    default:
+                    {
+                         
+                        result = uiTemplates.unknownButtonIcon;
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            EntryPoint.ConsoleInstance.Log("Can't parsed localized origin : " +localizedOrigin);
+            result = uiTemplates.unknownButtonIcon;
+            return false;
+        }
+
     }
 }

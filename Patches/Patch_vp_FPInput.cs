@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using InControl;
 using UnityEngine;
 using UnityEngine.XR;
-using Valve.VR;
 
 namespace SRVR.Patches
 {
@@ -99,10 +97,13 @@ namespace SRVR.Patches
                 // controller position with the x and z. HOWEVER: this would result in Collision Hell. to make it work well, you'd need to move the
                 // controller until it collides with a wall, then move the camera the rest of the way. Implement This Later.
                 __instance.transform.position = __instance.Parent.position + (Quaternion.AngleAxis(adjustmentDegrees, Vector3.up) * pos);
+                HMDPosition = pos;
             }
-
             return false;
         }
+        
+
+        public static Vector3 HMDPosition;
     }
 
 }
