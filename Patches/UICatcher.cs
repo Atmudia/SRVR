@@ -12,6 +12,7 @@ namespace SRVR.Patches
     {
         public static void Prefix(CanvasScaler __instance)
         {
+            EntryPoint.ConsoleInstance.Log(__instance.ToString());
             if (!EntryPoint.EnabledVR)
                 return;
             var canvas = __instance.GetComponent<Canvas>();

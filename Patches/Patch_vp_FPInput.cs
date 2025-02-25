@@ -99,9 +99,9 @@ namespace SRVR.Patches
                 __instance.transform.position = __instance.Parent.position + (Quaternion.AngleAxis(adjustmentDegrees, Vector3.up) * pos);
                 HMDPosition = pos;
             }
-
             return false;
         }
+        
 
         public static Vector3 HMDPosition;
     }

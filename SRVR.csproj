@@ -45,9 +45,9 @@
       <Compile Include="Extension.cs" />
       <Compile Include="Patches\Patch_GamepadPanel.cs" />
       <Compile Include="Patches\Patch_LoadingUI.cs" />
+      <Compile Include="Patches\Patch_RecenterableScroll.cs" />
       <Compile Include="Patches\Patch_Vacuumable.cs" />
       <Compile Include="Patches\Patch_vp_FPWeapon.cs" />
-      <Compile Include="Patches\Patch_MainMenuUI.cs" />
       <Compile Include="Patches\Patch_QuicksilverEnergyGenerator.cs" />
       <Compile Include="Patches\Patch_RanchHouseUI.cs" />
       <Compile Include="Patches\Patch_SRInput.cs" />
@@ -62,6 +62,7 @@
     </ItemGroup>
     <ItemGroup>
       <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
+	  <Publicize Include="UnityEngine.UI" IncludeCompilerGeneratedMembers="false" />
 	  <Publicize Include="InControl" IncludeCompilerGeneratedMembers="false" />
 
       <Reference Include="0Harmony">

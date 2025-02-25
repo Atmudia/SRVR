@@ -124,6 +124,7 @@ namespace SRVR.Patches
             FPInteract = leftController;
             
             
+            
             // FPInteract = EntryPoint.Controllers.transform.Find("Left Controller").gameObject;
 
             var pedia = PediaInteract.pediaModel.Instantiate();
@@ -135,8 +136,7 @@ namespace SRVR.Patches
             pedia.SetActive(true);
             pedia.layer = LayerMask.NameToLayer("Weapon");
             fpsCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Held");
-
-
+            
             var uiCollider = new GameObject("UICollider")
             {
                 transform =
@@ -177,13 +177,13 @@ namespace SRVR.Patches
              
             VRDeathHandler.EventAdd();
 
-            var vacCollider = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            vacCollider.transform.SetParent(scaler2.transform, false);
-            vacCollider.transform.localScale = Vector3.one;
-            vacCollider.transform.localPosition = new Vector3(0.35f, -0.1f, 0f);
-            vacCollider.transform.localRotation = Quaternion.Euler(0,0,90);
-            vacCollider.RemoveComponent<MeshRenderer>();
-            vacCollider.layer = vp_Layer.PenWalls;
+            // var vacCollider = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            // vacCollider.transform.SetParent(scaler2.transform, false);
+            // vacCollider.transform.localScale = Vector3.one;
+            // vacCollider.transform.localPosition = new Vector3(0.35f, -0.1f, 0f);
+            // vacCollider.transform.localRotation = Quaternion.Euler(0,0,90);
+            // // vacCollider.RemoveComponent<MeshRenderer>();
+            // vacCollider.layer = vp_Layer.PenWalls;
             //var glueTrigger = vacCollider.AddComponent<SphereCollider>();
             //glueTrigger.radius = 0.8f;
             //glueTrigger.center = new Vector3(2f, -0.1f, 0f);

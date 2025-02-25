@@ -7,9 +7,11 @@ using SRML.Console;
 using SRML.SR;
 using SRVR.Components;
 using SRVR.Patches;
+using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using Valve.VR;
 using Console = SRML.Console.Console;
 using Object = UnityEngine.Object;
 
@@ -25,7 +27,7 @@ namespace SRVR
     
     public class EntryPoint : ModEntryPoint
     {
-        public static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
+        public new static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
         public static AssetBundle VRAssets = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.vrassets"));//Temporary
         public static bool EnabledVR = true;
         
@@ -97,19 +99,31 @@ namespace SRVR
                 return;
             }
             
-            
-            Console.RegisterCommand(new ContinueGameCommand());
-            Console.RegisterCommand(new UnparentVacGun());
-            Console.RegisterCommand(new ParentVacGun());
             HarmonyInstance.PatchAll();
             TranslationPatcher.AddUITranslation("b.uninstall_vr", "Uninstall VR");
 
-
-            if (!EnabledVR) return;
-            if (!VRManager.InitializeVR()) return;
-            if (!VRManager.StartVR()) return;
-            VRInput.RegisterCallbacks();
+            if (EnabledVR)
+            {
+                if (VRManager.InitializeVR())
+                {
+                    if (VRManager.StartVR())
+                    {
+                        VRInput.RegisterCallbacks();
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+          
             
+            
+            // EntryPoint.ConsoleInstance.Log(SteamVR.instance.hmd_ModelNumber);
             var pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
             pediaModel.DontDestroyOnLoad();
             pediaModel.name = "PediaInteract";
@@ -178,49 +192,6 @@ namespace SRVR
 
 
 
-    }
-
-    public class ContinueGameCommand : ConsoleCommand
-    {
-        public override bool Execute(string[] args)
-        {
-            GameData.Summary saveToContinue = SRSingleton<GameContext>.Instance.AutoSaveDirector.GetSaveToContinue();
-            SRSingleton<GameContext>.Instance.AutoSaveDirector.BeginLoad(saveToContinue.name, saveToContinue.saveName, (Action) (() =>
-            {
-            }));
-            return true;
-        }
-
-        public override string ID => "continue_game";
-        public override string Usage => ID;
-        public override string Description => ID;
-    }
-    public class UnparentVacGun : ConsoleCommand
-    {
-        public override bool Execute(string[] args)
-        {
-            if (!ParentVacGun.Parent)
-                ParentVacGun.Parent = Patch_vp_FPWeapon.FPWeapon.transform.parent;
-            Patch_vp_FPWeapon.FPWeapon.transform.SetParent(null);
-            return true;
-        }
-
-        public override string ID => "unparent_vacgun";
-        public override string Usage => ID;
-        public override string Description => ID;
-    }
-    public class ParentVacGun : ConsoleCommand
-    {
-        public static Transform Parent;
-        public override bool Execute(string[] args)
-        {
-            Patch_vp_FPWeapon.FPWeapon.transform.SetParent(Parent);
-            return true;
-        }
-
-        public override string ID => "parent_vacgun";
-        public override string Usage => ID;
-        public override string Description => ID;
     }
     
 }

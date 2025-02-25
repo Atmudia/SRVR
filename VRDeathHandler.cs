@@ -33,7 +33,7 @@ namespace SRVR
         {
             float time = 0f;
             
-            while (obj.transform.localScale.x < 1f && obj.transform.localScale.y < 1f && obj.transform.localScale.z < 1f)
+            while (obj.transform.localScale is { x: < 1f, y: < 1f } && obj.transform.localScale.z < 1f)
             {
                 
                 time += Time.deltaTime;
