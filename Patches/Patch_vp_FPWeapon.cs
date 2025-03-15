@@ -1,7 +1,9 @@
+using System;
 using HarmonyLib;
 using SRVR.Components;
 using UnityEngine;
 using UnityEngine.UI;
+using Valve.VR.Extras;
 
 namespace SRVR.Patches
 {
@@ -117,14 +119,21 @@ namespace SRVR.Patches
 
             scaler.localPosition = new Vector3(-0.2f, 0.35f, 0.1f);
 
-            fpsCamera.gameObject.AddComponent<PlayerVRPos>();
+            // if (true)
+            //     fpsCamera.gameObject.AddComponent<PlayerVRPos>();
 
             var weaponCamera = fpsCamera.transform.Find("WeaponCamera");
             weaponCamera.GetComponent<Camera>().nearClipPlane = 0.05f;
             FPInteract = leftController;
-            
-            
-            
+            if (!EntryPoint.EnabledVR)
+            {
+                FPInteract.transform.position = FPInteract.transform.position + new Vector3(0, 1.3f, 0);
+            }
+            var addComponent = leftController.gameObject.AddComponent<LineRenderer>();
+            addComponent.gameObject.AddComponent<LaserPointer>();
+
+            // var addComponent2 = rightController.gameObject.AddComponent<LineRenderer>();
+            // addComponent2.gameObject.AddComponent<LaserPointer>();
             // FPInteract = EntryPoint.Controllers.transform.Find("Left Controller").gameObject;
 
             var pedia = PediaInteract.pediaModel.Instantiate();
@@ -189,6 +198,47 @@ namespace SRVR.Patches
             //glueTrigger.center = new Vector3(2f, -0.1f, 0f);
             //glueTrigger.isTrigger = true;
             //vacCollider.AddComponent<ActorGlue>(); // i think this will be funny; balancing largo mini-game
+        }
+    }
+    public class LaserPointer : MonoBehaviour
+    {
+        public static RaycastHit? Hit;
+        public Transform controller;
+        public LineRenderer lineRenderer;
+        public LayerMask interactableLayers; // Set this in Unity to define what the laser interacts with.
+
+        public void Awake()
+        {
+            this.lineRenderer = this.gameObject.GetComponent<LineRenderer>();
+            lineRenderer.startWidth = 0.01f;
+            lineRenderer.endWidth = 0.01f;
+            this.controller = this.transform;
+        }
+
+        void Update()
+        {
+            // Set the laser start point at the controller
+            lineRenderer.SetPosition(0, controller.position);
+        
+            ;
+            Vector3 startPoint = controller.position;
+            Vector3 endPoint = controller.position + controller.forward;
+            float laserRadius = 0.1f; // Thickness
+
+            if (Physics.CapsuleCast(startPoint, endPoint, 0.3f, controller.forward, out var hit, 10))
+
+            // if (Physics.Raycast(controller.position, controller.forward, out var hit, 10f))
+            {
+                Hit = hit;
+                // If the laser hits an object, stop at that point
+                lineRenderer.SetPosition(1, hit.point);
+            }
+            else
+            {
+                Hit = null;
+                // Otherwise, extend the laser forward
+                lineRenderer.SetPosition(1, controller.position + controller.forward * 10f);
+            }
         }
     }
 }

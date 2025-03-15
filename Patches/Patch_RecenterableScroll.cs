@@ -10,9 +10,7 @@ namespace SRVR.Patches
         [HarmonyPrefix, HarmonyPatch(typeof(RecenterableScroll), nameof(RecenterableScroll.ScrollToItem))]
         public static bool ScrollToItem(RecenterableScroll __instance, RectTransform itemTransform)
         {
-            var viewport = __instance.scroll.viewport;
-            if (!viewport)
-                viewport = (RectTransform)__instance.scroll.content.parent;
+            var viewport = __instance.scroll.viewport ?? (RectTransform)__instance.scroll.content.parent ;
             var contentArea = __instance.scroll.content.rect;
             var targetArea = itemTransform.rect;
             var viewportArea = viewport.rect;

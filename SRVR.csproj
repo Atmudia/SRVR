@@ -12,7 +12,7 @@
         <AssemblyName>SRVR</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
-        <LangVersion>9</LangVersion>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -43,10 +43,11 @@
       <Compile Include="Components\UIPositioner.cs" />
       <Compile Include="EntryPoint.cs" />
       <Compile Include="Extension.cs" />
-      <Compile Include="Patches\Patch_GamepadPanel.cs" />
+      <Compile Include="Patches\Patch_UI.cs" />
       <Compile Include="Patches\Patch_LoadingUI.cs" />
       <Compile Include="Patches\Patch_RecenterableScroll.cs" />
       <Compile Include="Patches\Patch_Vacuumable.cs" />
+      <Compile Include="Patches\Patch_vp_Controller.cs" />
       <Compile Include="Patches\Patch_vp_FPWeapon.cs" />
       <Compile Include="Patches\Patch_QuicksilverEnergyGenerator.cs" />
       <Compile Include="Patches\Patch_RanchHouseUI.cs" />
@@ -62,8 +63,7 @@
     </ItemGroup>
     <ItemGroup>
       <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
-	  <Publicize Include="UnityEngine.UI" IncludeCompilerGeneratedMembers="false" />
-	  <Publicize Include="InControl" IncludeCompilerGeneratedMembers="false" />
+	  <Publicize Include="SRML" IncludeCompilerGeneratedMembers="false" />
 
       <Reference Include="0Harmony">
         <HintPath>.\Libs\0Harmony.dll</HintPath>

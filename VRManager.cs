@@ -12,6 +12,13 @@ namespace SRVR
     public class VRManager
     {
         public static bool recenter  = false;
+        
+
+        public static Mesh LeftHandMesh;
+        public static Mesh RightHandMesh;
+        public static Material HandsMaterial;
+
+        public static GameObject CurrentVRRig;
 
         public static bool InitializeVR()
         {
@@ -26,6 +33,7 @@ namespace SRVR
                 EntryPoint.ConsoleInstance.LogError("Problem initializing SteamVR");
                 return false;
             }
+            LoadAssetsFromAssetBundle();
             return true;
             
         }
@@ -139,6 +147,13 @@ namespace SRVR
             return true;
         }
 
+        public static void LoadAssetsFromAssetBundle()
+        {
+            LeftHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("leftHand");
+            RightHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("rightHand");
+            HandsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
+        }
+
         public static void tryRecenter()
         {
             List<XRInputSubsystem> inputSubsystems = new List<XRInputSubsystem>();
@@ -161,10 +176,7 @@ namespace SRVR
                 }
             };
             
-            var leftHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("leftHand");
-            var rightHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("rightHand");
             
-            var handsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
             var leftController = new GameObject("Left Controller")
             {
                 transform =
@@ -181,13 +193,17 @@ namespace SRVR
                     rotation = Quaternion.Euler(0, 90, 0),
                 }
             };
-            leftHand.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            var leftHandCol = leftHand.AddComponent<BoxCollider>();
-            leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
+            leftHand.AddComponent<MeshRenderer>().sharedMaterial = HandsMaterial;
+            if (true)
+            {
+                var leftHandCol = leftHand.AddComponent<BoxCollider>();
+                leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
+            }
+
             // leftHandCol.size = new Vector3(0f, 0f, -0.1f);
             
             
-            leftHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? rightHandMesh : leftHandMesh;
+            leftHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? RightHandMesh : LeftHandMesh;
             leftController.AddComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.RightHand : XRNode.LeftHand;
             leftController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
@@ -206,11 +222,31 @@ namespace SRVR
                     rotation = Quaternion.Euler(0, 90, 0),
                 }
             };
-            rightHand.AddComponent<MeshRenderer>().sharedMaterial = handsMaterial;
-            rightHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? leftHandMesh : rightHandMesh;
-            
+            rightHand.AddComponent<MeshRenderer>().sharedMaterial = HandsMaterial;
+            rightHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? LeftHandMesh : RightHandMesh;
             rightController.AddComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.LeftHand : XRNode.RightHand;
+            CurrentVRRig = controllers;
             return controllers.transform;
+        }
+
+        public static void SwitchHands()
+        {
+            if (!CurrentVRRig)
+                return;
+            
+            EntryPoint.ConsoleInstance.Log("Switching Hands...");
+
+            var leftController = CurrentVRRig.transform.Find("Left Controller").gameObject;
+            var leftHand = leftController.transform.Find("Left Hand").gameObject;
+
+            var rightController = CurrentVRRig.transform.Find("Right Controller").gameObject;
+            var rightHand = rightController.transform.Find("Right Hand").gameObject;
+
+            leftHand.GetComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? RightHandMesh : LeftHandMesh;
+            leftController.GetComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.RightHand : XRNode.LeftHand;
+            
+            rightHand.GetComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? LeftHandMesh : RightHandMesh;
+            rightController.GetComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.LeftHand : XRNode.RightHand;
         }
 
         

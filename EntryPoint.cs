@@ -21,8 +21,18 @@ namespace SRVR
     
     public class VRConfig
     {
-        public static readonly bool SWITCH_HANDS = false;
-        public static readonly bool STATIC_UI_POSITION = true;
+        public static bool SWITCH_HANDS = false;
+        public static bool STATIC_UI_POSITION = true;
+        public static bool SNAP_TURN = false;
+        
+        public static void SaveConfig()
+        {
+            SRMod mod = SRModLoader.GetModForAssembly(typeof(EntryPoint).Assembly);
+            SRMod.ForceModContext(mod);
+            mod.Configs.Find((x) => x.FileName.ToLower() == "vr").SaveToFile();
+            SRMod.ClearModContext();
+        }
+        
     }
     
     public class EntryPoint : ModEntryPoint
@@ -32,9 +42,13 @@ namespace SRVR
         public static bool EnabledVR = true;
         
         public EntryPoint()
-        {
-          VRInstaller.Install();
+        { 
+            
+                
+            VRInstaller.Install();
         }
+
+        
 
         public override void PreLoad()
         {
@@ -100,7 +114,16 @@ namespace SRVR
             }
             
             HarmonyInstance.PatchAll();
-            TranslationPatcher.AddUITranslation("b.uninstall_vr", "Uninstall VR");
+            TranslationPatcher.AddUITranslation("b.uninstall_srvr", "Uninstall SRVR");
+            TranslationPatcher.AddUITranslation("b.snapturn", "Turn Snap Turn");
+            TranslationPatcher.AddUITranslation("b.switch_hands", "Switch Hands");
+            int[] layerNumbers = { 0, 1, 3, 5, 6, 7, 10, 12, 15, 17, 18, 19, 20, 21, 23, 24, 25, 26, 28, 30, 31 };
+
+            foreach (int layer in layerNumbers)
+            {
+                string layerName = LayerMask.LayerToName(layer);
+                ConsoleInstance.Log($"Layer {layer}: {layerName}");
+            }           
 
             if (EnabledVR)
             {
@@ -167,6 +190,7 @@ namespace SRVR
                 controllers.transform.SetParent(camera.transform, false);
                 vp_Layer.Set(controllers.gameObject, vp_Layer.Actor, true);
                 fpsCamera.AddComponent<RotHMD>(); 
+                menu.transform.Find("MessageOfTheDay").gameObject.SetActive(false);
             };
 
             Patch_LoadingUI.backgroundSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault((x) => x.name == "UISprite");

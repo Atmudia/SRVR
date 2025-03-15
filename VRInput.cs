@@ -66,13 +66,43 @@ namespace SRVR
             UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             UpdateWithState(InputControlType.Action2, SteamVR_Actions.slimecontrols.pulse.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             UpdateWithState(InputControlType.DPadRight, SteamVR_Actions.slimecontrols.map.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            
+            
+            UpdateWithState(InputControlType.Start, SteamVR_Actions.slimecontrols.pause.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.DPadUp, SteamVR_Actions.slimecontrols.slimepedia.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.Action4, SteamVR_Actions.slimecontrols.flashlight.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.RightStickButton, SteamVR_Actions.slimecontrols.radar.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            UpdateWithState(InputControlType.DPadDown, SteamVR_Actions.slimecontrols.gadgetmode.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
 
-            if (!SceneContext.Instance?.TimeDirector?.HasPauser() ?? false)
+            if (!(SceneContext.Instance?.TimeDirector?.HasPauser() ?? false))
             {
-                Patch_vp_FPInput.adjustmentDegrees += RightStickX.Value;
-                Patch_vp_FPInput.adjustmentDegrees %= 360;
+                float rightStickX = RightStickX.Value;
+                float snapThreshold = 0.7f; // Stick must be pushed at least 70% to trigger snap turn
+                float resetThreshold = 0.2f; // Stick must return below 20% to reset
+                int snapAngle = 45; // Degrees per snap turn
+
+                if (VRConfig.SNAP_TURN)
+                {
+                    if (Mathf.Abs(rightStickX) > snapThreshold && !Patch_vp_FPInput.snapTriggered)
+                    {
+                        int snapDirection = rightStickX > 0 ? 1 : -1;
+                        Patch_vp_FPInput.adjustmentDegrees += snapDirection * snapAngle;
+                        Patch_vp_FPInput.adjustmentDegrees %= 360;
+                        Patch_vp_FPInput.snapTriggered = true; // Prevent multiple snaps until stick resets
+                    }
+                    else if (Mathf.Abs(rightStickX) < resetThreshold) // Stick has returned to center
+                    {
+                        Patch_vp_FPInput.snapTriggered = false; // Allow next snap
+                    }
+                }
+                else
+                {
+                    Patch_vp_FPInput.adjustmentDegrees += rightStickX;
+                    Patch_vp_FPInput.adjustmentDegrees %= 360;
+                }
             }
         }
+        
 
         public static void RegisterCallbacks()
         {
@@ -135,7 +165,17 @@ namespace SRVR
                         result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action1"];
                         break;
                     }
+                    case SteamVRLocalizedOrigin.LeftAButton:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.Unknown]["Action1"];
+                        break;
+                    }
                     case SteamVRLocalizedOrigin.BButton:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action2"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.LeftBButton:
                     {
                         result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action2"];
                         break;

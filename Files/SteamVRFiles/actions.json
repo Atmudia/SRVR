@@ -47,8 +47,37 @@
       "type": "boolean"
     },
     {
-      "name": "/actions/slimecontrols/in/poser",
+      "name": "/actions/slimecontrols/in/pose_right",
+      "type": "pose",
+      "skeleton": "/skeleton/hand/right"
+    },
+    {
+      "name": "/actions/slimecontrols/in/pose_left",
       "type": "pose"
+    },
+    {
+      "name": "/actions/slimecontrols/in/pause",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/slimecontrols/in/slimepedia",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/slimecontrols/in/flashlight",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/slimecontrols/in/radar",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/slimecontrols/in/gadgetmode",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/slimecontrols/out/vibration",
+      "type": "vibration"
     }
   ],
   "action_sets": [

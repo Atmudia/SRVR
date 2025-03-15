@@ -7,6 +7,7 @@ using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.Persist;
 using UnityEngine;
 using Valve.VR;
+using Object = UnityEngine.Object;
 
 namespace SRVR.Patches
 {
@@ -77,8 +78,10 @@ namespace SRVR.Patches
         }
 
         [HarmonyPatch(typeof(UITemplates), nameof(UITemplates.GetButtonIcon)), HarmonyPrefix]
-        public static bool GetDefaultDeviceIcon(UITemplates __instance, InputDeviceStyle inputDevice, string keyStr, ref bool iconFound, ref Sprite __result)
+        public static bool GetButtonIcon(UITemplates __instance, InputDeviceStyle inputDevice, string keyStr, ref bool iconFound, ref Sprite __result)
         {
+            if (!EntryPoint.EnabledVR)
+                return true;
             if (!SteamVR_Actions.slimecontrols.interact.active)
                 return true;
             switch (keyStr)
@@ -116,12 +119,10 @@ namespace SRVR.Patches
                 }
                     
             }
-            
-            
-            
             return !iconFound;
         }
-       
+        
+
         
         
     }

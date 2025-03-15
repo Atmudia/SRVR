@@ -23,13 +23,13 @@ namespace SRVR.Patches
             // Define the replacement method
             var customRaycastMethod = AccessTools.Method(typeof(Patch_UIDetector), nameof(CustomRaycast));
 
-            for (int i = 0; i < codeInstructions.Count; i++)
+            foreach (var instruction in codeInstructions)
             {
                 // Look for the Physics.Raycast call
-                if (codeInstructions[i].opcode == OpCodes.Call && codeInstructions[i].operand as MethodInfo == raycastMethod)
+                if (instruction.opcode == OpCodes.Call && instruction.operand as MethodInfo == raycastMethod)
                 {
                     // Replace the Physics.Raycast call with CustomRaycast
-                    codeInstructions[i].operand = customRaycastMethod;
+                    instruction.operand = customRaycastMethod;
                     Debug.Log("Replaced Physics.Raycast with CustomRaycast");
                 }
             }
@@ -38,15 +38,11 @@ namespace SRVR.Patches
         }
         public static bool CustomRaycast(Ray ray, out RaycastHit hitInfo, float maxDistance)
         {
-            
-            var controller = Patch_vp_FPWeapon.FPInteract;
-            ray = new Ray(controller.position, controller.forward);
-            Vector3 halfExtents = Vector3.one * 1.5f; 
-            
-            // Change the max distance if it doesnt seem right ingame.
-            bool hit = Physics.BoxCast(ray.origin, halfExtents, ray.direction, out hitInfo, Quaternion.identity, .75f);
-
-            return hit;
+            Vector3 startPoint = Patch_vp_FPWeapon.FPInteract.position;
+            Vector3 endPoint = Patch_vp_FPWeapon.FPInteract.position + Patch_vp_FPWeapon.FPInteract.forward;
+            var capsuleCast = Physics.CapsuleCast(startPoint, endPoint, 0.3f, Patch_vp_FPWeapon.FPInteract.forward, out hitInfo, 10);
+            //
+            return capsuleCast;
         }
     }
 }

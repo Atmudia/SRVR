@@ -22,6 +22,8 @@ namespace SRVR.Patches
     [HarmonyPatch()]
     public static class Patch_vp_FPInput
     {
+        public static bool snapTriggered;
+
         public static bool UsingVR()
         {
             if (EntryPoint.EnabledVR)
@@ -34,6 +36,8 @@ namespace SRVR.Patches
                 v.x * Mathf.Cos(delta) - v.y * Mathf.Sin(delta),
                 v.x * Mathf.Sin(delta) + v.y * Mathf.Cos(delta)
             );
+            
+            
         }
 
         
@@ -76,6 +80,7 @@ namespace SRVR.Patches
 
         private static float offset = 0f;
         public static float adjustmentDegrees = 0f;
+        public static float delay;
 
         [HarmonyPrefix, HarmonyPatch(typeof(vp_FPCamera), nameof(vp_FPCamera.LateUpdate))]
 
@@ -97,8 +102,10 @@ namespace SRVR.Patches
                 // controller position with the x and z. HOWEVER: this would result in Collision Hell. to make it work well, you'd need to move the
                 // controller until it collides with a wall, then move the camera the rest of the way. Implement This Later.
                 __instance.transform.position = __instance.Parent.position + (Quaternion.AngleAxis(adjustmentDegrees, Vector3.up) * pos);
-                HMDPosition = pos;
+                // HMDPosition = pos;
             }
+            
+            
             return false;
         }
         
