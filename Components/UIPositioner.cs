@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace SRVR.Components
@@ -9,18 +10,24 @@ namespace SRVR.Components
         {
             if (VRConfig.STATIC_UI_POSITION && !(DisableStaticPosition.Contains(gameObject.name) || IsInCategory(gameObject.name)))
                 return;
-            if (Camera.main == null) return;
+            if (!Camera.main) return;
             transform.position = Camera.main.transform.position + Camera.main.transform.forward;
             transform.rotation = Camera.main.transform.rotation;
-            
-            // if (VRConfig.STATIC_UI_POSITION && !(DisableStaticPosition.Contains(gameObject.name) || IsInCategory(gameObject.name)))
+        }
+        private IEnumerator DelayedPositionUpdate()
+        {
+            yield return new WaitForEndOfFrame();
+            if (Camera.main)
+            {
+                transform.position = Camera.main.transform.position + Camera.main.transform.forward;
+                transform.rotation = Camera.main.transform.rotation;
+                
+            } 
         }
 
         public void OnEnable()
         {
-            if (Camera.main == null) return;
-            transform.position = Camera.main.transform.position + Camera.main.transform.forward;
-            transform.rotation = Camera.main.transform.rotation;
+            StartCoroutine(DelayedPositionUpdate());
         }
 
         public static bool IsInCategory(string name)

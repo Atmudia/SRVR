@@ -23,6 +23,7 @@ namespace SRVR.Patches
     public static class Patch_vp_FPInput
     {
         public static bool snapTriggered;
+        public static Vector3 rotatedPos;
 
         public static bool UsingVR()
         {
@@ -97,12 +98,17 @@ namespace SRVR.Patches
             }
             if (head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 pos))
             {
+                var difference = pos - HMDPosition;
+                rotatedPos = Quaternion.Euler(0, adjustmentDegrees, 0) * difference;
+                rotatedPos.y = 0;
+                __instance.Parent.position += rotatedPos;
+                __instance.transform.position = __instance.Parent.position + new Vector3(0, pos.y, 0);
                 // TODO: not great solution !! head position becomes unbound from body position, meaning moving physically doesn't ACTUALLY move the player,
                 // it just looks like it does. fixing would require setting the camera position to just the y value here, then updating the
                 // controller position with the x and z. HOWEVER: this would result in Collision Hell. to make it work well, you'd need to move the
                 // controller until it collides with a wall, then move the camera the rest of the way. Implement This Later.
-                __instance.transform.position = __instance.Parent.position + (Quaternion.AngleAxis(adjustmentDegrees, Vector3.up) * pos);
-                // HMDPosition = pos;
+                // __instance.transform.position = __instance.Parent.position + (Quaternion.AngleAxis(adjustmentDegrees, Vector3.up) * pos);
+                HMDPosition = pos;
             }
             
             
