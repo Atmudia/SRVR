@@ -150,9 +150,8 @@ namespace SRVR
 
         public static void LoadAssetsFromAssetBundle()
         {
-            LeftHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("leftHand");
-            RightHandMesh = EntryPoint.VRAssets.LoadAsset<Mesh>("rightHand");
-            HandsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
+            HandsMaterial = EntryPoint.VRHands.LoadAsset<Material>("Hands Material 1");
+            HandsMaterial.shader = Shader.Find("SR/Actor, Vac (Hands)");
         }
 
         public static void tryRecenter()
@@ -212,6 +211,7 @@ namespace SRVR
 
             leftController.layer = LayerMask.NameToLayer("Weapon");
             leftHand.layer = LayerMask.NameToLayer("Weapon");
+            leftHand.GetComponentInChildren<SkinnedMeshRenderer>().gameObject.layer = LayerMask.NameToLayer("Weapon");
 
             // right controller
 
@@ -237,6 +237,7 @@ namespace SRVR
 
             rightController.layer = LayerMask.NameToLayer("Weapon");
             rightHand.layer = LayerMask.NameToLayer("Weapon");
+            rightHand.GetComponentInChildren<SkinnedMeshRenderer>().gameObject.layer = LayerMask.NameToLayer("Weapon");
 
             HandManager toggler = controllers.AddComponent<HandManager>();
             toggler.Awake();

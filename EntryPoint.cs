@@ -38,7 +38,6 @@ namespace SRVR
     public class EntryPoint : ModEntryPoint
     {
         public new static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
-        public static AssetBundle VRAssets = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.vrassets"));//Temporary
         public static AssetBundle VRHands = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.newvrhands"));
         public static bool EnabledVR = true;
         
@@ -187,7 +186,6 @@ namespace SRVR
                 fpsCamera.transform.localPosition = Vector3.zero;
                 fpsCamera.transform.localEulerAngles = Vector3.zero;
                 var controllers = VRManager.InstantiateVRRig();
-                HandManager.Instance.FPWeapon = controllers.Find("Right Hand");
                 controllers.transform.SetParent(camera.transform, false);
                 vp_Layer.Set(controllers.gameObject, vp_Layer.Actor, true);
                 fpsCamera.AddComponent<RotHMD>(); 
