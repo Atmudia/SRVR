@@ -150,7 +150,7 @@ namespace SRVR
 
         public static void LoadAssetsFromAssetBundle()
         {
-            HandsMaterial = EntryPoint.VRAssets.LoadAsset<Material>("Hands Material 1");
+            HandsMaterial = EntryPoint.VRHands.LoadAsset<Material>("Hands Material 1");
             HandsMaterial.shader = Shader.Find("SR/Actor, Vac (Hands)");
         }
 
