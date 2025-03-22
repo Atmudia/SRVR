@@ -5,6 +5,7 @@ using HarmonyLib;
 using InControl;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.Persist;
+using SRVR.Components;
 using UnityEngine;
 using Valve.VR;
 using Object = UnityEngine.Object;
@@ -36,10 +37,11 @@ namespace SRVR.Patches
             }
             if (mode == SRInput.InputMode.PAUSE)
             {
-                if (Patch_vp_FPWeapon.FPWeapon)
+                if (HandManager.Instance?.FPWeapon)
                 {
-                    Patch_vp_FPWeapon.FPWeapon.gameObject.SetActive(false);
-                    Patch_vp_FPWeapon.FPWeapon.parent.Find("Right Hand").gameObject.SetActive(true);
+                    HandManager.Instance.FPWeapon.gameObject.SetActive(false);
+                    HandManager.Instance.UI.SetActive(false);
+                    HandManager.Instance.FPWeapon.parent.Find("Hand").gameObject.SetActive(true);
                 }
 
                 // Activate the action if mode is DEFAULT
@@ -47,10 +49,11 @@ namespace SRVR.Patches
             }
             else
             {
-                if (Patch_vp_FPWeapon.FPWeapon)
+                if (HandManager.Instance?.FPWeapon)
                 {
-                    Patch_vp_FPWeapon.FPWeapon.gameObject.SetActive(true);
-                    Patch_vp_FPWeapon.FPWeapon.parent.Find("Right Hand").gameObject.SetActive(false);
+                    HandManager.Instance.FPWeapon.gameObject.SetActive(true);
+                    HandManager.Instance.UI.SetActive(true);
+                    HandManager.Instance.FPWeapon.parent.Find("Hand").gameObject.SetActive(false);
 
                 }
                 // Deactivate the action if mode is not DEFAULT

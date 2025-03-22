@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using SRVR.Components;
 
 namespace SRVR.Patches
 {
@@ -24,7 +25,7 @@ namespace SRVR.Patches
             });
             return code;
         }
-        public static void SetQuicksilverEnergyGeneratorAlternative(QuicksilverEnergyGenerator __instance) => Patch_vp_FPWeapon.FPWeapon.GetComponentInChildren<VacDisplayTimer>().SetQuicksilverEnergyGenerator(__instance);
+        public static void SetQuicksilverEnergyGeneratorAlternative(QuicksilverEnergyGenerator __instance) => HandManager.Instance.FPWeapon.GetComponentInChildren<VacDisplayTimer>().SetQuicksilverEnergyGenerator(__instance);
 
     }
 }

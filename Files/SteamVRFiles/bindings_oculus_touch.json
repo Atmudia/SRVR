@@ -24,12 +24,7 @@
     },
     "/actions/slimecontrols": {
       "chords": [],
-      "poses": [
-        {
-          "output": "/actions/slimecontrols/in/pose_right",
-          "path": "/user/hand/right/pose/raw"
-        }
-      ],
+      "poses": [],
       "haptics": [],
       "sources": [
         {
@@ -43,14 +38,17 @@
           }
         },
         {
-          "path": "/user/hand/right/input/trigger",
-          "mode": "trigger",
-          "parameters": {},
-          "inputs": {
-            "pull": {
-              "output": "/actions/slimecontrols/in/shoot"
-            }
-          }
+            "inputs" : {
+				"click" : {
+					"output" : "/actions/slimecontrols/in/shoot"
+				},
+				"pull" : {
+					"output" : "/actions/slimecontrols/in/fallback_right"
+				}
+			},
+			"mode" : "trigger",
+			"path" : "/user/hand/right/input/trigger"
+			"parameters": {},
         },
         {
           "path": "/user/hand/left/input/grip",
@@ -136,7 +134,16 @@
           }
         }
       ],
-      "skeleton": []
+		"skeleton": [
+			{
+				"output" : "/actions/slimecontrols/in/pose_left",
+				"path" : "/user/hand/left/input/skeleton/left"
+			},
+			{
+				"output" : "/actions/slimecontrols/in/pose_right",
+				"path" : "/user/hand/right/input/skeleton/right"
+			}
+		]
     }
   },
   "controller_type": "oculus_touch",

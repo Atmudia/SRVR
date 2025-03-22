@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using SRVR.Components;
 using UnityEngine;
 
 namespace SRVR.Patches
@@ -38,9 +39,9 @@ namespace SRVR.Patches
         }
         public static bool CustomRaycast(Ray ray, out RaycastHit hitInfo, float maxDistance)
         {
-            Vector3 startPoint = Patch_vp_FPWeapon.FPInteract.position;
-            Vector3 endPoint = Patch_vp_FPWeapon.FPInteract.position + Patch_vp_FPWeapon.FPInteract.forward;
-            var capsuleCast = Physics.CapsuleCast(startPoint, endPoint, 0.3f, Patch_vp_FPWeapon.FPInteract.forward, out hitInfo, 10);
+            Vector3 startPoint = HandManager.Instance.FPInteract.position;
+            Vector3 endPoint = HandManager.Instance.FPInteract.position + HandManager.Instance.FPInteract.forward;
+            var capsuleCast = Physics.CapsuleCast(startPoint, endPoint, 0.3f, HandManager.Instance.FPInteract.forward, out hitInfo, 10);
             //
             return capsuleCast;
         }

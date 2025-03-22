@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SRVR.Components;
+using SRVR.Files;
 using Unity.XR.OpenVR;
 using UnityEngine;
 using UnityEngine.XR;
@@ -168,88 +169,86 @@ namespace SRVR
 
         public static Transform InstantiateVRRig()
         {
-            var controllers = new GameObject("Controllers")
+            GameObject controllers = new GameObject("Controllers")
             {
-                transform =
-                {
-                    localPosition = Vector3.zero
-                }
+                transform = { localPosition = Vector3.zero }
             };
-            
-            
-            var leftController = new GameObject("Left Controller")
-            {
-                transform =
-                {
-                    parent = controllers.transform,
-                }
-            };
-            var leftHand = new GameObject("Left Hand")
-            {
-                transform =
-                {
-                    parent = leftController.transform,
-                    position = new Vector3(0, 0, -0.1f),
-                    rotation = Quaternion.Euler(0, 90, 0),
-                }
-            };
-            leftHand.AddComponent<MeshRenderer>().sharedMaterial = HandsMaterial;
-            if (true)
-            {
-                var leftHandCol = leftHand.AddComponent<BoxCollider>();
-                leftHandCol.size = new Vector3(0.08f, 0.04f, 0.16f);
-            }
 
-            // leftHandCol.size = new Vector3(0f, 0f, -0.1f);
+            SteamVR_Skeleton_Pose relaxedPose = Object.Instantiate(EntryPoint.VRHands.LoadAsset<SteamVR_Skeleton_Pose>("relaxed"));
+            relaxedPose.hideFlags = HideFlags.HideAndDontSave;
+            relaxedPose.leftHand.bonePositions = relaxed_Pose.leftHandPositions;
+            relaxedPose.leftHand.boneRotations = relaxed_Pose.leftHandRotations;
+            relaxedPose.rightHand.bonePositions = relaxed_Pose.rightHandPositions;
+            relaxedPose.rightHand.boneRotations = relaxed_Pose.rightHandRotations;
+            SteamVR_Skeleton_Pose fistPose = Object.Instantiate(EntryPoint.VRHands.LoadAsset<SteamVR_Skeleton_Pose>("fist"));
+            fistPose.hideFlags = HideFlags.HideAndDontSave;
+            fistPose.leftHand.bonePositions = fist_Pose.leftHandPositions;
+            fistPose.leftHand.boneRotations = fist_Pose.leftHandRotations;
+            fistPose.rightHand.bonePositions = fist_Pose.rightHandPositions;
+            fistPose.rightHand.boneRotations = fist_Pose.rightHandRotations;
+
+            // left controller
+
+            GameObject leftController = new GameObject("Left Controller")
+            {
+                transform = { parent = controllers.transform, }
+            };
+
+            leftController.SetActive(false);
+            GameObject leftHand = Object.Instantiate(EntryPoint.VRHands.LoadAsset<GameObject>("left hand"), new Vector3(0, 0, -0.1f), Quaternion.identity, leftController.transform);
+            leftHand.name = "Hand";
+            leftHand.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMaterial = HandsMaterial;
             
-            
-            leftHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? RightHandMesh : LeftHandMesh;
-            leftController.AddComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.RightHand : XRNode.LeftHand;
+            SteamVR_Behaviour_Skeleton leftSkeleton = leftHand.GetComponentInChildren<SteamVR_Behaviour_Skeleton>(true);
+            leftSkeleton.skeletonAction = SteamVR_Actions.slimecontrols.pose_left;
+            leftSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.fallback_left;
+            SteamVR_Skeleton_Poser leftPoser = leftHand.GetComponentInChildren<SteamVR_Skeleton_Poser>();
+            leftPoser.skeletonMainPose = relaxedPose;
+            leftPoser.skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>() { fistPose };
+
+            leftHand.AddComponent<BoxCollider>().size = new Vector3(0.08f, 0.04f, 0.16f);
             leftController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
 
             leftController.layer = LayerMask.NameToLayer("Weapon");
             leftHand.layer = LayerMask.NameToLayer("Weapon");
-            var rightController = new GameObject("Right Controller")
+
+            // right controller
+
+            GameObject rightController = new GameObject("Right Controller")
             {
                 transform = { parent = controllers.transform }
             };
-            var rightHand = new GameObject("Right Hand")
-            {
-                transform =
-                {
-                    parent = rightController.transform,
-                    position = new Vector3(0, 0, -0.1f),
-                    rotation = Quaternion.Euler(0, 90, 0),
-                }
-            };
-            rightHand.AddComponent<MeshRenderer>().sharedMaterial = HandsMaterial;
-            rightHand.AddComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? LeftHandMesh : RightHandMesh;
-            rightController.AddComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.LeftHand : XRNode.RightHand;
+            rightController.SetActive(false);
+            GameObject rightHand = Object.Instantiate(EntryPoint.VRHands.LoadAsset<GameObject>("right hand"), new Vector3(0, 0, -0.1f), Quaternion.identity, rightController.transform);
+            rightHand.name = "Hand";
+            rightHand.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMaterial = HandsMaterial;
+
+            SteamVR_Behaviour_Skeleton rightSkeleton = rightHand.GetComponentInChildren<SteamVR_Behaviour_Skeleton>(true);
+            rightSkeleton.skeletonAction = SteamVR_Actions.slimecontrols.pose_right;
+            rightSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.fallback_right;
+            SteamVR_Skeleton_Poser rightPoser = rightHand.GetComponentInChildren<SteamVR_Skeleton_Poser>();
+            rightPoser.skeletonMainPose = relaxedPose;
+            rightPoser.skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>() { fistPose };
+
+            rightHand.AddComponent<BoxCollider>().size = new Vector3(0.08f, 0.04f, 0.16f);
+            rightController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
+
+            rightController.layer = LayerMask.NameToLayer("Weapon");
+            rightHand.layer = LayerMask.NameToLayer("Weapon");
+
+            HandManager toggler = controllers.AddComponent<HandManager>();
+            toggler.Awake();
+            toggler.leftController = leftController;
+            toggler.rightController = rightController;
+            toggler.leftHand = leftHand;
+            toggler.rightHand = rightHand;
+            toggler.UpdateHandStates();
+
             CurrentVRRig = controllers;
+
             return controllers.transform;
         }
-
-        public static void SwitchHands()
-        {
-            if (!CurrentVRRig)
-                return;
-            
-            EntryPoint.ConsoleInstance.Log("Switching Hands...");
-
-            var leftController = CurrentVRRig.transform.Find("Left Controller").gameObject;
-            var leftHand = leftController.transform.Find("Left Hand").gameObject;
-
-            var rightController = CurrentVRRig.transform.Find("Right Controller").gameObject;
-            var rightHand = rightController.transform.Find("Right Hand").gameObject;
-
-            leftHand.GetComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? RightHandMesh : LeftHandMesh;
-            leftController.GetComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.RightHand : XRNode.LeftHand;
-            
-            rightHand.GetComponent<MeshFilter>().sharedMesh = VRConfig.SWITCH_HANDS ? LeftHandMesh : RightHandMesh;
-            rightController.GetComponent<PosHand>().hand = VRConfig.SWITCH_HANDS ? XRNode.LeftHand : XRNode.RightHand;
-        }
-
-        
-
     }
 }
