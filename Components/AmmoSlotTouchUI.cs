@@ -28,7 +28,7 @@ namespace SRVR
         
         public void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.name == "Left Hand")
+            if (other.gameObject.name == "Hand")
             {
                 ammo.selectedAmmoIdx = slotIDX;
             }

@@ -3,9 +3,11 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using SRVR.Components;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
 using Valve.VR;
 
 namespace SRVR.Patches
@@ -68,7 +70,11 @@ namespace SRVR.Patches
             (srToggleHand.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
             {
                 VRConfig.SWITCH_HANDS = arg0;
-                VRManager.SwitchHands();
+                if (HandManager.Instance)
+                {
+                    HandManager.Instance.dominantHand = VRConfig.SWITCH_HANDS ? XRNode.LeftHand : XRNode.RightHand;
+                    HandManager.Instance.UpdateHandStates();
+                }
                 VRConfig.SaveConfig();
             });
             srToggleHand.isOn = VRConfig.SWITCH_HANDS;

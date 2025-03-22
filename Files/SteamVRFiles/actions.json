@@ -48,12 +48,13 @@
     },
     {
       "name": "/actions/slimecontrols/in/pose_right",
-      "type": "pose",
+      "type": "skeleton",
       "skeleton": "/skeleton/hand/right"
     },
     {
       "name": "/actions/slimecontrols/in/pose_left",
-      "type": "pose"
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/left"
     },
     {
       "name": "/actions/slimecontrols/in/pause",
@@ -74,6 +75,16 @@
     {
       "name": "/actions/slimecontrols/in/gadgetmode",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/slimecontrols/in/fallback_right",
+      "type": "vector1",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/slimecontrols/in/fallback_left",
+      "type": "vector1",
+      "requirement": "mandatory"
     },
     {
       "name": "/actions/slimecontrols/out/vibration",

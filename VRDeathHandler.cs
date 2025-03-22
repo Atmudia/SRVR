@@ -1,5 +1,6 @@
 using System.Collections;
 using HarmonyLib;
+using SRVR.Components;
 using SRVR.Patches;
 using UnityEngine;
 
@@ -49,13 +50,13 @@ namespace SRVR
         {
             if (locked)
             {
-                SceneContext.Instance.StartCoroutine(ShrinkController(Patch_vp_FPWeapon.FPWeapon.parent));
-                SceneContext.Instance.StartCoroutine(ShrinkController(Patch_vp_FPWeapon.FPInteract));
+                SceneContext.Instance.StartCoroutine(ShrinkController(HandManager.Instance.FPWeapon.parent));
+                SceneContext.Instance.StartCoroutine(ShrinkController(HandManager.Instance.FPInteract));
             }
             else
             {
-                SceneContext.Instance.StartCoroutine(GrowController(Patch_vp_FPWeapon.FPWeapon.parent));
-                SceneContext.Instance.StartCoroutine(GrowController(Patch_vp_FPWeapon.FPInteract));
+                SceneContext.Instance.StartCoroutine(GrowController(HandManager.Instance.FPWeapon.parent));
+                SceneContext.Instance.StartCoroutine(GrowController(HandManager.Instance.FPInteract));
             }
         }
     }
