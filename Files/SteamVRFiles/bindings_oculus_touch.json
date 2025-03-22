@@ -47,8 +47,8 @@
 				}
 			},
 			"mode" : "trigger",
-			"path" : "/user/hand/right/input/trigger"
-			"parameters": {},
+			"path" : "/user/hand/right/input/trigger",
+			"parameters": {}
         },
         {
           "path": "/user/hand/left/input/grip",
