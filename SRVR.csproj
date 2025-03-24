@@ -42,6 +42,7 @@
     <Compile Include="Components\ActorGlue.cs" />
     <Compile Include="Components\HandManager.cs" />
     <Compile Include="Components\UIPositioner.cs" />
+    <Compile Include="Components\PosHMD.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="Files\fist_Pose.cs" />
