@@ -60,8 +60,9 @@ namespace SRVR.Patches
             pedia.SetActive(true);
             pedia.layer = LayerMask.NameToLayer("Weapon");
 
-            fpsCamera.transform.Find("WeaponCamera").GetComponent<Camera>().nearClipPlane = 0.05f;
+            fpsCamera.Find("WeaponCamera").GetComponent<Camera>().nearClipPlane = 0.05f;
             fpsCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Held");
+            fpsCamera.gameObject.AddComponent<PosHMD>().baseCam = fpsCamera.GetComponent<vp_FPCamera>();
 
             vacShapeCache.GetComponent<DynamicBone>().enabled = false; // I dont see why this is disabled. when enabled in the middle of gameplay it works, but im sure it should work.
             vacShapeCache.parent = scaler.transform;

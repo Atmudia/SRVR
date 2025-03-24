@@ -188,35 +188,13 @@ namespace SRVR
                 var controllers = VRManager.InstantiateVRRig();
                 controllers.transform.SetParent(camera.transform, false);
                 vp_Layer.Set(controllers.gameObject, vp_Layer.Actor, true);
-                fpsCamera.AddComponent<RotHMD>(); 
+                fpsCamera.AddComponent<SteamVR_TrackedObject>().index = SteamVR_TrackedObject.EIndex.Hmd; 
                 menu.transform.Find("MessageOfTheDay").gameObject.SetActive(false);
             };
 
             Patch_LoadingUI.backgroundSprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault((x) => x.name == "UISprite");
         }
-
-        public class RotHMD : MonoBehaviour
-        {
-            public void Update()
-            {
-                InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
-                if (head.TryGetFeatureValue(CommonUsages.deviceRotation, out var rot))
-                {
-                    this.transform.localRotation = rot;
-                }
-                if (head.TryGetFeatureValue(CommonUsages.devicePosition, out var pos))
-                {
-                    this.transform.localPosition = pos;
-                }
-                
-            }
-        }
-        
-
-
-
     }
-    
 }
 
     

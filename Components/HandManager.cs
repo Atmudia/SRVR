@@ -14,6 +14,9 @@ namespace SRVR.Components
         public GameObject leftHand;
         public GameObject rightHand;
 
+        public PosHand leftHandPositioner;
+        public PosHand rightHandPositioner;
+
         public Transform FPWeapon;
         public Transform FPInteract;
         public GameObject UI;
@@ -44,6 +47,22 @@ namespace SRVR.Components
 
             leftController.SetActive(leftAvailable);
             rightController.SetActive(rightAvailable);
+
+            leftHandPositioner.deviceIndex = 9999;
+            rightHandPositioner.deviceIndex = 9999;
+
+            for (uint i = 0; i < OpenVR.k_unMaxTrackedDeviceCount; i++)
+            {
+                switch (OpenVR.System.GetControllerRoleForTrackedDeviceIndex(i))
+                {
+                    case ETrackedControllerRole.LeftHand:
+                        leftHandPositioner.deviceIndex = i;
+                        break;
+                    case ETrackedControllerRole.RightHand:
+                        rightHandPositioner.deviceIndex = i;
+                        break;
+                }
+            }
 
             if (FPWeapon)
             {

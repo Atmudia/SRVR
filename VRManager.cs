@@ -207,7 +207,7 @@ namespace SRVR
 
             leftHand.AddComponent<BoxCollider>().size = new Vector3(0.08f, 0.04f, 0.16f);
             leftController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            leftController.AddComponent<PosHand>().hand = XRNode.LeftHand;
+            PosHand leftPositioner = leftController.AddComponent<PosHand>();
 
             leftController.layer = LayerMask.NameToLayer("Weapon");
             leftHand.layer = LayerMask.NameToLayer("Weapon");
@@ -233,7 +233,7 @@ namespace SRVR
 
             rightHand.AddComponent<BoxCollider>().size = new Vector3(0.08f, 0.04f, 0.16f);
             rightController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            rightController.AddComponent<PosHand>().hand = XRNode.RightHand;
+            PosHand rightPositioner = rightController.AddComponent<PosHand>();
 
             rightController.layer = LayerMask.NameToLayer("Weapon");
             rightHand.layer = LayerMask.NameToLayer("Weapon");
@@ -245,6 +245,8 @@ namespace SRVR
             toggler.rightController = rightController;
             toggler.leftHand = leftHand;
             toggler.rightHand = rightHand;
+            toggler.leftHandPositioner = leftPositioner;
+            toggler.rightHandPositioner = rightPositioner;
             toggler.UpdateHandStates();
 
             CurrentVRRig = controllers;
