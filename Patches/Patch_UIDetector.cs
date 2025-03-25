@@ -14,6 +14,8 @@ namespace SRVR.Patches
         [HarmonyTranspiler, HarmonyPatch(nameof(UIDetector.Update))]
         static IEnumerable<CodeInstruction> Update(IEnumerable<CodeInstruction> instructions)
         {
+            if (!EntryPoint.EnabledVR)
+                return instructions;
             var codeInstructions = instructions.ToList();
             var raycastMethod = AccessTools.Method(typeof(Physics), nameof(Physics.Raycast), new[] {
                 typeof(Ray),

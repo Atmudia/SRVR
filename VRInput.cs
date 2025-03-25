@@ -41,6 +41,8 @@ namespace SRVR
             
             
             
+            
+            
             // UpdateWithState(InputControlType.Action1, SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             // UpdateWithState(InputControlType.LeftStickButton, SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
             // UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
@@ -97,7 +99,7 @@ namespace SRVR
                 }
                 else
                 {
-                    Patch_vp_FPInput.adjustmentDegrees += rightStickX;
+                    Patch_vp_FPInput.adjustmentDegrees += (rightStickX * deltaTime) * SteamVR.instance.hmd_DisplayFrequency;
                     Patch_vp_FPInput.adjustmentDegrees %= 360;
                 }
             }

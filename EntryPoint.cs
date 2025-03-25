@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using SRML;
 using SRML.Config.Attributes;
 using SRML.Console;
 using SRML.SR;
+using SRML.SR.Utils.Debug;
 using SRVR.Components;
 using SRVR.Patches;
 using Steamworks;
 using UnityEngine;
+using UnityEngine.Scripting;
 using UnityEngine.UI;
 using UnityEngine.XR;
 using Valve.VR;
 using Console = SRML.Console.Console;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 namespace SRVR
@@ -42,14 +49,9 @@ namespace SRVR
         public static bool EnabledVR = true;
         
         public EntryPoint()
-        { 
-            
-                
+        {
             VRInstaller.Install();
         }
-
-        
-
         public override void PreLoad()
         {
             if (!VRInstaller.IsAfterInstall)
@@ -106,24 +108,34 @@ namespace SRVR
                                 "[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation.");
                             Debug.LogError("   ");
                             Debug.LogError("   ");
+                            if (typeof(ConsoleWindow).GetMethod("OnGUI",AccessTools.all) != null)
+                            {
+                                string installDirectory = new DirectoryInfo(Application.dataPath).Parent.FullName;
+                                Process.Start(VRInstaller.VRInstallerPath, $"\"{installDirectory}\" install");
+                            }
+
                             Application.Quit();
+
+ 
                         });
                     }
                 };
                 return;
             }
+
+            if (typeof(ConsoleWindow).GetMethod("OnGUI", AccessTools.all) != null)
+            {
+                EntryPoint.ConsoleInstance.LogWarning("Optimization Fixes did not work properly, please try to reinstall the game and mod.");
+            }
             
             HarmonyInstance.PatchAll();
+            foreach (var patchedMethod in HarmonyInstance.GetPatchedMethods())
+            {
+                EntryPoint.ConsoleInstance.Log(patchedMethod.ToString());
+            }
             TranslationPatcher.AddUITranslation("b.uninstall_srvr", "Uninstall SRVR");
             TranslationPatcher.AddUITranslation("b.snapturn", "Turn Snap Turn");
             TranslationPatcher.AddUITranslation("b.switch_hands", "Switch Hands");
-            int[] layerNumbers = { 0, 1, 3, 5, 6, 7, 10, 12, 15, 17, 18, 19, 20, 21, 23, 24, 25, 26, 28, 30, 31 };
-
-            foreach (int layer in layerNumbers)
-            {
-                string layerName = LayerMask.LayerToName(layer);
-                ConsoleInstance.Log($"Layer {layer}: {layerName}");
-            }           
 
             if (EnabledVR)
             {
@@ -143,10 +155,7 @@ namespace SRVR
                     return;
                 }
             }
-          
-            
-            
-            // EntryPoint.ConsoleInstance.Log(SteamVR.instance.hmd_ModelNumber);
+
             var pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
             pediaModel.DontDestroyOnLoad();
             pediaModel.name = "PediaInteract";

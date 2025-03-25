@@ -37,7 +37,6 @@
     <Compile Include="Components\AmmoSlotTouchUI.cs" />
     <Compile Include="Components\HUDTouchBounds.cs" />
     <Compile Include="Components\PediaInteract.cs" />
-    <Compile Include="Components\PlayerVRPos.cs" />
     <Compile Include="Components\PosHand.cs" />
     <Compile Include="Components\ActorGlue.cs" />
     <Compile Include="Components\HandManager.cs" />
@@ -61,7 +60,6 @@
     <Compile Include="Patches\Patch_WeaponVacuum.cs" />
     <Compile Include="Patches\Patch_SlimeSubbehaviours.cs" />
     <Compile Include="Patches\UICatcher.cs" />
-    <Compile Include="SRLookup.cs" />
     <Compile Include="VRDeathHandler.cs" />
     <Compile Include="VRInput.cs" />
     <Compile Include="VRInstaller.cs" />
@@ -79,6 +77,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>.\Libs\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="DOTween">
+      <HintPath>.\Libs\DOTween.dll</HintPath>
+    </Reference>
     <Reference Include="InControl">
       <HintPath>.\Libs\InControl.dll</HintPath>
     </Reference>
@@ -91,6 +92,9 @@
     <Reference Include="SteamVR_Actions">
       <HintPath>.\Files\Managed\SteamVR_Actions.dll</HintPath>
     </Reference>
+    <Reference Include="System">
+      <HintPath>.\Libs\System.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>.\Libs\Unity.TextMeshPro.dll</HintPath>
     </Reference>
@@ -100,11 +104,17 @@
     <Reference Include="Unity.XR.OpenVR">
       <HintPath>.\Files\Managed\Unity.XR.OpenVR.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>.\Libs\UnityEngine.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>.\Libs\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>.\Libs\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>.\Libs\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>.\Libs\UnityEngine.PhysicsModule.dll</HintPath>
@@ -166,6 +176,7 @@
     <EmbeddedResource Include="Files\SteamVRFiles\binding_vive_tracker_camera.json" />
     <EmbeddedResource Include="Files\SteamVRFiles\OpenVRSettings.asset" />
     <EmbeddedResource Include="Files\UnitySubsystems\UnitySubsystemsManifest.json" />
+    <EmbeddedResource Include="Files\SRVRInstaller.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

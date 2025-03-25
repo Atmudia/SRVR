@@ -23,7 +23,6 @@ namespace SRVR.Patches
     public static class Patch_vp_FPInput
     {
         public static bool snapTriggered;
-        public static Vector3 rotatedPos;
 
         public static bool UsingVR()
         {
@@ -64,24 +63,12 @@ namespace SRVR.Patches
 
         static IEnumerable<CodeInstruction> GetMouseLook(IEnumerable<CodeInstruction> instructions)
         {
-            var codeInstructions = instructions.ToList();
-            foreach (var codeInstruction in codeInstructions)
-            {
-                if (codeInstruction.Calls(AccessTools.Method(typeof(InputDirector),
-                        nameof(InputDirector.UsingGamepad))))
-                {
-                    codeInstruction.operand = AccessTools.Method(typeof(Patch_vp_FPInput), nameof(UsingVR));
-                    EntryPoint.ConsoleInstance.Log("Changed: GetMouseLook ");
-                }
-            }
-
-
-            return codeInstructions;
+            return instructions.MethodReplacer(AccessTools.Method(typeof(InputDirector),
+                nameof(InputDirector.UsingGamepad)), AccessTools.Method(typeof(Patch_vp_FPInput), nameof(UsingVR)));
         }
 
         private static float offset = 0f;
         public static float adjustmentDegrees = 0f;
-        public static float delay;
 
         [HarmonyPrefix, HarmonyPatch(typeof(vp_FPCamera), nameof(vp_FPCamera.LateUpdate))]
 

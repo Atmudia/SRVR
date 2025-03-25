@@ -17,9 +17,6 @@ namespace SRVR.Patches
             __instance.mainUI.transform.Find("BackgroundSizer").transform.localPosition = new Vector3(0, 0, -0.1f);
             __instance.mainUI.transform.Find("UIContainer").transform.localPosition = new Vector3(0, 0, -0.2f);
         }
-        
-        
-
         [HarmonyPostfix, HarmonyPatch(nameof(RanchHouseUI.OnButtonDLC))]
         public static void OnButtonDLC(RanchHouseUI __instance)
         {

@@ -13,12 +13,7 @@ namespace SRVR
     public class VRManager
     {
         public static bool recenter  = false;
-        
-
-        public static Mesh LeftHandMesh;
-        public static Mesh RightHandMesh;
         public static Material HandsMaterial;
-
         public static GameObject CurrentVRRig;
 
         public static bool InitializeVR()

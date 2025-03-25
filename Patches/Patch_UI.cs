@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -16,10 +18,8 @@ namespace SRVR.Patches
     public class Patch_UI
     {
         [HarmonyPatch(typeof(GamepadPanel), nameof(GamepadPanel.Update)), HarmonyPrefix]
-        public static bool Update(GamepadPanel __instance)
-        {
-            return false;
-        }
+        public static bool Update() => !EntryPoint.EnabledVR;
+        
         [HarmonyPatch(typeof(GamepadPanel), nameof(GamepadPanel.Awake)), HarmonyPrefix]
         public static void GamepadAwake(GamepadPanel __instance)
         {
@@ -56,13 +56,20 @@ namespace SRVR.Patches
             {
                 SRSingleton<GameContext>.Instance.UITemplates.CreateConfirmDialog("Are you sure you want to uninstall SRVR?", (ConfirmUI.OnConfirm) (() =>
                 {
-                    VRInstaller.Uninstall();
-                    Application.Quit();
+                    var uninstall = VRInstaller.Uninstall();
+                    if (uninstall == null)
+                    {
+                        Application.Quit();
+                    }
+                    else
+                    {
+                        SRSingleton<GameContext>.Instance.UITemplates.CreateErrorDialog($"Uninstallation Error: {uninstall.ToString()}");
+                    }
+                    string installDirectory = new DirectoryInfo(Application.dataPath).Parent!.FullName;
+                    Process.Start(VRInstaller.VRInstallerPath, $"\"{installDirectory}\" uninstall");
                 }));
             });
             uninstallObj.name = "UninstallVRButton";
-
-
             var leftHand = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
             leftHand.SetSiblingIndex(7);
             leftHand.GetComponentInChildren<XlateText>().SetKey("b.switch_hands");
