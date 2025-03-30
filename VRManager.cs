@@ -217,8 +217,15 @@ namespace SRVR
                 }
             };
 
+            LineRenderer leftLine = leftHand.AddComponent<LineRenderer>();
+            leftLine.enabled = false;
+            leftLine.startWidth = 0.005f;
+            leftLine.endWidth = 0.005f;
+
             PickupVacuumable leftPickuper = leftHand.AddComponent<PickupVacuumable>();
             leftPickuper.origin = leftPickupOrigin.transform;
+            leftPickuper.raycastOrigin = leftHand.transform.Find("laser origin");
+            leftPickuper.line = leftLine;
             leftPickuper.skeletonAction = SteamVR_Actions.slimecontrols.pose_left;
             leftPickuper.grabAction = SteamVR_Actions.slimecontrols.grab_left;
 
@@ -256,8 +263,15 @@ namespace SRVR
                 }
             };
 
+            LineRenderer rightLine = rightHand.AddComponent<LineRenderer>();
+            rightLine.enabled = false;
+            rightLine.startWidth = 0.005f;
+            rightLine.endWidth = 0.005f;
+
             PickupVacuumable rightPickuper = rightHand.AddComponent<PickupVacuumable>();
             rightPickuper.origin = rightPickupOrigin.transform;
+            rightPickuper.raycastOrigin = rightHand.transform.Find("laser origin");
+            rightPickuper.line = rightLine;
             rightPickuper.skeletonAction = SteamVR_Actions.slimecontrols.pose_right;
             rightPickuper.grabAction = SteamVR_Actions.slimecontrols.grab_right;
 
@@ -271,6 +285,8 @@ namespace SRVR
             toggler.rightHandModel = rightHand.GetComponentInChildren<SkinnedMeshRenderer>(true).gameObject;
             toggler.leftHandPositioner = leftPositioner;
             toggler.rightHandPositioner = rightPositioner;
+            toggler.leftPickuper = leftPickuper;
+            toggler.rightPickuper = rightPickuper;
             toggler.UpdateHandStates();
 
             CurrentVRRig = controllers;

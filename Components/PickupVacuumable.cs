@@ -1,4 +1,5 @@
-﻿using SRVR.Patches;
+﻿using DG.Tweening;
+using SRVR.Patches;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,7 +11,11 @@ namespace SRVR.Components
     {
         public SteamVR_Action_Single grabAction;
         public SteamVR_Action_Skeleton skeletonAction;
+        
         public Transform origin;
+        public Transform raycastOrigin;
+
+        public LineRenderer line;
 
         private Vacuumable held;
         private Vacuumable potentialHeld;
@@ -23,16 +28,34 @@ namespace SRVR.Components
         private bool needsExtraFingers = false;
         private int fingersNeeded = 2;
 
+        private bool nonZeroVelocity = true;
+        private bool heldIsDistant = false;
+        private float moveTime;
+        private Vector3 moveStartPos;
+
+        private const float MOVE_LENGTH = 0.2f;
+        private const int DISTANCE_MASK = -536887557;
+
         public void OnEnable() => skeletonAction.onUpdate += OnSkeletonChanged;
         public void OnDisable() => skeletonAction.onUpdate -= OnSkeletonChanged;
 
-        public void ForceDrop()
+        public void Drop(bool withVelocity = true)
         {
             if (!held)
                 return;
 
             held.release();
-            held.body.velocity = velocity;
+            if (withVelocity)
+                held.body.velocity = velocity;
+
+            nonZeroVelocity = false;
+            velocity = Vector3.zero;
+            lastPos = Vector3.zero;
+            moveTime = 0.0f;
+            moveStartPos = Vector3.zero;
+
+            if (velocity.magnitude >= 3)
+                held.Launch(Vacuumable.LaunchSource.PLAYER);
 
             held = null;
             SetHeldRad(0);
@@ -40,16 +63,63 @@ namespace SRVR.Components
 
         public void Update()
         {
-            if (potentialHeld == null && allPotentialHelds.Count > 0)
-                potentialHeld = allPotentialHelds[0];
-            else if (potentialHeld != null && !allPotentialHelds.Contains(potentialHeld))
-                potentialHeld = null;
+            if (held)
+            {
+                line.enabled = false;
+                if (nonZeroVelocity)
+                {
+                    velocity = (held.transform.position - lastPos) / Time.deltaTime;
+                    lastPos = held.transform.position;
+                }
 
-            if (!held)
-                return;
+                if (moveTime > 0)
+                {
+                    held.transform.position = Vector3.Lerp(origin.position, moveStartPos, moveTime / MOVE_LENGTH);
+                    
+                    moveTime -= Time.deltaTime;
+                    if (moveTime <= 0)
+                    {
+                        held.transform.position = origin.position;
+                        moveTime = 0;
+                        nonZeroVelocity = true;
+                    }
+                }
+            }
+            else
+            {
+                if (allPotentialHelds.Count == 0)
+                {
+                    if (VRConfig.DISTANCE_GRAB && Physics.Raycast(raycastOrigin.position, raycastOrigin.forward, out RaycastHit hit, 3f, DISTANCE_MASK, QueryTriggerInteraction.Ignore))
+                    {
+                        heldIsDistant = true;
+                        potentialHeld = hit.collider.GetComponent<Vacuumable>();
+                    }
+                    else
+                    {
+                        heldIsDistant = false;
+                        potentialHeld = null;
+                    }
+                }
+                else if (potentialHeld == null)
+                {
+                    heldIsDistant = false;
+                    potentialHeld = allPotentialHelds[0];
+                }
+                else if (!allPotentialHelds.Contains(potentialHeld))
+                {
+                    heldIsDistant = false;
+                    potentialHeld = null;
+                }
 
-            velocity = (held.transform.position - lastPos) / Time.deltaTime;
-            lastPos = held.transform.position;
+                if (potentialHeld == null)
+                {
+                    line.enabled = false;
+                    return;
+                }
+
+                line.enabled = true;
+                line.SetPositions(new[] { raycastOrigin.position, potentialHeld.transform.position });
+            }
         }
 
         public void OnSkeletonChanged(SteamVR_Action_Skeleton fromAction)
@@ -59,15 +129,7 @@ namespace SRVR.Components
                 if (grabAction.axis >= 0.5f || skeletonAction.GetFingerCurls().Count(x => x >= 0.5) >= 2)
                     return;
 
-                potentialHeld = held;
-                held.release();
-                held.body.velocity = velocity;
-
-                if (velocity.magnitude >= 3)
-                    held.Launch(Vacuumable.LaunchSource.PLAYER);
-
-                held = null;
-                SetHeldRad(0);
+                Drop(nonZeroVelocity);
             }
             else
             {
@@ -118,8 +180,14 @@ namespace SRVR.Components
                 Patch_Vacuumable.doNotParent = true;
                 held.hold();
 
-                SetHeldRad(PhysicsUtil.RadiusOfObject(GameContext.Instance.LookupDirector.GetPrefab(held.identifiable.id)) * 0.646875f);
+                SetHeldRad(PhysicsUtil.RadiusOfObject(GameContext.Instance.LookupDirector.GetPrefab(held.identifiable.id)));
                 held.transform.SetParent(origin, true);
+
+                nonZeroVelocity = !heldIsDistant;
+                velocity = Vector3.zero;
+                lastPos = held.transform.position;
+                moveTime = heldIsDistant ? MOVE_LENGTH : 0.0f;
+                moveStartPos = held.transform.position;
             }
         }
 
@@ -154,7 +222,7 @@ namespace SRVR.Components
         private void SetHeldRad(float rad)
         {
             if (rad == 0)
-                origin.localPosition = new Vector3(0.646875f, origin.localPosition.y, origin.localPosition.z);
+                origin.localPosition = new Vector3(1f, origin.localPosition.y, origin.localPosition.z);
             else
                 origin.localPosition = new Vector3(rad, origin.localPosition.y, origin.localPosition.z);
         }

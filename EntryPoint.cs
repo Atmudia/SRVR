@@ -31,6 +31,7 @@ namespace SRVR
         public static bool SWITCH_HANDS = false;
         public static bool STATIC_UI_POSITION = true;
         public static bool SNAP_TURN = false;
+        public static bool DISTANCE_GRAB = true;
         
         public static void SaveConfig()
         {

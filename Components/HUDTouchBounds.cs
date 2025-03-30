@@ -6,7 +6,7 @@ namespace SRVR.Components
     {
         public void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.name == "Left Hand")
+            if (other.gameObject.name == "Hand")
             {
                 other.transform.localScale = Vector3.one * 0.45f;
             }
@@ -14,7 +14,7 @@ namespace SRVR.Components
 
         public void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.name == "Left Hand")
+            if (other.gameObject.name == "Hand")
             {
                 other.transform.localScale = Vector3.one;
             }

@@ -48,6 +48,9 @@ namespace SRVR.Patches
 
                     HandManager.Instance.leftHandModel.layer = uiLayer;
                     HandManager.Instance.rightHandModel.layer = uiLayer;
+
+                    HandManager.Instance.leftPickuper.Drop(false);
+                    HandManager.Instance.rightPickuper.Drop(false);
                 }
 
                 // Activate the action if mode is DEFAULT

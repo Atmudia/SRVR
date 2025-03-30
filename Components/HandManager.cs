@@ -18,6 +18,8 @@ namespace SRVR.Components
 
         public PosHand leftHandPositioner;
         public PosHand rightHandPositioner;
+        public PickupVacuumable leftPickuper;
+        public PickupVacuumable rightPickuper;
 
         public Transform FPWeapon;
         public Transform FPInteract;
