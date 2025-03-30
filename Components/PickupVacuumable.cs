@@ -8,6 +8,7 @@ namespace SRVR.Components
 {
     public class PickupVacuumable : MonoBehaviour
     {
+        public SteamVR_Action_Single grabAction;
         public SteamVR_Action_Skeleton skeletonAction;
         public Transform origin;
 
@@ -55,7 +56,7 @@ namespace SRVR.Components
         {
             if (held != null)
             {
-                if (skeletonAction.GetFingerCurls().Count(x => x >= 0.5) >= 2)
+                if (grabAction.axis >= 0.5f || skeletonAction.GetFingerCurls().Count(x => x >= 0.5) >= 2)
                     return;
 
                 potentialHeld = held;
@@ -98,7 +99,7 @@ namespace SRVR.Components
                     }
                     else return;
                 }
-                else if (count < 2)
+                else if (grabAction.axis < 0.5 && count < 2)
                     return;
 
                 // pick objects off of treeeeees

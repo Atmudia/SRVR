@@ -1,7 +1,7 @@
 {
    "action_manifest_version" : 0,
    "alias_info" : {},
-   "app_key" : "application.generated.unity.vr.exe",
+   "app_key" : "application.generated.unity.steamsquawk.exe",
    "bindings" : {
       "/actions/buggy" : {
          "chords" : [],
@@ -45,7 +45,7 @@
                      "output" : "/actions/slimecontrols/in/shoot"
                   },
                   "pull" : {
-                     "output" : "/actions/slimecontrols/in/fallback_right"
+                     "output" : "/actions/slimecontrols/in/grab_right"
                   }
                },
                "mode" : "trigger",
@@ -171,7 +171,7 @@
                      "output" : "/actions/slimecontrols/in/prevslot"
                   },
                   "pull" : {
-                     "output" : "/actions/slimecontrols/in/fallback_left"
+                     "output" : "/actions/slimecontrols/in/grab_left"
                   }
                },
                "mode" : "trigger",

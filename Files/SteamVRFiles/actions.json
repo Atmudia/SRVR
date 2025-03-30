@@ -77,12 +77,12 @@
       "type": "boolean"
     },
     {
-      "name": "/actions/slimecontrols/in/fallback_right",
+      "name": "/actions/slimecontrols/in/grab_right",
       "type": "vector1",
       "requirement": "mandatory"
     },
     {
-      "name": "/actions/slimecontrols/in/fallback_left",
+      "name": "/actions/slimecontrols/in/grab_left",
       "type": "vector1",
       "requirement": "mandatory"
     },

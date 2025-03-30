@@ -196,7 +196,7 @@ namespace SRVR
             
             SteamVR_Behaviour_Skeleton leftSkeleton = leftHand.GetComponentInChildren<SteamVR_Behaviour_Skeleton>(true);
             leftSkeleton.skeletonAction = SteamVR_Actions.slimecontrols.pose_left;
-            leftSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.fallback_left;
+            leftSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.grab_left;
             SteamVR_Skeleton_Poser leftPoser = leftHand.GetComponentInChildren<SteamVR_Skeleton_Poser>();
             leftPoser.skeletonMainPose = relaxedPose;
             leftPoser.skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>() { fistPose };
@@ -220,6 +220,7 @@ namespace SRVR
             PickupVacuumable leftPickuper = leftHand.AddComponent<PickupVacuumable>();
             leftPickuper.origin = leftPickupOrigin.transform;
             leftPickuper.skeletonAction = SteamVR_Actions.slimecontrols.pose_left;
+            leftPickuper.grabAction = SteamVR_Actions.slimecontrols.grab_left;
 
             // right controller
 
@@ -234,7 +235,7 @@ namespace SRVR
 
             SteamVR_Behaviour_Skeleton rightSkeleton = rightHand.GetComponentInChildren<SteamVR_Behaviour_Skeleton>(true);
             rightSkeleton.skeletonAction = SteamVR_Actions.slimecontrols.pose_right;
-            rightSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.fallback_right;
+            rightSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.grab_right;
             SteamVR_Skeleton_Poser rightPoser = rightHand.GetComponentInChildren<SteamVR_Skeleton_Poser>();
             rightPoser.skeletonMainPose = relaxedPose;
             rightPoser.skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>() { fistPose };
@@ -258,6 +259,7 @@ namespace SRVR
             PickupVacuumable rightPickuper = rightHand.AddComponent<PickupVacuumable>();
             rightPickuper.origin = rightPickupOrigin.transform;
             rightPickuper.skeletonAction = SteamVR_Actions.slimecontrols.pose_right;
+            rightPickuper.grabAction = SteamVR_Actions.slimecontrols.grab_right;
 
             HandManager toggler = controllers.AddComponent<HandManager>();
             toggler.Awake();

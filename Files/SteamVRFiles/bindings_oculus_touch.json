@@ -43,18 +43,21 @@
 					"output" : "/actions/slimecontrols/in/shoot"
 				},
 				"pull" : {
-					"output" : "/actions/slimecontrols/in/fallback_right"
+					"output" : "/actions/slimecontrols/in/grab_right"
 				}
 			},
 			"mode" : "trigger",
 			"path" : "/user/hand/right/input/trigger",
-			"parameters": {}
+			"parameters": {},
         },
         {
           "path": "/user/hand/left/input/grip",
           "mode": "trigger",
           "parameters": {},
           "inputs": {
+            "click": {
+              "output": "/actions/slimecontrols/in/shoot"
+            },
             "pull": {
               "output": "/actions/slimecontrols/in/nextslot"
             }
