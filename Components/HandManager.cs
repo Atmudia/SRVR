@@ -13,6 +13,8 @@ namespace SRVR.Components
 
         public GameObject leftHand;
         public GameObject rightHand;
+        public GameObject leftHandModel;
+        public GameObject rightHandModel;
 
         public PosHand leftHandPositioner;
         public PosHand rightHandPositioner;

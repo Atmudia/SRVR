@@ -15,6 +15,9 @@ namespace SRVR.Patches
     [HarmonyPatch]
     public static class Patch_SRInput
     {
+        public static int uiLayer = LayerMask.NameToLayer("UI");
+        public static int weaponLayer = LayerMask.NameToLayer("Weapon");
+
         [HarmonyPatch(typeof(SRInput), nameof(SRInput.SetInputMode), typeof(SRInput.InputMode)), HarmonyPrefix]
         public static void SetInputMode(SRInput.InputMode mode)
         {
@@ -42,6 +45,9 @@ namespace SRVR.Patches
                     HandManager.Instance.FPWeapon.gameObject.SetActive(false);
                     HandManager.Instance.UI.SetActive(false);
                     HandManager.Instance.FPWeapon.parent.Find("Hand").gameObject.SetActive(true);
+
+                    HandManager.Instance.leftHandModel.layer = uiLayer;
+                    HandManager.Instance.rightHandModel.layer = uiLayer;
                 }
 
                 // Activate the action if mode is DEFAULT
@@ -54,6 +60,9 @@ namespace SRVR.Patches
                     HandManager.Instance.FPWeapon.gameObject.SetActive(true);
                     HandManager.Instance.UI.SetActive(true);
                     HandManager.Instance.FPWeapon.parent.Find("Hand").gameObject.SetActive(false);
+
+                    HandManager.Instance.leftHandModel.layer = weaponLayer;
+                    HandManager.Instance.rightHandModel.layer = weaponLayer;
 
                 }
                 // Deactivate the action if mode is not DEFAULT

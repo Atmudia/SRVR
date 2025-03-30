@@ -61,7 +61,9 @@ namespace SRVR.Patches
             pedia.layer = LayerMask.NameToLayer("Weapon");
 
             fpsCamera.Find("WeaponCamera").GetComponent<Camera>().nearClipPlane = 0.05f;
-            fpsCamera.GetComponent<Camera>().cullingMask |= 1 << LayerMask.NameToLayer("Held");
+            fpsCamera.Find("WeaponCamera").GetComponent<Camera>().cullingMask = 1 << LayerMask.NameToLayer("UI");
+            fpsCamera.GetComponent<Camera>().cullingMask |= (1 << LayerMask.NameToLayer("Held")) | (1 << LayerMask.NameToLayer("Weapon"));
+            fpsCamera.GetComponent<Camera>().cullingMask ^= 1 << LayerMask.NameToLayer("UI");
             fpsCamera.gameObject.AddComponent<PosHMD>().baseCam = fpsCamera.GetComponent<vp_FPCamera>();
 
             vacShapeCache.GetComponent<DynamicBone>().enabled = false; // I dont see why this is disabled. when enabled in the middle of gameplay it works, but im sure it should work.
@@ -107,7 +109,7 @@ namespace SRVR.Patches
 
             hudUIContainer.Find("crossHair").gameObject.SetActive(false);
 
-            hudUITransform.gameObject.layer = LayerMask.NameToLayer("Weapon");
+            //hudUITransform.gameObject.layer = LayerMask.NameToLayer("Weapon");
             Canvas canvas = hudUITransform.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.worldCamera = Camera.main;
