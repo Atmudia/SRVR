@@ -25,6 +25,7 @@ namespace SRVR.Components
         private Vector3 lastPos;
         private Vector3 velocity;
 
+        private bool grabActionNeedsRefresh = false;
         private bool needsExtraFingers = false;
         private int fingersNeeded = 2;
 
@@ -36,8 +37,16 @@ namespace SRVR.Components
         private const float MOVE_LENGTH = 0.2f;
         private const int DISTANCE_MASK = -536887557;
 
-        public void OnEnable() => skeletonAction.onUpdate += OnSkeletonChanged;
-        public void OnDisable() => skeletonAction.onUpdate -= OnSkeletonChanged;
+        public void OnEnable()
+        {
+            skeletonAction.onChange += OnSkeletonChanged;
+            grabAction.onChange += OnGrabActionChanged;
+        }
+        public void OnDisable()
+        {
+            skeletonAction.onChange -= OnSkeletonChanged;
+            grabAction.onChange -= OnGrabActionChanged;
+        }
 
         public void Drop(bool withVelocity = true)
         {
@@ -63,10 +72,13 @@ namespace SRVR.Components
 
         public void Update()
         {
+            if (grabActionNeedsRefresh && grabAction.axis < 0.5)
+                grabActionNeedsRefresh = false;
+
             if (held)
             {
                 line.enabled = false;
-                if (nonZeroVelocity)
+                if (nonZeroVelocity) // this is mostly so that, in the scenario wherein you drop an item while it's distance grab flying towards you, it doesn't go into the atmosphere
                 {
                     velocity = (held.transform.position - lastPos) / Time.deltaTime;
                     lastPos = held.transform.position;
@@ -74,6 +86,7 @@ namespace SRVR.Components
 
                 if (moveTime > 0)
                 {
+                    // using lerp instead of dotween so that it goes to the player hand even if they move their hand
                     held.transform.position = Vector3.Lerp(origin.position, moveStartPos, moveTime / MOVE_LENGTH);
                     
                     moveTime -= Time.deltaTime;
@@ -87,6 +100,9 @@ namespace SRVR.Components
             }
             else
             {
+                // if NOTHING is in the hand trigger, distance grab may commence
+                // if there's no potential held currently, but there can be, set it to that
+                // if potential held is not a valid potential held, set it to null (prevents stale references)
                 if (allPotentialHelds.Count == 0)
                 {
                     if (VRConfig.DISTANCE_GRAB && Physics.Raycast(raycastOrigin.position, raycastOrigin.forward, out RaycastHit hit, 3f, DISTANCE_MASK, QueryTriggerInteraction.Ignore))
@@ -122,7 +138,10 @@ namespace SRVR.Components
             }
         }
 
-        public void OnSkeletonChanged(SteamVR_Action_Skeleton fromAction)
+        private void OnGrabActionChanged(SteamVR_Action_Single fromAction, SteamVR_Input_Sources fromSource, float newAxis, float newDelta) => OnActionsChanged();
+        private void OnSkeletonChanged(SteamVR_Action_Skeleton fromAction) => OnActionsChanged();
+
+        private void OnActionsChanged()
         {
             if (held != null)
             {
@@ -161,7 +180,7 @@ namespace SRVR.Components
                     }
                     else return;
                 }
-                else if (grabAction.axis < 0.5 && count < 2)
+                else if ((grabAction.axis < 0.5 || grabActionNeedsRefresh) && count < 2)
                     return;
 
                 // pick objects off of treeeeees
@@ -180,14 +199,20 @@ namespace SRVR.Components
                 Patch_Vacuumable.doNotParent = true;
                 held.hold();
 
-                SetHeldRad(PhysicsUtil.RadiusOfObject(GameContext.Instance.LookupDirector.GetPrefab(held.identifiable.id)));
+                float radius = PhysicsUtil.RadiusOfObject(GameContext.Instance.LookupDirector.GetPrefab(held.identifiable.id));
+                SetHeldRad(radius);
                 held.transform.SetParent(origin, true);
 
                 nonZeroVelocity = !heldIsDistant;
                 velocity = Vector3.zero;
                 lastPos = held.transform.position;
-                moveTime = heldIsDistant ? MOVE_LENGTH : 0.0f;
-                moveStartPos = held.transform.position;
+
+                // if object is close enough, no reason to snap to origin, it just makes it weird
+                if (heldIsDistant && Vector3.Distance(transform.position, held.transform.position) > radius + 0.1)
+                {
+                    moveTime = MOVE_LENGTH;
+                    moveStartPos = held.transform.position;
+                }
             }
         }
 
@@ -200,8 +225,10 @@ namespace SRVR.Components
             if (vacuumable == null)
                 return;
 
+            // ensure that you don't just magnetize items if you already have fingers/action down
             fingersNeeded = skeletonAction.GetFingerCurls().Count(x => x >= 0.5) + 2;
             needsExtraFingers = fingersNeeded > 2;
+            grabActionNeedsRefresh = grabAction.axis > 0.5f;
 
             potentialHeld = vacuumable;
             allPotentialHelds.Add(vacuumable);
@@ -219,7 +246,7 @@ namespace SRVR.Components
             }
         }
 
-        private void SetHeldRad(float rad)
+        private void SetHeldRad(float rad) // tries and usually fails to prevent floating
         {
             if (rad == 0)
                 origin.localPosition = new Vector3(1f, origin.localPosition.y, origin.localPosition.z);

@@ -137,6 +137,7 @@ namespace SRVR
             TranslationPatcher.AddUITranslation("b.uninstall_srvr", "Uninstall SRVR");
             TranslationPatcher.AddUITranslation("b.snapturn", "Turn Snap Turn");
             TranslationPatcher.AddUITranslation("b.switch_hands", "Switch Hands");
+            TranslationPatcher.AddUITranslation("b.distance_grab", "Distance Grab");
 
             if (EnabledVR)
             {
