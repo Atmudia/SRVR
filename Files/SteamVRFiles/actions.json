@@ -47,16 +47,6 @@
       "type": "boolean"
     },
     {
-      "name": "/actions/slimecontrols/in/pose_right",
-      "type": "skeleton",
-      "skeleton": "/skeleton/hand/right"
-    },
-    {
-      "name": "/actions/slimecontrols/in/pose_left",
-      "type": "skeleton",
-      "skeleton": "/skeleton/hand/left"
-    },
-    {
       "name": "/actions/slimecontrols/in/pause",
       "type": "boolean"
     },
@@ -77,23 +67,87 @@
       "type": "boolean"
     },
     {
-      "name": "/actions/slimecontrols/in/fallback_right",
-      "type": "vector1",
-      "requirement": "mandatory"
-    },
-    {
-      "name": "/actions/slimecontrols/in/fallback_left",
-      "type": "vector1",
-      "requirement": "mandatory"
+      "name": "/actions/slimecontrols/in/toggle_vacgun",
+      "type": "boolean",
+      "requirement": "optional"
     },
     {
       "name": "/actions/slimecontrols/out/vibration",
       "type": "vibration"
+    },
+    {
+      "name": "/actions/ui/in/submit",
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/ui/in/alt_submit",
+      "type": "boolean",
+      "requirement": "suggested"
+    },
+    {
+      "name": "/actions/ui/in/cancel",
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/ui/in/close",
+      "type": "boolean",
+      "requirement": "suggested"
+    },
+    {
+      "name": "/actions/ui/in/navigate",
+      "type": "vector2",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/ui/in/scroll",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/ui/in/next_tab",
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/ui/in/prev_tab",
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/global/in/grab_left",
+      "type": "vector1",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/global/in/grab_right",
+      "type": "vector1",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/global/in/pose_left",
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/left",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/global/in/pose_right",
+      "type": "skeleton",
+      "skeleton": "/skeleton/hand/right",
+      "requirement": "mandatory"
     }
   ],
   "action_sets": [
     {
       "name": "/actions/slimecontrols",
+      "usage": "leftright"
+    },
+    {
+      "name": "/actions/ui",
+      "usage": "leftright"
+    },
+    {
+      "name": "/actions/global",
       "usage": "leftright"
     }
   ],

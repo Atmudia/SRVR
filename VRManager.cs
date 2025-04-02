@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using SRVR.Components;
 using SRVR.Files;
 using Unity.XR.OpenVR;
@@ -194,19 +195,39 @@ namespace SRVR
             leftHand.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMaterial = HandsMaterial;
             
             SteamVR_Behaviour_Skeleton leftSkeleton = leftHand.GetComponentInChildren<SteamVR_Behaviour_Skeleton>(true);
-            leftSkeleton.skeletonAction = SteamVR_Actions.slimecontrols.pose_left;
-            leftSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.fallback_left;
+            leftSkeleton.skeletonAction = SteamVR_Actions.global.pose_left;
+            leftSkeleton.fallbackCurlAction = SteamVR_Actions.global.grab_left;
             SteamVR_Skeleton_Poser leftPoser = leftHand.GetComponentInChildren<SteamVR_Skeleton_Poser>();
             leftPoser.skeletonMainPose = relaxedPose;
             leftPoser.skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>() { fistPose };
 
-            leftHand.AddComponent<BoxCollider>().size = new Vector3(0.08f, 0.04f, 0.16f);
-            leftController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             PosHand leftPositioner = leftController.AddComponent<PosHand>();
 
             leftController.layer = LayerMask.NameToLayer("Weapon");
             leftHand.layer = LayerMask.NameToLayer("Weapon");
             leftHand.GetComponentInChildren<SkinnedMeshRenderer>().gameObject.layer = LayerMask.NameToLayer("Weapon");
+
+            GameObject leftPickupOrigin = new GameObject("origin")
+            {
+                transform =
+                {
+                    parent = leftHand.transform,
+                    localPosition = Vector3.zero,
+                    rotation = Quaternion.identity
+                }
+            };
+
+            LineRenderer leftLine = leftHand.AddComponent<LineRenderer>();
+            leftLine.enabled = false;
+            leftLine.startWidth = 0.005f;
+            leftLine.endWidth = 0.005f;
+
+            PickupVacuumable leftPickuper = leftHand.AddComponent<PickupVacuumable>();
+            leftPickuper.origin = leftPickupOrigin.transform;
+            leftPickuper.raycastOrigin = leftHand.transform.Find("laser origin");
+            leftPickuper.line = leftLine;
+            leftPickuper.skeletonAction = SteamVR_Actions.global.pose_left;
+            leftPickuper.grabAction = SteamVR_Actions.global.grab_left;
 
             // right controller
 
@@ -220,19 +241,40 @@ namespace SRVR
             rightHand.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMaterial = HandsMaterial;
 
             SteamVR_Behaviour_Skeleton rightSkeleton = rightHand.GetComponentInChildren<SteamVR_Behaviour_Skeleton>(true);
-            rightSkeleton.skeletonAction = SteamVR_Actions.slimecontrols.pose_right;
-            rightSkeleton.fallbackCurlAction = SteamVR_Actions.slimecontrols.fallback_right;
+            rightSkeleton.skeletonAction = SteamVR_Actions.global.pose_right;
+            rightSkeleton.fallbackCurlAction = SteamVR_Actions.global.grab_right;
             SteamVR_Skeleton_Poser rightPoser = rightHand.GetComponentInChildren<SteamVR_Skeleton_Poser>();
             rightPoser.skeletonMainPose = relaxedPose;
             rightPoser.skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>() { fistPose };
 
-            rightHand.AddComponent<BoxCollider>().size = new Vector3(0.08f, 0.04f, 0.16f);
-            rightController.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             PosHand rightPositioner = rightController.AddComponent<PosHand>();
 
             rightController.layer = LayerMask.NameToLayer("Weapon");
             rightHand.layer = LayerMask.NameToLayer("Weapon");
             rightHand.GetComponentInChildren<SkinnedMeshRenderer>().gameObject.layer = LayerMask.NameToLayer("Weapon");
+
+            GameObject rightPickupOrigin = new GameObject("origin")
+            {
+                transform =
+                {
+                    parent = rightHand.transform,
+                    localPosition = Vector3.zero,
+                    rotation = Quaternion.identity
+                }
+            };
+
+            LineRenderer rightLine = rightHand.AddComponent<LineRenderer>();
+            rightLine.enabled = false;
+            rightLine.startWidth = 0.005f;
+            rightLine.endWidth = 0.005f;
+
+            PickupVacuumable rightPickuper = rightHand.AddComponent<PickupVacuumable>();
+            rightPickuper.origin = rightPickupOrigin.transform;
+            rightPickuper.raycastOrigin = rightHand.transform.Find("laser origin");
+            rightPickuper.line = rightLine;
+            rightPickuper.skeletonAction = SteamVR_Actions.global.pose_right;
+            rightPickuper.grabAction = SteamVR_Actions.global.grab_right;
+            rightPickuper.originScaler = -1f;
 
             HandManager toggler = controllers.AddComponent<HandManager>();
             toggler.Awake();
@@ -240,8 +282,12 @@ namespace SRVR
             toggler.rightController = rightController;
             toggler.leftHand = leftHand;
             toggler.rightHand = rightHand;
+            toggler.leftHandModel = leftHand.GetComponentInChildren<SkinnedMeshRenderer>(true).gameObject;
+            toggler.rightHandModel = rightHand.GetComponentInChildren<SkinnedMeshRenderer>(true).gameObject;
             toggler.leftHandPositioner = leftPositioner;
             toggler.rightHandPositioner = rightPositioner;
+            toggler.leftPickuper = leftPickuper;
+            toggler.rightPickuper = rightPickuper;
             toggler.UpdateHandStates();
 
             CurrentVRRig = controllers;

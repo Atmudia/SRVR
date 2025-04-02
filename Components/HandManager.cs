@@ -13,15 +13,24 @@ namespace SRVR.Components
 
         public GameObject leftHand;
         public GameObject rightHand;
+        public GameObject leftHandModel;
+        public GameObject rightHandModel;
 
         public PosHand leftHandPositioner;
         public PosHand rightHandPositioner;
+        public PickupVacuumable leftPickuper;
+        public PickupVacuumable rightPickuper;
 
+        public WeaponVacuum vacuumer;
         public Transform FPWeapon;
         public Transform FPInteract;
         public GameObject UI;
 
         public XRNode dominantHand;
+
+        public bool vacShown = true;
+        public Dictionary<Vacuumable, PickupVacuumable> heldVacuumables = new Dictionary<Vacuumable, PickupVacuumable>();
+        public Vacuumable gunVacuumable;
 
         public void OnEnable()
         {
@@ -32,6 +41,22 @@ namespace SRVR.Components
         {
             InputTracking.nodeAdded -= UpdateHandStates;
             InputTracking.nodeRemoved -= UpdateHandStates;
+        }
+
+        public void UpdateVacVisibility() => SetVacVisibility(vacShown);
+        public void SetVacVisibility(bool showVac)
+        {
+            vacShown = showVac;
+
+            if (FPWeapon)
+            {
+                FPWeapon.gameObject.SetActive(VRInput.Mode == SRInput.InputMode.DEFAULT && showVac);
+                UI.SetActive(FPWeapon.gameObject.activeSelf);
+                vacuumer.enabled = FPWeapon.gameObject.activeSelf;
+            }
+            
+            leftHand.SetActive(VRInput.Mode != SRInput.InputMode.DEFAULT || dominantHand == XRNode.RightHand || !showVac);
+            rightHand.SetActive(VRInput.Mode != SRInput.InputMode.DEFAULT || dominantHand == XRNode.LeftHand || !showVac);
         }
 
         public void UpdateHandStates() => UpdateHandStates(default);
@@ -105,6 +130,8 @@ namespace SRVR.Components
             UI.transform.SetParent(dominantHand == XRNode.LeftHand ? leftController.transform : rightController.transform, false);
             UI.transform.localRotation = dominantHand == XRNode.LeftHand ? Quaternion.Euler(34, 15f, 11) : Quaternion.Euler(34, -15, -11);
             UI.transform.localPosition = new Vector3(0f, 0.2563f, 0.1197f);
+
+            UpdateVacVisibility();
         }
     }
 }

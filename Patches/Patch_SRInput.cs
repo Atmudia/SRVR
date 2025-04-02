@@ -15,6 +15,9 @@ namespace SRVR.Patches
     [HarmonyPatch]
     public static class Patch_SRInput
     {
+        public static int uiLayer = LayerMask.NameToLayer("UI");
+        public static int weaponLayer = LayerMask.NameToLayer("Weapon");
+
         [HarmonyPatch(typeof(SRInput), nameof(SRInput.SetInputMode), typeof(SRInput.InputMode)), HarmonyPrefix]
         public static void SetInputMode(SRInput.InputMode mode)
         {
@@ -22,7 +25,6 @@ namespace SRVR.Patches
                 return;
             EntryPoint.ConsoleInstance.Log("SetInputMode: " + mode);
             VRInput.Mode = mode;
-            
 
             // Activate or deactivate SteamVR action based on mode
             if (mode == SRInput.InputMode.DEFAULT)
@@ -37,29 +39,33 @@ namespace SRVR.Patches
             }
             if (mode == SRInput.InputMode.PAUSE)
             {
-                if (HandManager.Instance?.FPWeapon)
+                SteamVR_Actions.ui.Activate();
+
+                HandManager.Instance?.leftPickuper?.Drop(false);
+                HandManager.Instance?.rightPickuper?.Drop(false);
+
+                if (HandManager.Instance?.leftHandModel)
                 {
-                    HandManager.Instance.FPWeapon.gameObject.SetActive(false);
-                    HandManager.Instance.UI.SetActive(false);
-                    HandManager.Instance.FPWeapon.parent.Find("Hand").gameObject.SetActive(true);
+                    HandManager.Instance.leftHandModel.layer = uiLayer;
+                    HandManager.Instance.rightHandModel.layer = uiLayer;
                 }
 
-                // Activate the action if mode is DEFAULT
-                SteamVR_Actions.slimecontrols.Activate();
+                VRInput.repauseDelay = VRInput.REPAUSE_DELAY;
+                HandManager.Instance?.UpdateVacVisibility();
             }
             else
             {
-                if (HandManager.Instance?.FPWeapon)
-                {
-                    HandManager.Instance.FPWeapon.gameObject.SetActive(true);
-                    HandManager.Instance.UI.SetActive(true);
-                    HandManager.Instance.FPWeapon.parent.Find("Hand").gameObject.SetActive(false);
+                SteamVR_Actions.ui.Deactivate();
 
+                if (HandManager.Instance?.leftHandModel)
+                {
+                    HandManager.Instance.leftHandModel.layer = weaponLayer;
+                    HandManager.Instance.rightHandModel.layer = weaponLayer;
                 }
-                // Deactivate the action if mode is not DEFAULT
-                SteamVR_Actions.slimecontrols.Deactivate();
+
+                VRInput.repauseDelay = VRInput.REPAUSE_DELAY;
+                HandManager.Instance?.UpdateVacVisibility();
             }
-            
         }
 
         

@@ -97,6 +97,16 @@ namespace SRVR.Patches
             });
             srToggleSnap.isOn = VRConfig.SNAP_TURN;
             
+            var distanceGrab = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
+            distanceGrab.SetSiblingIndex(9);
+            distanceGrab.GetComponentInChildren<XlateText>().SetKey("b.distance_grab");
+            var srToggleGrab = distanceGrab.GetComponentInChildren<SRToggle>();
+            (srToggleGrab.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
+            {
+                VRConfig.DISTANCE_GRAB = arg0;
+                VRConfig.SaveConfig();
+            });
+            srToggleGrab.isOn = VRConfig.DISTANCE_GRAB;
         }
 
         [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.SetupVertNav)), HarmonyPrefix]

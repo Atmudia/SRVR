@@ -1,5 +1,6 @@
 ﻿using System;
 using InControl;
+using SRVR.Components;
 using SRVR.Patches;
 using Steamworks;
 using UnityEngine;
@@ -12,6 +13,10 @@ namespace SRVR
     {
         public static VRInput Instance;
         public static SRInput.InputMode Mode;
+        public static float repauseDelay = 0.0f;
+
+        public const float REPAUSE_DELAY = 0.25f;
+
         public VRInput()
         {
             Instance = this;
@@ -38,47 +43,69 @@ namespace SRVR
             this.AddControl(InputControlType.LeftStickButton, "Left Stick Button");
             this.AddControl(InputControlType.Action3, "Action3");
             this.AddControl(InputControlType.Action2, "Action2");
-            
-            
-            
-            
-            
-            // UpdateWithState(InputControlType.Action1, SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            // UpdateWithState(InputControlType.LeftStickButton, SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            // UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            // UpdateWithState(InputControlType.Action2, SteamVR_Actions.slimecontrols.pulse.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            // UpdateWithState(InputControlType.DPadRight, SteamVR_Actions.slimecontrols.map.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            
-            
+
+            SteamVR_Actions.global.Activate();
         }
-        
-        
+
         public override void Update(ulong updateTick, float deltaTime)
         {
-            
-            UpdateLeftStickWithValue(SteamVR_Actions.slimecontrols.move.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateRightStickWithValue(SteamVR_Actions.slimecontrols.look.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithValue(InputControlType.RightTrigger, SteamVR_Actions.slimecontrols.shoot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithValue(InputControlType.LeftTrigger, SteamVR_Actions.slimecontrols.vac.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithValue(InputControlType.LeftBumper, SteamVR_Actions.slimecontrols.nextslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithValue(InputControlType.RightBumper, SteamVR_Actions.slimecontrols.prevslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            
-            UpdateWithState(InputControlType.Action1, SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.LeftStickButton, SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.Action3, SteamVR_Actions.slimecontrols.interact.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.Action2, SteamVR_Actions.slimecontrols.pulse.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.DPadRight, SteamVR_Actions.slimecontrols.map.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            
-            
-            UpdateWithState(InputControlType.Start, SteamVR_Actions.slimecontrols.pause.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.DPadUp, SteamVR_Actions.slimecontrols.slimepedia.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.Action4, SteamVR_Actions.slimecontrols.flashlight.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.RightStickButton, SteamVR_Actions.slimecontrols.radar.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-            UpdateWithState(InputControlType.DPadDown, SteamVR_Actions.slimecontrols.gadgetmode.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+            if (repauseDelay > 0.0f)
+            {
+                repauseDelay = Mathf.Clamp(repauseDelay - deltaTime, 0, REPAUSE_DELAY);
+                return;
+            }
+
+            switch (Mode)
+            {
+                case SRInput.InputMode.DEFAULT:
+                    Vector2 move = SteamVR_Actions.slimecontrols.move.GetAxis(SteamVR_Input_Sources.Any);
+                    SRInput.Actions.horizontal.UpdateWithValue(move.x, updateTick, deltaTime);
+                    SRInput.Actions.vertical.UpdateWithValue(move.y, updateTick, deltaTime);
+
+                    SRInput.Actions.attack.UpdateWithValue(SteamVR_Actions.slimecontrols.shoot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.vac.UpdateWithValue(SteamVR_Actions.slimecontrols.vac.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.nextSlot.UpdateWithValue(SteamVR_Actions.slimecontrols.nextslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.prevSlot.UpdateWithValue(SteamVR_Actions.slimecontrols.prevslot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+
+                    SRInput.Actions.jump.UpdateWithState(SteamVR_Actions.slimecontrols.jump.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.run.UpdateWithState(SteamVR_Actions.slimecontrols.sprint.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.interact.UpdateWithState(SteamVR_Actions.slimecontrols.interact.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.burst.UpdateWithState(SteamVR_Actions.slimecontrols.pulse.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.openMap.UpdateWithState(SteamVR_Actions.slimecontrols.map.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+
+                    if (SteamVR_Actions.slimecontrols.toggle_vacgun.GetStateDown(SteamVR_Input_Sources.Any))
+                        HandManager.Instance?.SetVacVisibility(!HandManager.Instance.vacShown);
+
+                    SRInput.Actions.pedia.UpdateWithState(SteamVR_Actions.slimecontrols.slimepedia.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.light.UpdateWithState(SteamVR_Actions.slimecontrols.flashlight.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.radarToggle.UpdateWithState(SteamVR_Actions.slimecontrols.radar.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.toggleGadgetMode.UpdateWithState(SteamVR_Actions.slimecontrols.gadgetmode.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.Actions.menu.UpdateWithState(SteamVR_Actions.slimecontrols.pause.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+
+                    break;
+                case SRInput.InputMode.PAUSE:
+
+                    SRInput.PauseActions.submit.UpdateWithState(SteamVR_Actions.ui.submit.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.PauseActions.altSubmit.UpdateWithState(SteamVR_Actions.ui.alt_submit.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.PauseActions.cancel.UpdateWithState(SteamVR_Actions.ui.cancel.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.PauseActions.closeMap.UpdateWithState(SteamVR_Actions.ui.close.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.PauseActions.menuTabLeft.UpdateWithState(SteamVR_Actions.ui.prev_tab.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.PauseActions.menuTabRight.UpdateWithState(SteamVR_Actions.ui.next_tab.GetStateDown(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    SRInput.PauseActions.unmenu.UpdateWithState(SteamVR_Actions.ui.close.GetState(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+
+                    float value = SteamVR_Actions.ui.scroll.GetAxis(SteamVR_Input_Sources.Any).y * 5;
+                    (value > 0 ? SRInput.PauseActions.menuScrollUp : SRInput.PauseActions.menuScrollDown).UpdateWithValue(Mathf.Abs(value), updateTick, deltaTime);
+
+                    Vector2 navigation = SteamVR_Actions.ui.navigate.GetAxis(SteamVR_Input_Sources.Any);
+                    (navigation.x > 0 ? SRInput.PauseActions.menuRight : SRInput.PauseActions.menuLeft).UpdateWithValue(Mathf.Abs(navigation.x), updateTick, deltaTime);
+                    (navigation.y > 0 ? SRInput.PauseActions.menuUp : SRInput.PauseActions.menuDown).UpdateWithValue(Mathf.Abs(navigation.y), updateTick, deltaTime);
+
+                    break;
+            }
 
             if (!(SceneContext.Instance?.TimeDirector?.HasPauser() ?? false))
             {
-                float rightStickX = RightStickX.Value;
+                float rightStickX = SteamVR_Actions.slimecontrols.look.axis.x;
                 float snapThreshold = 0.7f; // Stick must be pushed at least 70% to trigger snap turn
                 float resetThreshold = 0.2f; // Stick must return below 20% to reset
                 int snapAngle = 45; // Degrees per snap turn
