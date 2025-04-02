@@ -171,6 +171,7 @@ namespace SRVR.Patches
 
             HandManager.Instance.UI = hudUITransform.gameObject;
             HandManager.Instance.FPWeapon = scaler;
+            HandManager.Instance.vacuumer = simplePlayer.GetComponentInChildren<WeaponVacuum>();
             HandManager.Instance.FPInteract = leftController; // will need to be properly modified with new interact system if such exists
             HandManager.Instance.dominantHand = VRConfig.SWITCH_HANDS ? UnityEngine.XR.XRNode.LeftHand : UnityEngine.XR.XRNode.RightHand;
             HandManager.Instance.UpdateHandStates();

@@ -2,8 +2,10 @@
 using SRVR.Patches;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Lifetime;
 using UnityEngine;
 using Valve.VR;
+using static SECTR_AudioSystem;
 
 namespace SRVR.Components
 {
@@ -11,7 +13,8 @@ namespace SRVR.Components
     {
         public SteamVR_Action_Single grabAction;
         public SteamVR_Action_Skeleton skeletonAction;
-        
+
+        public float originScaler = 1f;
         public Transform origin;
         public Transform raycastOrigin;
 
@@ -19,6 +22,7 @@ namespace SRVR.Components
 
         private Vacuumable held;
         private Vacuumable potentialHeld;
+        private bool shouldHaveHeld;
 
         private List<Vacuumable> allPotentialHelds = new List<Vacuumable>();
 
@@ -44,6 +48,8 @@ namespace SRVR.Components
         }
         public void OnDisable()
         {
+            Drop();
+
             skeletonAction.onChange -= OnSkeletonChanged;
             grabAction.onChange -= OnGrabActionChanged;
         }
@@ -53,10 +59,13 @@ namespace SRVR.Components
             if (!held)
                 return;
 
+            shouldHaveHeld = false;
+            HandManager.Instance.heldVacuumables.Remove(held); // done here to prevent infinite loop
             held.release();
             if (withVelocity)
                 held.body.velocity = velocity;
 
+            RefreshFingersNeeded();
             nonZeroVelocity = false;
             velocity = Vector3.zero;
             lastPos = Vector3.zero;
@@ -66,6 +75,7 @@ namespace SRVR.Components
             if (velocity.magnitude >= 3)
                 held.Launch(Vacuumable.LaunchSource.PLAYER);
 
+            allPotentialHelds.RemoveAll(x => x == null);
             held = null;
             SetHeldRad(0);
         }
@@ -100,6 +110,23 @@ namespace SRVR.Components
             }
             else
             {
+                if (shouldHaveHeld) // make sure it doesn't break if held object gets destroyed
+                {
+                    shouldHaveHeld = false;
+
+                    allPotentialHelds.RemoveAll(x => x == null);
+
+                    RefreshFingersNeeded();
+                    nonZeroVelocity = false;
+                    velocity = Vector3.zero;
+                    lastPos = Vector3.zero;
+                    moveTime = 0.0f;
+                    moveStartPos = Vector3.zero;
+
+                    held = null;
+                    SetHeldRad(0);
+                }
+
                 // if NOTHING is in the hand trigger, distance grab may commence
                 // if there's no potential held currently, but there can be, set it to that
                 // if potential held is not a valid potential held, set it to null (prevents stale references)
@@ -193,13 +220,20 @@ namespace SRVR.Components
                         return;
                 }
 
+                potentialHeld.GetComponentInChildren<FashionPod>()?.fashionJoint?.Destroy();
+
+                shouldHaveHeld = true;
                 held = potentialHeld;
                 potentialHeld = null;
 
+                if (!HandManager.Instance.heldVacuumables.ContainsKey(held) && held.isHeld())
+                    HandManager.Instance.vacuumer.DropAllVacced();
+                held.release();
                 Patch_Vacuumable.doNotParent = true;
                 held.hold();
+                HandManager.Instance.heldVacuumables[held] = this;
 
-                float radius = PhysicsUtil.RadiusOfObject(GameContext.Instance.LookupDirector.GetPrefab(held.identifiable.id));
+                float radius = PhysicsUtil.RadiusOfObject(GameContext.Instance.LookupDirector.GetPrefab(held.identifiable.id)) * originScaler;
                 SetHeldRad(radius);
                 held.transform.SetParent(origin, true);
 
@@ -225,10 +259,7 @@ namespace SRVR.Components
             if (vacuumable == null)
                 return;
 
-            // ensure that you don't just magnetize items if you already have fingers/action down
-            fingersNeeded = skeletonAction.GetFingerCurls().Count(x => x >= 0.5) + 2;
-            needsExtraFingers = fingersNeeded > 2;
-            grabActionNeedsRefresh = grabAction.axis > 0.5f;
+            RefreshFingersNeeded();
 
             potentialHeld = vacuumable;
             allPotentialHelds.Add(vacuumable);
@@ -246,10 +277,18 @@ namespace SRVR.Components
             }
         }
 
+        private void RefreshFingersNeeded()
+        {
+            // ensure that you don't just magnetize items if you already have fingers/action down
+            fingersNeeded = skeletonAction.GetFingerCurls().Count(x => x >= 0.5) + 2;
+            needsExtraFingers = fingersNeeded > 2;
+            grabActionNeedsRefresh = grabAction.axis > 0.5f;
+        }
+
         private void SetHeldRad(float rad) // tries and usually fails to prevent floating
         {
             if (rad == 0)
-                origin.localPosition = new Vector3(1f, origin.localPosition.y, origin.localPosition.z);
+                origin.localPosition = new Vector3(originScaler, origin.localPosition.y, origin.localPosition.z);
             else
                 origin.localPosition = new Vector3(rad, origin.localPosition.y, origin.localPosition.z);
         }

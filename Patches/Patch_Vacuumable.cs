@@ -13,6 +13,18 @@ namespace SRVR.Patches
         public static bool doNotParent = false;
         public static Dictionary<Vacuumable, Vector3> originalScale = new Dictionary<Vacuumable, Vector3>();
 
+        [HarmonyPatch("isCaptive")]
+        [HarmonyPostfix]
+        public static void IsCaptivePostfix(Vacuumable __instance, ref bool __result) => __result = __result || (HandManager.Instance?.heldVacuumables?.ContainsKey(__instance) ?? false);
+
+        [HarmonyPatch("SetCaptive")]
+        [HarmonyPrefix]
+        public static void SetCaptivePrefix(Vacuumable __instance, Joint toJoint)
+        {
+            if (toJoint == null && HandManager.Instance.heldVacuumables.TryGetValue(__instance, out PickupVacuumable pickuper))
+                pickuper.Drop(false);
+        }
+
         [HarmonyPatch("SetHeld")]
         [HarmonyPrefix]
         public static void SetHeldPrefix(Vacuumable __instance, bool held)
@@ -44,6 +56,7 @@ namespace SRVR.Patches
                 __instance.body.constraints = RigidbodyConstraints.None;
 
                 originalScale.Remove(__instance); // not technically needed, but for the sake of not leaking memory, this good
+                HandManager.Instance.heldVacuumables.Remove(__instance);
             }
             doNotParent = false;
         }

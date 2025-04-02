@@ -17,6 +17,38 @@
          "skeleton" : [],
          "sources" : []
       },
+      "/actions/global" : {
+         "skeleton" : [
+            {
+               "output" : "/actions/global/in/pose_left",
+               "path" : "/user/hand/left/input/skeleton/left"
+            },
+            {
+               "output" : "/actions/global/in/pose_right",
+               "path" : "/user/hand/right/input/skeleton/right"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/global/in/grab_left"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "pull" : {
+                     "output" : "/actions/global/in/grab_right"
+                  }
+               },
+               "mode" : "trigger",
+               "path" : "/user/hand/right/input/trigger"
+            }
+         ]
+      },
       "/actions/platformer" : {
          "chords" : [],
          "haptics" : [],
@@ -26,18 +58,18 @@
       },
       "/actions/slimecontrols" : {
          "chords" : [],
-         "haptics" : [],
-         "poses" : [],
-         "skeleton" : [
+         "haptics" : [
             {
-               "output" : "/actions/slimecontrols/in/pose_left",
-               "path" : "/user/hand/left/input/skeleton/left"
+               "output" : "/actions/slimecontrols/out/vibration",
+               "path" : "/user/hand/left/output/haptic"
             },
             {
-               "output" : "/actions/slimecontrols/in/pose_right",
-               "path" : "/user/hand/right/input/skeleton/right"
+               "output" : "/actions/slimecontrols/out/vibration",
+               "path" : "/user/hand/right/output/haptic"
             }
          ],
+         "poses" : [],
+         "skeleton" : [],
          "sources" : [
             {
                "inputs" : {
@@ -110,6 +142,9 @@
             },
             {
                "inputs" : {
+                  "click" : {
+                     "output" : "/actions/slimecontrols/in/pulse"
+                  },
                   "position" : {
                      "output" : "/actions/slimecontrols/in/look"
                   }
@@ -132,7 +167,7 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/slimecontrols/in/pulse"
+                     "output" : "/actions/slimecontrols/in/nextslot"
                   }
                },
                "mode" : "button",
@@ -141,7 +176,10 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/slimecontrols/in/interact"
+                     "output" : "/actions/slimecontrols/in/map"
+                  },
+                  "long" : {
+                     "output" : "/actions/slimecontrols/in/pause"
                   }
                },
                "mode" : "button",
@@ -150,7 +188,10 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/slimecontrols/in/map"
+                     "output" : "/actions/slimecontrols/in/gadgetmode"
+                  },
+                  "long" : {
+                     "output" : "/actions/slimecontrols/in/toggle_vacgun"
                   }
                },
                "mode" : "button",
@@ -159,7 +200,7 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/slimecontrols/in/nextslot"
+                     "output" : "/actions/slimecontrols/in/prevslot"
                   }
                },
                "mode" : "button",
@@ -168,7 +209,7 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/slimecontrols/in/prevslot"
+                     "output" : "/actions/slimecontrols/in/interact"
                   },
                   "pull" : {
                      "output" : "/actions/slimecontrols/in/grab_left"
@@ -176,6 +217,95 @@
                },
                "mode" : "trigger",
                "path" : "/user/hand/left/input/trigger"
+            }
+         ]
+      },
+      "/actions/ui" : {
+         "chords" : [],
+         "haptics" : [],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {
+                  "scroll" : {
+                     "output" : "/actions/ui/in/scroll"
+                  }
+               },
+               "mode" : "scroll",
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/ui/in/next_tab"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/ui/in/prev_tab"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/ui/in/submit"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/a"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/ui/in/cancel"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/ui/in/alt_submit"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/a"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/ui/in/close"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/b"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/ui/in/navigate"
+                  }
+               },
+               "mode" : "joystick",
+               "path" : "/user/hand/right/input/thumbstick"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/ui/in/navigate"
+                  }
+               },
+               "mode" : "joystick",
+               "path" : "/user/hand/left/input/thumbstick"
             }
          ]
       }

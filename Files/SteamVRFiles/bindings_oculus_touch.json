@@ -38,17 +38,17 @@
           }
         },
         {
-            "inputs" : {
-				"click" : {
-					"output" : "/actions/slimecontrols/in/shoot"
-				},
-				"pull" : {
-					"output" : "/actions/slimecontrols/in/grab_right"
-				}
-			},
-			"mode" : "trigger",
-			"path" : "/user/hand/right/input/trigger",
-			"parameters": {}
+          "path": "/user/hand/right/input/trigger",
+          "mode": "trigger",
+          "parameters": {},
+          "inputs": {
+            "click": {
+              "output": "/actions/slimecontrols/in/shoot"
+            },
+            "pull": {
+              "output": "/actions/slimecontrols/in/grab_right"
+            }
+          }
         },
         {
           "path": "/user/hand/left/input/grip",
@@ -68,12 +68,12 @@
           "mode": "trigger",
           "parameters": {},
           "inputs": {
-			"click" : {
-				"output" : "/actions/slimecontrols/in/prevslot"
-			},
-			"pull" : {
-				"output" : "/actions/slimecontrols/in/grab_left"
-			}
+            "click": {
+              "output": "/actions/slimecontrols/in/prevslot"
+            },
+            "pull": {
+              "output": "/actions/slimecontrols/in/grab_left"
+            }
           }
         },
         {
@@ -140,16 +140,7 @@
           }
         }
       ],
-		"skeleton": [
-			{
-				"output" : "/actions/slimecontrols/in/pose_left",
-				"path" : "/user/hand/left/input/skeleton/left"
-			},
-			{
-				"output" : "/actions/slimecontrols/in/pose_right",
-				"path" : "/user/hand/right/input/skeleton/right"
-			}
-		]
+      "skeleton": []
     }
   },
   "controller_type": "oculus_touch",
