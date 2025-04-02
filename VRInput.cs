@@ -58,8 +58,9 @@ namespace SRVR
             switch (Mode)
             {
                 case SRInput.InputMode.DEFAULT:
-                    UpdateLeftStickWithValue(SteamVR_Actions.slimecontrols.move.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
-                    UpdateRightStickWithValue(SteamVR_Actions.slimecontrols.look.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
+                    Vector2 move = SteamVR_Actions.slimecontrols.move.GetAxis(SteamVR_Input_Sources.Any);
+                    SRInput.Actions.horizontal.UpdateWithValue(move.x, updateTick, deltaTime);
+                    SRInput.Actions.vertical.UpdateWithValue(move.y, updateTick, deltaTime);
 
                     SRInput.Actions.attack.UpdateWithValue(SteamVR_Actions.slimecontrols.shoot.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
                     SRInput.Actions.vac.UpdateWithValue(SteamVR_Actions.slimecontrols.vac.GetAxis(SteamVR_Input_Sources.Any), updateTick, deltaTime);
