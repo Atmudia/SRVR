@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRVR", "SRVR.csproj", "{B70739AA-283A-4F2E-A2A6-F3EAE83D7E3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRVR", "SRVR\SRVR.csproj", "{4B4106B3-210C-4B23-8E65-0902327B3677}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRVRInstaller", "SRVRInstaller\SRVRInstaller.csproj", "{FF9B0851-102C-495A-BD69-758F6DB8919B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B70739AA-283A-4F2E-A2A6-F3EAE83D7E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B70739AA-283A-4F2E-A2A6-F3EAE83D7E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B70739AA-283A-4F2E-A2A6-F3EAE83D7E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B70739AA-283A-4F2E-A2A6-F3EAE83D7E3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B4106B3-210C-4B23-8E65-0902327B3677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B4106B3-210C-4B23-8E65-0902327B3677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B4106B3-210C-4B23-8E65-0902327B3677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B4106B3-210C-4B23-8E65-0902327B3677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF9B0851-102C-495A-BD69-758F6DB8919B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF9B0851-102C-495A-BD69-758F6DB8919B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF9B0851-102C-495A-BD69-758F6DB8919B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF9B0851-102C-495A-BD69-758F6DB8919B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

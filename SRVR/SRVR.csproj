@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.props" Condition="Exists('packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B70739AA-283A-4F2E-A2A6-F3EAE83D7E3F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SRVR</RootNamespace>
+    <AssemblyName>SRVR</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Components\AmmoSlotTouchUI.cs" />
+    <Compile Include="Components\HandManager.cs" />
+    <Compile Include="Components\HUDTouchBounds.cs" />
+    <Compile Include="Components\PediaInteract.cs" />
+    <Compile Include="Components\PickupVacuumable.cs" />
+    <Compile Include="Components\PosHand.cs" />
+    <Compile Include="Components\PosHMD.cs" />
+    <Compile Include="Components\UIPositioner.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="Extension.cs" />
+    <Compile Include="Files\fist_Pose.cs" />
+    <Compile Include="Files\relaxed_Pose.cs" />
+    <Compile Include="Patches\Patch_UI.cs" />
+    <Compile Include="Patches\Patch_LoadingUI.cs" />
+    <Compile Include="Patches\Patch_RecenterableScroll.cs" />
+    <Compile Include="Patches\Patch_Vacuumable.cs" />
+    <Compile Include="Patches\Patch_vp_Controller.cs" />
+    <Compile Include="Patches\Patch_vp_FPWeapon.cs" />
+    <Compile Include="Patches\Patch_QuicksilverEnergyGenerator.cs" />
+    <Compile Include="Patches\Patch_RanchHouseUI.cs" />
+    <Compile Include="Patches\Patch_Input.cs" />
+    <Compile Include="Patches\Patch_UIDetector.cs" />
+    <Compile Include="Patches\Patch_vp_FPInput.cs" />
+    <Compile Include="Patches\Patch_WeaponVacuum.cs" />
+    <Compile Include="Patches\Patch_SlimeSubbehaviours.cs" />
+    <Compile Include="Patches\UICatcher.cs" />
+    <Compile Include="VRDeathHandler.cs" />
+    <Compile Include="VRInput.cs" />
+    <Compile Include="VRInstaller.cs" />
+    <Compile Include="VRManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
+    <Publicize Include="SRML" IncludeCompilerGeneratedMembers="false" />
+    <Reference Include="0Harmony">
+      <HintPath>.\Libs\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>.\Libs\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>.\Libs\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>.\Libs\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="InControl">
+      <HintPath>.\Libs\InControl.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML">
+      <HintPath>.\Libs\SRML.dll</HintPath>
+    </Reference>
+    <Reference Include="SteamVR">
+      <HintPath>.\Files\Managed\SteamVR.dll</HintPath>
+    </Reference>
+    <Reference Include="SteamVR_Actions">
+      <HintPath>.\Files\Managed\SteamVR_Actions.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>.\Libs\System.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>.\Libs\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.Management">
+      <HintPath>.\Files\Managed\Unity.XR.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.OpenVR">
+      <HintPath>.\Files\Managed\Unity.XR.OpenVR.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>.\Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>.\Libs\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>.\Libs\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>.\Libs\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>.\Libs\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>.\Files\Managed\UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubsystemsModule">
+      <HintPath>.\Libs\UnityEngine.SubsystemsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>.\Libs\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>.\Libs\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>.\Libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>.\Libs\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>.\Libs\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>.\Libs\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="modinfo.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="newvrhands" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Files\Managed\SteamVR.dll" />
+    <EmbeddedResource Include="Files\Managed\SteamVR_Actions.dll" />
+    <EmbeddedResource Include="Files\Managed\Unity.XR.Management.dll" />
+    <EmbeddedResource Include="Files\Managed\Unity.XR.OpenVR.dll" />
+    <EmbeddedResource Include="Files\Managed\UnityEngine.SpatialTracking.dll" />
+    <EmbeddedResource Include="Files\Managed\Valve.Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Files\Plugins\openvr_api.dll" />
+    <EmbeddedResource Include="Files\Plugins\XRSDKOpenVR.dll" />
+    <EmbeddedResource Include="Files\SteamVRFiles\actions.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\bindings_holographic_controller.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\bindings_knuckles.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\bindings_logitech_stylus.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\bindings_oculus_touch.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\bindings_vive_controller.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\bindings_vive_cosmos_controller.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_holographic_hmd.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_index_hmd.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_rift.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_vive.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_vive_cosmos.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_vive_pro.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\binding_vive_tracker_camera.json" />
+    <EmbeddedResource Include="Files\SteamVRFiles\OpenVRSettings.asset" />
+    <EmbeddedResource Include="Files\UnitySubsystems\UnitySubsystemsManifest.json" />
+    <EmbeddedResource Include="Files\SRVRInstaller.exe" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.props'))" />
+    <Error Condition="!Exists('packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.targets'))" />
+  </Target>
+  <Import Project="packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.targets" Condition="Exists('packages\Krafs.Publicizer.2.2.1\build\Krafs.Publicizer.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>
