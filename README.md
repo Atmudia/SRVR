@@ -9,6 +9,7 @@ SRVR is a modification that brings full Virtual Reality support to Slime Rancher
 - Realistic VR controls for all game mechanics
 - Seamless integration with the base game
 - Support for VR motion controls and tracking
+- Custom VR death handling system
 - Optimized performance for VR
 
 ## Prerequisites
@@ -35,8 +36,18 @@ SRVR is a modification that brings full Virtual Reality support to Slime Rancher
 3. The game will automatically detect your VR headset and initialize VR mode.
 4. Use your VR controllers to interact with the game world:
    - Move using smooth turn or snap turn VR locomotion.
-   - Use your hands to interact with slimes and objects.
+   - Use your vacpack and hands to interact with slimes and objects.
    - Access your inventory and vacpack naturally in VR.
+   - Grab slimes/food and throw them.
+
+## VR Configuration
+
+SRVR includes several configurable VR settings which are adjustable in Other Tab in Options:
+
+- **Switch Hands** *(default: false)* – Allows switching primary hand controls.
+- **Snap Turn** *(default: false)* – Enables snap turning instead of smooth turning.
+- **Snap Turn Angle** *(default: 45°)* – Adjusts the snap turn angle.
+- **Distance Grab** *(default: true)* – Enables grabbing objects from a distance.
 
 ## Known Issues
 
@@ -70,3 +81,4 @@ If you need help or encounter issues:
 
 ### 1.0 - Initial Release
 - First official release of SRVR.
+
