@@ -41,43 +41,11 @@ namespace SRVR.Patches
         [HarmonyPatch(typeof(DLCManageUI), nameof(DLCManageUI.Awake)), HarmonyPrefix]
         public static void Awake(DLCManageUI __instance) => __instance.gameObject.RemoveComponent<Canvas>();
 
-        public static bool IsIntialized = false;
         [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.SetupVideoSettings)), HarmonyPostfix]
         public static void SetupVideoSettings(OptionsUI __instance)
         {
             __instance.ambientOcclusionToggle.transform.parent.gameObject.SetActive(false);
             __instance.fovSlider.transform.parent.gameObject.SetActive(false);
-            // __instance.overscanFovRow.GetComponentInChildren<XlateText>().SetKey("b.snap_turn_angle");
-            // var sliderEvent = __instance.overscanSlider.onValueChanged = new Slider.SliderEvent();
-            // __instance.overscanSlider.minValue = 30;
-            // __instance.overscanSlider.maxValue = 90;
-            // __instance.overscanSlider.value = (VRConfig.SNAP_TURN_ANGLE);
-            //
-            // sliderEvent.AddListener(value =>
-            // {
-            //     EntryPoint.ConsoleInstance.Log("            ");
-            //     foreach (var stackFrame in new StackTrace().GetFrames())
-            //     {
-            //         var methodBase = stackFrame.GetMethod();
-            //         EntryPoint.ConsoleInstance.Log($"Method Name: {methodBase.Name}, {methodBase.DeclaringType.Name}");
-            //     }
-            //     int closest = PresetSnapTurnAngles[0];
-            //     foreach (int angle in PresetSnapTurnAngles)
-            //     {
-            //         if (Mathf.Abs(value - angle) < Mathf.Abs(value - closest))
-            //         {
-            //             closest = angle;
-            //         }
-            //     }
-            //     VRConfig.SNAP_TURN_ANGLE = closest; // Snap the UI slider to the closest preset
-            //     __instance.overscanSlider.SetValueWithoutNotify(closest);
-            //     __instance.overscanValText.text = closest.ToString();
-            //     // VRConfig.SaveConfig();
-            //    
-            // });
-            IsIntialized = true;
-
-            // }
         }
         [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.SetupOtherOptions)), HarmonyPostfix]
         public static void SetupOtherOptions(OptionsUI __instance)
