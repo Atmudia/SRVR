@@ -45,10 +45,57 @@ namespace SRVR.Patches
             controllers.SetParent(simplePlayer.transform, false);
             controllers.localPosition = Vector3.zero;
 
-            // atmudia will replace with new system?
-            // when/if that happens, make sure to account for either non-dominant hand, and one-handed setups
-            LineRenderer addComponent = leftController.gameObject.AddComponent<LineRenderer>();
-            addComponent.gameObject.AddComponent<LaserPointer>();
+            UIDetector detectorBase = simplePlayer.GetComponentInChildren<UIDetector>();
+
+            GameObject rightUiLaser = new GameObject("UI Laser")
+            {
+                transform =
+                {
+                    parent = rightController,
+                    position = rightController.Find("Hand/laser origin").position,
+                    rotation = rightController.Find("Hand/laser origin").rotation
+                }
+            };
+            rightUiLaser.AddComponent<LineRenderer>();
+            rightUiLaser.AddComponent<LaserPointer>();
+
+            UIDetector rightControllerDetector = rightUiLaser.gameObject.AddComponent<UIDetector>();
+            rightControllerDetector.activationGuiPrefab = detectorBase.activationGuiPrefab;
+            rightControllerDetector.gadgetModeActivationGuiPrefab = detectorBase.gadgetModeActivationGuiPrefab;
+            rightControllerDetector.slimeGateActivationGuiPrefab = detectorBase.slimeGateActivationGuiPrefab;
+            rightControllerDetector.slimeGateNoKeyActivationGuiPrefab = detectorBase.slimeGateNoKeyActivationGuiPrefab;
+            rightControllerDetector.puzzleGateActivationGuiPrefab = detectorBase.puzzleGateActivationGuiPrefab;
+            rightControllerDetector.puzzleGateLockedActivationGuiPrefab = detectorBase.puzzleGateLockedActivationGuiPrefab;
+            rightControllerDetector.treasurePodActivationGuiPrefab = detectorBase.treasurePodActivationGuiPrefab;
+            rightControllerDetector.treasurePodInsufKeyActivationGuiPrefab = detectorBase.treasurePodInsufKeyActivationGuiPrefab;
+            rightControllerDetector.treasurePodNoKeyActivationGuiPrefab = detectorBase.treasurePodNoKeyActivationGuiPrefab;
+            rightControllerDetector.interactDistance = detectorBase.interactDistance;
+
+            GameObject leftUiLaser = new GameObject("UI Laser")
+            {
+                transform =
+                {
+                    parent = leftController,
+                    position = rightController.Find("Hand/laser origin").position,
+                    rotation = rightController.Find("Hand/laser origin").rotation
+                }
+            };
+            leftUiLaser.AddComponent<LineRenderer>();
+            leftUiLaser.AddComponent<LaserPointer>();
+
+            UIDetector leftControllerDetector = leftUiLaser.gameObject.AddComponent<UIDetector>();
+            leftControllerDetector.activationGuiPrefab = detectorBase.activationGuiPrefab;
+            leftControllerDetector.gadgetModeActivationGuiPrefab = detectorBase.gadgetModeActivationGuiPrefab;
+            leftControllerDetector.slimeGateActivationGuiPrefab = detectorBase.slimeGateActivationGuiPrefab;
+            leftControllerDetector.slimeGateNoKeyActivationGuiPrefab = detectorBase.slimeGateNoKeyActivationGuiPrefab;
+            leftControllerDetector.puzzleGateActivationGuiPrefab = detectorBase.puzzleGateActivationGuiPrefab;
+            leftControllerDetector.puzzleGateLockedActivationGuiPrefab = detectorBase.puzzleGateLockedActivationGuiPrefab;
+            leftControllerDetector.treasurePodActivationGuiPrefab = detectorBase.treasurePodActivationGuiPrefab;
+            leftControllerDetector.treasurePodInsufKeyActivationGuiPrefab = detectorBase.treasurePodInsufKeyActivationGuiPrefab;
+            leftControllerDetector.treasurePodNoKeyActivationGuiPrefab = detectorBase.treasurePodNoKeyActivationGuiPrefab;
+            leftControllerDetector.interactDistance = detectorBase.interactDistance;
+
+            Object.Destroy(detectorBase);
 
             GameObject pedia = PediaInteract.pediaModel.Instantiate();
             pedia.transform.SetParent(scaler2.transform, false);
@@ -170,7 +217,6 @@ namespace SRVR.Patches
             HandManager.Instance.UI = hudUITransform.gameObject;
             HandManager.Instance.FPWeapon = scaler;
             HandManager.Instance.vacuumer = simplePlayer.GetComponentInChildren<WeaponVacuum>();
-            HandManager.Instance.FPInteract = leftController; // will need to be properly modified with new interact system if such exists
             HandManager.Instance.dominantHand = VRConfig.SWITCH_HANDS ? UnityEngine.XR.XRNode.LeftHand : UnityEngine.XR.XRNode.RightHand;
             HandManager.Instance.UpdateHandStates();
         }
@@ -180,15 +226,18 @@ namespace SRVR.Patches
         public Transform controller;
         public LineRenderer lineRenderer;
 
+        private PlayerState playerState;
+
         public void Awake()
         {
-            this.lineRenderer = this.gameObject.GetComponent<LineRenderer>();
+            playerState = SceneContext.Instance.PlayerState;
+            lineRenderer = gameObject.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.01f;
             lineRenderer.endWidth = 0.01f;
-            this.controller = this.transform;
+            controller = transform;
         }
 
-        void Update()
+        public void Update()
         {
             // Set the laser start point at the controller
             lineRenderer.SetPosition(0, controller.position);
@@ -196,14 +245,16 @@ namespace SRVR.Patches
             Vector3 startPoint = controller.position;
             Vector3 endPoint = controller.position + controller.forward;
 
-            if (Physics.CapsuleCast(startPoint, endPoint, 0.3f, controller.forward, out var hit, 10))
+            // this looks REALLY cursed but. this is how the game does it. genuinely.
+            if (Physics.CapsuleCast(startPoint, endPoint, 0.3f, controller.forward, out var hit, 3) && (hit.collider.GetComponent<UIActivator>()
+                || hit.collider.GetComponent<SlimeGateActivator>() || hit.collider.GetComponent<TreasurePod>() || hit.collider.GetComponent<TechActivator>() != null ||
+                    hit.collider.GetComponentInParent<GadgetInteractor>() != null || (playerState.InGadgetMode && hit.collider.GetComponentInParent<GadgetSite>())))
             {
-                lineRenderer.SetPosition(1, hit.point);
+                lineRenderer.enabled = true;
+                lineRenderer.SetPosition(1, hit.collider.transform.position);
             }
             else
-            {
-                lineRenderer.SetPosition(1, controller.position + controller.forward * 10f);
-            }
+                lineRenderer.enabled = false;
         }
     }
 }

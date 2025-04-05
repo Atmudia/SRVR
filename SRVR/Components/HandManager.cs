@@ -23,7 +23,6 @@ namespace SRVR.Components
 
         public WeaponVacuum vacuumer;
         public Transform FPWeapon;
-        public Transform FPInteract;
         public GameObject UI;
 
         public XRNode dominantHand;
