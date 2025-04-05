@@ -27,13 +27,13 @@ namespace SRVR
         {
             if (locked)
             {
-                ShrinkController(HandManager.Instance.FPWeapon.parent);
-                ShrinkController(HandManager.Instance.FPInteract);
+                ShrinkController(HandManager.Instance.leftController.transform);
+                ShrinkController(HandManager.Instance.rightController.transform);
             }
             else
             {
-                GrowController(HandManager.Instance.FPWeapon.parent);
-                GrowController(HandManager.Instance.FPInteract);
+                GrowController(HandManager.Instance.leftController.transform);
+                GrowController(HandManager.Instance.rightController.transform);
             }
         }
     }
