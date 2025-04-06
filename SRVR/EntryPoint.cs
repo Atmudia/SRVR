@@ -123,6 +123,10 @@ namespace SRVR
             
             SRCallbacks.OnMainMenuLoaded += menu =>
             {
+                var deviceButtonIconDict = GameContext.Instance.UITemplates.deviceButtonIconDict;
+                deviceButtonIconDict[InputDeviceStyle.XboxOne]["Trigger"] = SRLookup.MergeSpritesWithPivots(deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftTrigger"], deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightTrigger"]).CreateSprite();
+                deviceButtonIconDict[InputDeviceStyle.XboxOne]["Grip"] = SRLookup.MergeSpritesWithPivots(deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftBumper"], deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightBumper"]).CreateSprite();
+
                 var fpsCamera = GameObject.Find("FPSCamera");
                 
                 var camera = new GameObject("Camera")

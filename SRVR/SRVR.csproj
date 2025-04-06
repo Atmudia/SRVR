@@ -64,6 +64,7 @@
     <Compile Include="Patches\Patch_WeaponVacuum.cs" />
     <Compile Include="Patches\Patch_SlimeSubbehaviours.cs" />
     <Compile Include="Patches\UICatcher.cs" />
+    <Compile Include="SRLookup.cs" />
     <Compile Include="VRDeathHandler.cs" />
     <Compile Include="VRInput.cs" />
     <Compile Include="VRInstaller.cs" />

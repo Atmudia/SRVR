@@ -140,9 +140,12 @@ namespace SRVR
         }
         public enum SteamVRLocalizedOrigin
         {
+            None,
             // Generic Hand Assignments
             LeftHand,
             RightHand,
+            Trigger,
+            Grip,
 
             // Oculus Touch Controllers
             LeftIndexTrigger,
@@ -182,7 +185,6 @@ namespace SRVR
             
             if (GetLocalizedOriginEnum(inputSource, out var localizedOrigin))
             {
-                EntryPoint.ConsoleInstance.Log($"GetVRButton: {controllerType}, {localizedOrigin}");
                 switch (localizedOrigin)
                 {
                     case SteamVRLocalizedOrigin.AButton:
@@ -203,6 +205,11 @@ namespace SRVR
                     case SteamVRLocalizedOrigin.YButton:
                     {
                         result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action4"];
+                        break;
+                    }
+                    case SteamVRLocalizedOrigin.Trigger:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Trigger"];
                         break;
                     }
                     case SteamVRLocalizedOrigin.RightTrigger:
@@ -229,6 +236,11 @@ namespace SRVR
                         result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftStickMove"];
                         break;
                     }
+                    case SteamVRLocalizedOrigin.Grip:
+                    {
+                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Grip"];
+                        break;
+                    }
                     case SteamVRLocalizedOrigin.LeftGrip:
                     {
                         result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightBumper"];
@@ -239,6 +251,7 @@ namespace SRVR
                         result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftBumper"];
                         break;
                     }
+                  
                     
                     case SteamVRLocalizedOrigin.LeftHand:
                     case SteamVRLocalizedOrigin.RightHand:
@@ -246,6 +259,7 @@ namespace SRVR
                     case SteamVRLocalizedOrigin.RightMenuButton:
                     case SteamVRLocalizedOrigin.LeftMenu:
                     case SteamVRLocalizedOrigin.RightMenu:
+                    case SteamVRLocalizedOrigin.None:
                     default:
                     {
                         result = null;
@@ -255,10 +269,10 @@ namespace SRVR
 
                 return true;
             }
-
-            EntryPoint.ConsoleInstance.Log("Can't parsed localized origin : " +localizedOrigin);
+            
+            EntryPoint.ConsoleInstance.Log($"Can't parsed localized origin: {controllerType}, {inputSource} " );
             result = uiTemplates.unknownButtonIcon;
-            return false;
+            return true;
         }
 
     }
