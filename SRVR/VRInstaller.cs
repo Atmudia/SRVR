@@ -210,7 +210,7 @@ namespace SRVR
                 typeof(GameController).GetMethod("OnGUI", AccessTools.all) != null)
             {
                 var confirmDialog = uiTemplates.CreateConfirmDialog(
-                    "Do you want to install patches to base game files to make the game more performance? This will disable SRML Console",
+                    "Do you want to install patches to base game files to make the game more performance? This will disable SRML Console. This may cause Anti-Virus False Flag",
                     () =>
                     {
                         _applyPatches = true;

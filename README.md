@@ -22,11 +22,12 @@ SRVR is a modification that brings full Virtual Reality support to Slime Rancher
 ## Installation
 
 1. Ensure Slime Rancher is installed and updated to the latest version.
-2. Install SRML (Slime Rancher Mod Loader).
+2. Install SRML.
 3. Install SteamVR if you haven't already.
-4. Download the latest release of SRVR from the releases page.
+4. Download the latest release of SRVR from the releases page or via nexusmods.
 5. Copy the DLL file to your SRML mods directory.
 6. Launch the game *without* SteamVR. If you have the VR Playground DLC installed, the game will prompt you about its uninstallation. It will also ask whether you want to optimize the base game for VR (**you do not need to do this**). A console program will then run to patch the game—let it complete before exiting.
+   <br>**Warning the optimize base game can cause anti-virus to false flag installer**
 7. Relaunch the game with SteamVR enabled.
 
 ## Usage
@@ -39,6 +40,8 @@ SRVR is a modification that brings full Virtual Reality support to Slime Rancher
    - Use your vacpack and hands to interact with slimes and objects.
    - Access your inventory and vacpack naturally in VR.
    - Grab slimes/food and throw them.
+
+To launch game without vr mod, use *-novr* argument when launching the game
 
 ## VR Configuration
 
@@ -76,6 +79,9 @@ If you need help or encounter issues:
 2. Create a new issue on GitHub with a detailed description of your problem.
 3. Include your system specifications and VR hardware details in your report.
 4. Join the [Flat2VR Discord](http://flat2vr.com/) for additional support.
+
+## Video Showcase
+Check [AG4VR's video](https://www.youtube.com/watch?v=9egH_BYz-pU) to check how the vr mod looks in game.
 
 ## Version History
 
