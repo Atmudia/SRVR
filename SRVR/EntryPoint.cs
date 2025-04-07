@@ -70,6 +70,7 @@ namespace SRVR
             TranslationPatcher.AddUITranslation("b.distance_grab", "Distance Grab");
             TranslationPatcher.AddUITranslation("b.snap_turn_angle", "Snap Turn Angle");
             TranslationPatcher.AddUITranslation("b.pedia_toggle", "Toggle Pedia on Vacpack");
+            TranslationPatcher.AddUITranslation("b.vr", "VR");
 
             if (EnabledVR)
             {
@@ -97,8 +98,8 @@ namespace SRVR
             }
             else
             {
-                HarmonyInstance.Patch(AccessTools.Method(typeof(OptionsUI), nameof(OptionsUI.SetupOtherOptions)), postfix: new HarmonyMethod(typeof(Patch_UI), nameof(Patch_UI.SetupOtherOptions)));
-                HarmonyInstance.Patch(AccessTools.Method(typeof(OptionsUI), nameof(OptionsUI.SetupVertNav)), prefix: new HarmonyMethod(typeof(Patch_UI), nameof(Patch_UI.SetupVertNav)));
+                HarmonyInstance.Patch(AccessTools.Method(typeof(OptionsUI), nameof(OptionsUI.SetupOptionsUI)), prefix: new HarmonyMethod(typeof(Patch_UI), nameof(Patch_UI.SetupOptionsUI)));
+                HarmonyInstance.Patch(AccessTools.Method(typeof(OptionsUI), nameof(OptionsUI.DeselectAll)), prefix: new HarmonyMethod(typeof(Patch_UI), nameof(Patch_UI.DeselectAll)));
                 return;
             }
 

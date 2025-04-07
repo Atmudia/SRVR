@@ -46,11 +46,27 @@ namespace SRVR.Patches
         {
             __instance.ambientOcclusionToggle.transform.parent.gameObject.SetActive(false);
             __instance.fovSlider.transform.parent.gameObject.SetActive(false);
+
         }
-        [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.SetupOtherOptions)), HarmonyPostfix]
-        public static void SetupOtherOptions(OptionsUI __instance)
+
+        public static GameObject VRPanel;
+
+        [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.SetupOptionsUI)), HarmonyPostfix]
+        public static void SetupOptionsUI(OptionsUI __instance)
         {
-            var uninstallObj = Object.Instantiate(__instance.resetProfileButton.gameObject, __instance.resetProfileButton.transform.parent);
+            var vrTab = __instance.otherTab.Instantiate(__instance.otherTab.transform.parent);
+            vrTab.name = "VRTab";
+            vrTab.GetComponentInChildren<XlateText>().SetKey("b.vr");
+            vrTab.transform.SetSiblingIndex(5);
+            var vrPanel = __instance.otherPanel.InstantiateInactive(__instance.otherPanel.transform.parent).transform.Find("MiscPanel");
+            vrPanel.parent.name = "VRPanel";
+            VRPanel = vrPanel.transform.parent.gameObject;
+            (vrTab.GetComponentInChildren<SRToggle>().onValueChanged = new Toggle.ToggleEvent()).AddListener((isOn) =>
+            {
+                __instance.DeselectAll();
+                VRPanel.SetActive(true);
+            });
+            var uninstallObj = Object.Instantiate(vrPanel.Find("ResetProfileButton").gameObject, vrPanel.Find("ResetProfileButton").parent);
             uninstallObj.GetComponentInChildren<XlateText>().SetKey("b.uninstall_srvr");
             (uninstallObj.GetComponentInChildren<Button>().onClick = new Button.ButtonClickedEvent()).AddListener(delegate
             {
@@ -70,8 +86,10 @@ namespace SRVR.Patches
 
                 });
             });
-            uninstallObj.name = "UninstallVRButton";
-            var leftHand = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
+            uninstallObj.name = "UninstallVRButton VR";
+            
+            var leftHand = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+            leftHand.name = "SwitchHandsButton VR";
             leftHand.SetSiblingIndex(7);
             leftHand.GetComponentInChildren<XlateText>().SetKey("b.switch_hands");
             var srToggleHand = leftHand.GetComponentInChildren<SRToggle>();
@@ -87,7 +105,8 @@ namespace SRVR.Patches
             });
             srToggleHand.isOn = VRConfig.SWITCH_HANDS;
             
-            var snap_turn = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
+            var snap_turn = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+            snap_turn.name = "SnapTurnButton VR";
             snap_turn.SetSiblingIndex(8);
             snap_turn.GetComponentInChildren<XlateText>().SetKey("b.snap_turn");
             var srToggleSnap = snap_turn.GetComponentInChildren<SRToggle>();
@@ -98,7 +117,10 @@ namespace SRVR.Patches
             });
             srToggleSnap.isOn = VRConfig.SNAP_TURN;
             
-            var distanceGrab = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
+            
+            var distanceGrab = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+            distanceGrab.name = "DistanceGrabButton VR";
+
             distanceGrab.SetSiblingIndex(10);
             distanceGrab.GetComponentInChildren<XlateText>().SetKey("b.distance_grab");
             var srToggleGrab = distanceGrab.GetComponentInChildren<SRToggle>();
@@ -109,7 +131,9 @@ namespace SRVR.Patches
             });
             srToggleGrab.isOn = VRConfig.DISTANCE_GRAB;
             
-            var pediaToggle = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
+            var pediaToggle = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+            pediaToggle.name = "PediaToggleButton VR";
+
             pediaToggle.SetSiblingIndex(11);
             pediaToggle.GetComponentInChildren<XlateText>().SetKey("b.pedia_toggle");
             var srTogglePedia = pediaToggle.GetComponentInChildren<SRToggle>();
@@ -124,8 +148,8 @@ namespace SRVR.Patches
             });
             srTogglePedia.isOn = VRConfig.DISTANCE_GRAB;
 
-            var snapTurnAngle = Object.Instantiate(__instance.overscanFovRow, __instance.overscanFovRow.transform.parent);
-            __instance.overscanFovRow.SetActive(false);
+            var snapTurnAngle = Object.Instantiate(vrPanel.Find("OverscanRow").gameObject, vrPanel.Find("OverscanRow").parent);
+            snapTurnAngle.name = "SnapTurnAngle VR";
             snapTurnAngle.transform.SetSiblingIndex(13);
             var slider = snapTurnAngle.GetComponentInChildren<Slider>();
             snapTurnAngle.GetComponentInChildren<XlateText>().SetKey("b.snap_turn_angle");
@@ -150,13 +174,20 @@ namespace SRVR.Patches
                
             });
             slider.value = VRConfig.SNAP_TURN_ANGLE;
-            
-           
+
+            foreach (Transform vrElements in vrPanel)
+            {
+                if (!vrElements.name.Contains(" VR"))
+                {
+                    Object.Destroy(vrElements.gameObject);
+                }
+            }
+            __instance.SetupVertNav(vrPanel.GetComponentsInChildren<Selectable>(true));
         }
 
-        [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.SetupVertNav)), HarmonyPrefix]
-        public static void SetupVertNav(OptionsUI __instance, ref Selectable[] selectables) =>  selectables = __instance.sprintHoldToggle.transform.parent.GetComponentsInChildren<Selectable>(); 
-
+        [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.DeselectAll)), HarmonyPostfix]
+        public static void DeselectAll(OptionsUI __instance) => VRPanel.Safe()?.SetActive(false);
+        
         [HarmonyPatch(typeof(DisableEffectsOnLowQuality), nameof(DisableEffectsOnLowQuality.CheckQuality)), HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> CheckQuality(IEnumerable<CodeInstruction> instructions)
         {
