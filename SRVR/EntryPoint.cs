@@ -25,6 +25,7 @@ namespace SRVR
         public static bool SNAP_TURN = false;
         public static int SNAP_TURN_ANGLE = 45;
         public static bool DISTANCE_GRAB = true;
+        public static bool PEDIA_ON_VAC = true;
         
         public static void SaveConfig()
         {
@@ -68,6 +69,7 @@ namespace SRVR
             TranslationPatcher.AddUITranslation("b.switch_hands", "Switch Hands");
             TranslationPatcher.AddUITranslation("b.distance_grab", "Distance Grab");
             TranslationPatcher.AddUITranslation("b.snap_turn_angle", "Snap Turn Angle");
+            TranslationPatcher.AddUITranslation("b.pedia_toggle", "Toggle Pedia on Vacpack");
 
             if (EnabledVR)
             {
@@ -118,7 +120,12 @@ namespace SRVR
             pediaColObj.transform.localEulerAngles = Vector3.zero;
             
             pediaModel.SetActive(false);
-            
+
+            Material lineMat = new Material(Shader.Find("Sprites/Default"));
+            lineMat.name = "line";
+            lineMat.hideFlags = HideFlags.HideAndDontSave;
+            HandManager.lineMat = lineMat;
+
             PediaInteract.pediaModel = pediaModel;
             
             SRCallbacks.OnMainMenuLoaded += menu =>

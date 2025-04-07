@@ -150,6 +150,8 @@ namespace SRVR
         }
         public static Transform InstantiateVRRig()
         {
+            Patches.Patch_vp_FPInput.HMDPosition = Vector3.zero;
+
             GameObject controllers = new GameObject("Controllers")
             {
                 transform = { localPosition = Vector3.zero }
@@ -208,6 +210,10 @@ namespace SRVR
             leftLine.startWidth = 0.005f;
             leftLine.endWidth = 0.005f;
 
+            leftLine.material = HandManager.lineMat;
+            leftLine.startColor = Color.cyan * new Color(1, 1, 1, 0);
+            leftLine.endColor = Color.cyan;
+
             PickupVacuumable leftPickuper = leftHand.AddComponent<PickupVacuumable>();
             leftPickuper.origin = leftPickupOrigin.transform;
             leftPickuper.raycastOrigin = leftHand.transform.Find("laser origin");
@@ -253,6 +259,10 @@ namespace SRVR
             rightLine.enabled = false;
             rightLine.startWidth = 0.005f;
             rightLine.endWidth = 0.005f;
+
+            rightLine.material = HandManager.lineMat;
+            rightLine.startColor = Color.cyan * new Color(1, 1, 1, 0);
+            rightLine.endColor = Color.cyan;
 
             PickupVacuumable rightPickuper = rightHand.AddComponent<PickupVacuumable>();
             rightPickuper.origin = rightPickupOrigin.transform;

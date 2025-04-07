@@ -56,7 +56,11 @@ namespace SRVR.Patches
                     rotation = rightController.Find("Hand/laser origin").rotation
                 }
             };
-            rightUiLaser.AddComponent<LineRenderer>();
+
+            LineRenderer rightLine = rightUiLaser.AddComponent<LineRenderer>();
+            rightLine.material = HandManager.lineMat;
+            rightLine.startColor = Color.cyan * new Color(1, 1, 1, 0);
+            rightLine.endColor = Color.cyan;
             rightUiLaser.AddComponent<LaserPointer>();
 
             UIDetector rightControllerDetector = rightUiLaser.gameObject.AddComponent<UIDetector>();
@@ -80,7 +84,11 @@ namespace SRVR.Patches
                     rotation = rightController.Find("Hand/laser origin").rotation
                 }
             };
-            leftUiLaser.AddComponent<LineRenderer>();
+
+            LineRenderer leftLine = leftUiLaser.AddComponent<LineRenderer>();
+            leftLine.material = HandManager.lineMat;
+            leftLine.startColor = Color.cyan * new Color(1, 1, 1, 0);
+            leftLine.endColor = Color.cyan;
             leftUiLaser.AddComponent<LaserPointer>();
 
             UIDetector leftControllerDetector = leftUiLaser.gameObject.AddComponent<UIDetector>();
@@ -104,6 +112,7 @@ namespace SRVR.Patches
             pedia.transform.localEulerAngles = new Vector3(450.6109f, 269.9038f, 57.2968f);
             pedia.SetActive(true);
             pedia.layer = LayerMask.NameToLayer("Weapon");
+            pedia.SetActive(VRConfig.PEDIA_ON_VAC);
 
             fpsCamera.Find("WeaponCamera").GetComponent<Camera>().nearClipPlane = 0.05f;
             fpsCamera.Find("WeaponCamera").GetComponent<Camera>().cullingMask = 1 << LayerMask.NameToLayer("UI");
@@ -217,6 +226,7 @@ namespace SRVR.Patches
             HandManager.Instance.UI = hudUITransform.gameObject;
             HandManager.Instance.FPWeapon = scaler;
             HandManager.Instance.vacuumer = simplePlayer.GetComponentInChildren<WeaponVacuum>();
+            HandManager.Instance.pedia = pedia;
             HandManager.Instance.dominantHand = VRConfig.SWITCH_HANDS ? UnityEngine.XR.XRNode.LeftHand : UnityEngine.XR.XRNode.RightHand;
             HandManager.Instance.UpdateHandStates();
         }
