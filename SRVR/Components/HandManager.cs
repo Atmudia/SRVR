@@ -22,10 +22,13 @@ namespace SRVR.Components
         public PickupVacuumable rightPickuper;
 
         public WeaponVacuum vacuumer;
+        public GameObject pedia;
         public Transform FPWeapon;
         public GameObject UI;
 
         public XRNode dominantHand;
+
+        public static Material lineMat;
 
         public bool vacShown = true;
         public Dictionary<Vacuumable, PickupVacuumable> heldVacuumables = new Dictionary<Vacuumable, PickupVacuumable>();

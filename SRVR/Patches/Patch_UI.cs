@@ -108,9 +108,25 @@ namespace SRVR.Patches
                 VRConfig.SaveConfig();
             });
             srToggleGrab.isOn = VRConfig.DISTANCE_GRAB;
+            
+            var pediaToggle = Object.Instantiate(__instance.sprintHoldToggle.gameObject, __instance.sprintHoldToggle.transform.parent).transform;
+            pediaToggle.SetSiblingIndex(11);
+            pediaToggle.GetComponentInChildren<XlateText>().SetKey("b.pedia_toggle");
+            var srTogglePedia = pediaToggle.GetComponentInChildren<SRToggle>();
+            (srTogglePedia.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
+            {
+                VRConfig.PEDIA_ON_VAC = arg0;
+
+                if (HandManager.Instance?.pedia)
+                    HandManager.Instance.pedia.SetActive(VRConfig.PEDIA_ON_VAC);
+
+                VRConfig.SaveConfig();
+            });
+            srTogglePedia.isOn = VRConfig.DISTANCE_GRAB;
+
             var snapTurnAngle = Object.Instantiate(__instance.overscanFovRow, __instance.overscanFovRow.transform.parent);
             __instance.overscanFovRow.SetActive(false);
-            snapTurnAngle.transform.SetSiblingIndex(12);
+            snapTurnAngle.transform.SetSiblingIndex(13);
             var slider = snapTurnAngle.GetComponentInChildren<Slider>();
             snapTurnAngle.GetComponentInChildren<XlateText>().SetKey("b.snap_turn_angle");
             var sliderEvent = slider.onValueChanged = new Slider.SliderEvent();
