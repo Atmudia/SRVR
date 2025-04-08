@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
 using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 namespace SRVR.Patches
 {
@@ -223,8 +224,20 @@ namespace SRVR.Patches
             };
         }
 
-        [HarmonyPatch(typeof(AmmoSlotUI), nameof(AmmoSlotUI.Start)), HarmonyPostfix]
-        public static void AmmoStart(AmmoSlotUI __instance) => __instance.selected.transform.localRotation = Quaternion.identity;
+        private static int lastSlot = -1;
+
+        [HarmonyPatch(typeof(AmmoSlotUI), nameof(AmmoSlotUI.Awake)), HarmonyPostfix]
+        public static void AmmoAwake(AmmoSlotUI __instance) => lastSlot = -1;
+        [HarmonyPatch(typeof(AmmoSlotUI), nameof(AmmoSlotUI.Update)), HarmonyPostfix]
+        public static void AmmoUpdate(AmmoSlotUI __instance)
+        {
+            int selectedAmmoIdx = __instance.player.Ammo.GetSelectedAmmoIdx();
+            if (lastSlot != selectedAmmoIdx)
+            {
+                __instance.selected.transform.localRotation = Quaternion.identity;
+                lastSlot = selectedAmmoIdx;
+            }
+        }
 
         public static DepthTextureMode GetDepthTextureModeAlternate()
         {
