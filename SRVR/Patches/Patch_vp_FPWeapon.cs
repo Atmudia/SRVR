@@ -105,7 +105,7 @@ namespace SRVR.Patches
 
             Object.Destroy(detectorBase);
 
-            GameObject pedia = PediaInteract.pediaModel.Instantiate();
+            GameObject pedia = EntryPoint.pediaModel.Instantiate();
             pedia.transform.SetParent(scaler2.transform, false);
             pedia.transform.localScale = Vector3.one;
             pedia.transform.localPosition = new Vector3(0.46f, -0.06f, -0.08f);

@@ -44,7 +44,8 @@ namespace SRVR
         public new static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
         public static AssetBundle VRHands = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.newvrhands"));
         public static bool EnabledVR = true;
-        
+        public static GameObject pediaModel;
+
         public EntryPoint()
         {
             VRInstaller.Install();
@@ -109,7 +110,7 @@ namespace SRVR
                 return;
             }
 
-            var pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
+            pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
             pediaModel.DontDestroyOnLoad();
             pediaModel.name = "PediaInteract";
             pediaModel.AddComponent<MeshRenderer>().material = pediaModel.GetComponent<SkinnedMeshRenderer>().material;
@@ -131,8 +132,6 @@ namespace SRVR
             lineMat.name = "line";
             lineMat.hideFlags = HideFlags.HideAndDontSave;
             HandManager.lineMat = lineMat;
-
-            PediaInteract.pediaModel = pediaModel;
             
             SRCallbacks.OnMainMenuLoaded += menu =>
             {

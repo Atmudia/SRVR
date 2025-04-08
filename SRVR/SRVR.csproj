@@ -40,7 +40,6 @@
     <Compile Include="Components\AmmoSlotTouchUI.cs" />
     <Compile Include="Components\HandManager.cs" />
     <Compile Include="Components\HUDTouchBounds.cs" />
-    <Compile Include="Components\PediaInteract.cs" />
     <Compile Include="Components\PickupVacuumable.cs" />
     <Compile Include="Components\PosHand.cs" />
     <Compile Include="Components\PosHMD.cs" />
