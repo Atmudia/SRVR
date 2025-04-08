@@ -78,6 +78,7 @@ namespace SRVR
             TranslationPatcher.AddUITranslation("b.height_adjust", "Height Adjustment");
             TranslationPatcher.AddUITranslation("b.left_handed", "Left Handed");
             TranslationPatcher.AddUITranslation("b.right_handed", "Right Handed");
+            TranslationPatcher.AddUITranslation("b.static_ui", "Static UI Position");
 
             if (EnabledVR)
             {

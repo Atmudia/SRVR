@@ -218,7 +218,20 @@ namespace SRVR.Patches
 
                 VRConfig.SaveConfig();
             });
-            srTogglePedia.isOn = VRConfig.DISTANCE_GRAB;
+            srTogglePedia.isOn = VRConfig.PEDIA_ON_VAC;
+
+            var staticUIToggle = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+            staticUIToggle.name = "StaticUIToggleButton VR";
+
+            staticUIToggle.SetSiblingIndex(12);
+            staticUIToggle.GetComponentInChildren<XlateText>().SetKey("b.static_ui");
+            var srToggleStaticUI = staticUIToggle.GetComponentInChildren<SRToggle>();
+            (srToggleStaticUI.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
+            {
+                VRConfig.STATIC_UI_POSITION = arg0;
+                VRConfig.SaveConfig();
+            });
+            srToggleStaticUI.isOn = VRConfig.STATIC_UI_POSITION;
 
             var snapTurnAngle = Object.Instantiate(vrPanel.Find("OverscanRow").gameObject, vrPanel.Find("OverscanRow").parent);
             snapTurnAngle.name = "SnapTurnAngle VR";
@@ -288,7 +301,7 @@ namespace SRVR.Patches
 
                 turnSensitivity.SetActive(!VRConfig.SNAP_TURN);
                 snapTurnAngle.SetActive(VRConfig.SNAP_TURN);
-                SetupVertNav(leftHandToggle, srToggleSnap, srToggleGrab, srTogglePedia, VRConfig.SNAP_TURN ? slider : sensSlider, heightSlider, uninstallObj.GetComponentInChildren<Button>(true));
+                SetupVertNav(leftHandToggle, srToggleSnap, srToggleGrab, srTogglePedia, srToggleStaticUI, VRConfig.SNAP_TURN ? slider : sensSlider, heightSlider, uninstallObj.GetComponentInChildren<Button>(true));
 
                 VRConfig.SaveConfig();
             });
@@ -314,7 +327,7 @@ namespace SRVR.Patches
                 }
             }
 
-            SetupVertNav(leftHandToggle, srToggleSnap, srToggleGrab, srTogglePedia, VRConfig.SNAP_TURN ? slider : sensSlider, heightSlider, uninstallObj.GetComponentInChildren<Button>(true));
+            SetupVertNav(leftHandToggle, srToggleSnap, srToggleGrab, srTogglePedia, srToggleStaticUI, VRConfig.SNAP_TURN ? slider : sensSlider, heightSlider, uninstallObj.GetComponentInChildren<Button>(true));
         }
 
         private static void SetupVertNav(params Selectable[] selectables)
