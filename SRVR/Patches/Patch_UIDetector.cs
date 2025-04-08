@@ -37,7 +37,10 @@ namespace SRVR.Patches
         {
             Vector3 startPoint = instance.transform.position;
             Vector3 endPoint = instance.transform.position + instance.transform.forward;
-            var capsuleCast = Physics.CapsuleCast(startPoint, endPoint, 0.3f, instance.transform.forward, out hitInfo, 10);
+
+            var capsuleCast = Physics.Raycast(startPoint, instance.transform.forward, out hitInfo, 3, -1, QueryTriggerInteraction.Collide) &&
+                (instance != HandManager.Instance?.dominantUIDetector || hitInfo.collider != HandManager.Instance?.pediaInteractable);
+            
             return capsuleCast;
         }
     }

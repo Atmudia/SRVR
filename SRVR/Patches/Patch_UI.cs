@@ -154,26 +154,17 @@ namespace SRVR.Patches
             var slider = snapTurnAngle.GetComponentInChildren<Slider>();
             snapTurnAngle.GetComponentInChildren<XlateText>().SetKey("b.snap_turn_angle");
             var sliderEvent = slider.onValueChanged = new Slider.SliderEvent();
-            slider.minValue = 30;
-            slider.maxValue = 90;
+            slider.minValue = 1;
+            slider.maxValue = 5;
             var snapTurnAngleValueLabel = snapTurnAngle.transform.GetChild(2).GetComponentInChildren<TextMeshProUGUI>();
             sliderEvent.AddListener(value =>
             {
-                int closest = PresetSnapTurnAngles[0];
-                foreach (int angle in PresetSnapTurnAngles)
-                {
-                    if (Mathf.Abs(value - angle) < Mathf.Abs(value - closest))
-                    {
-                        closest = angle;
-                    }
-                }
-                VRConfig.SNAP_TURN_ANGLE = closest;
-                slider.SetValueWithoutNotify(closest);  // Snap the UI slider to the closest preset
-                snapTurnAngleValueLabel.text = closest.ToString(); 
+                VRConfig.SNAP_TURN_ANGLE = ((int)value + 1) * 15;
+                snapTurnAngleValueLabel.text = VRConfig.SNAP_TURN_ANGLE.ToString(); 
                 VRConfig.SaveConfig();
                
             });
-            slider.value = VRConfig.SNAP_TURN_ANGLE;
+            slider.value = (VRConfig.SNAP_TURN_ANGLE / 15) - 1;
 
             foreach (Transform vrElements in vrPanel)
             {
@@ -182,7 +173,8 @@ namespace SRVR.Patches
                     Object.Destroy(vrElements.gameObject);
                 }
             }
-            __instance.SetupVertNav(vrPanel.GetComponentsInChildren<Selectable>(true));
+
+            __instance.SetupVertNav(srToggleHand, srToggleSnap, srToggleGrab, srTogglePedia, slider, uninstallObj.GetComponentInChildren<Button>(true));
         }
 
         [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.DeselectAll)), HarmonyPostfix]
@@ -230,6 +222,9 @@ namespace SRVR.Patches
                 HandManager.Instance.leftController.gameObject.SetActive(true);
             };
         }
+
+        [HarmonyPatch(typeof(AmmoSlotUI), nameof(AmmoSlotUI.Start)), HarmonyPostfix]
+        public static void AmmoStart(AmmoSlotUI __instance) => __instance.selected.transform.localRotation = Quaternion.identity;
 
         public static DepthTextureMode GetDepthTextureModeAlternate()
         {

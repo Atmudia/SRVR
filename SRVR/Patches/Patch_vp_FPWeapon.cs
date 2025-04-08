@@ -110,9 +110,11 @@ namespace SRVR.Patches
             pedia.transform.localScale = Vector3.one;
             pedia.transform.localPosition = new Vector3(0.46f, -0.06f, -0.08f);
             pedia.transform.localEulerAngles = new Vector3(450.6109f, 269.9038f, 57.2968f);
-            pedia.SetActive(true);
-            pedia.layer = LayerMask.NameToLayer("Weapon");
+            pedia.layer = LayerMask.NameToLayer("Default");
             pedia.SetActive(VRConfig.PEDIA_ON_VAC);
+
+            HandManager.Instance.pediaInteractable = pedia.GetComponentInChildren<Collider>();
+            HandManager.Instance.pediaInteractable.gameObject.AddComponent<UIActivator>().uiPrefab = SRLookup.Get<GameObject>("PediaUI");
 
             fpsCamera.Find("WeaponCamera").GetComponent<Camera>().nearClipPlane = 0.05f;
             fpsCamera.Find("WeaponCamera").GetComponent<Camera>().cullingMask = 1 << LayerMask.NameToLayer("UI");
@@ -235,6 +237,7 @@ namespace SRVR.Patches
     {
         public Transform controller;
         public LineRenderer lineRenderer;
+        public UIDetector detector;
 
         private PlayerState playerState;
 
@@ -256,7 +259,8 @@ namespace SRVR.Patches
             Vector3 endPoint = controller.position + controller.forward;
 
             // this looks REALLY cursed but. this is how the game does it. genuinely.
-            if (Physics.CapsuleCast(startPoint, endPoint, 0.3f, controller.forward, out var hit, 3) && (hit.collider.GetComponent<UIActivator>()
+            if (Physics.Raycast(startPoint, controller.forward, out var hit, 3, -1, QueryTriggerInteraction.Collide) && 
+                (detector != HandManager.Instance.dominantUIDetector || hit.collider != HandManager.Instance.pediaInteractable) && (hit.collider.GetComponent<UIActivator>()
                 || hit.collider.GetComponent<SlimeGateActivator>() || hit.collider.GetComponent<TreasurePod>() || hit.collider.GetComponent<TechActivator>() != null ||
                     hit.collider.GetComponentInParent<GadgetInteractor>() != null || (playerState.InGadgetMode && hit.collider.GetComponentInParent<GadgetSite>())))
             {

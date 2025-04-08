@@ -113,7 +113,6 @@ namespace SRVR
             var pediaColObj = new GameObject("Collision") { transform = { parent = pediaModel.transform } };
             
             pediaColObj.AddComponent<BoxCollider>().isTrigger = true;
-            pediaColObj.AddComponent<PediaInteract>();
             pediaColObj.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             
             pediaColObj.transform.localScale = new Vector3(0.35f, 0.1f, 0.35f);
