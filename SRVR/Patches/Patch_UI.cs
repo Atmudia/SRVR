@@ -235,6 +235,10 @@ namespace SRVR.Patches
             if (lastSlot != selectedAmmoIdx)
             {
                 __instance.selected.transform.localRotation = Quaternion.identity;
+                __instance.slots[selectedAmmoIdx].front.color = Color.yellow;
+                if (lastSlot > -1)
+                    __instance.slots[lastSlot].front.color = Color.white;
+                
                 lastSlot = selectedAmmoIdx;
             }
         }

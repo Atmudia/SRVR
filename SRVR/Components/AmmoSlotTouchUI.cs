@@ -1,38 +1,25 @@
-﻿using SRVR.Patches;
+﻿using SRVR.Components;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.XR;
 
 namespace SRVR
 {
-    public class AmmoSlotTouchUI : MonoBehaviour
+    public class AmmoSlotTouchUI : MonoBehaviour, TechActivator
     {
         public int slotIDX;
-
-        public Transform slotObject;
-        private Image _frameImg;
         private Ammo _ammo;
 
-        private void Awake()
-        {
-            _frameImg = slotObject.Find("Ammo Slot/Frame").GetComponent<Image>();
-            _ammo = SceneContext.Instance.PlayerState.Ammo;
-        }
+        public void Awake() => _ammo = SceneContext.Instance.PlayerState.Ammo;
 
-        public void Update()
+        public void Activate()
         {
-            transform.position = slotObject.position;
-            _frameImg.color = _ammo.selectedAmmoIdx == slotIDX ? Color.yellow : Color.white;
-        }
-        
-        
-        public void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject.name == "Hand")
+            if (_ammo.SetAmmoSlot(slotIDX) && HandManager.Instance?.vacuumer)
             {
-                _ammo.selectedAmmoIdx = slotIDX;
+                WeaponVacuum vacuumer = HandManager.Instance.vacuumer;
+                vacuumer.PlayTransientAudio(vacuumer.vacAmmoSelectCue);
+                vacuumer.vacAnimator.SetTrigger(vacuumer.animSwitchSlotsId);
             }
         }
+
+        public GameObject GetCustomGuiPrefab() => null;
     }
-    
 }

@@ -192,15 +192,17 @@ namespace SRVR.Patches
                 {
                     transform =
                     {
-                        localScale = Vector3.one * 0.03f,
+                        localScale = Vector3.one * 0.06f,
+                        localPosition = Vector3.zero,
+                        parent = slot
                     }
                 };
+                col.transform.localPosition = Vector3.zero;
 
                 col.AddComponent<BoxCollider>().isTrigger = true;
                 col.SetActive(false);
                 AmmoSlotTouchUI ammoSlotTouchUI = col.AddComponent<AmmoSlotTouchUI>();
                 ammoSlotTouchUI.slotIDX = i;
-                ammoSlotTouchUI.slotObject = slot;
                 col.SetActive(true);
             }
 
