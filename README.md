@@ -50,7 +50,10 @@ SRVR includes several configurable VR settings which are adjustable in Other Tab
 - **Switch Hands** *(default: false)* – Allows switching primary hand controls.
 - **Snap Turn** *(default: false)* – Enables snap turning instead of smooth turning.
 - **Snap Turn Angle** *(default: 45°)* – Adjusts the snap turn angle.
+- **Turn Sensitivity** *(default: 1.0)* – Adjusts the smooth turn speed.
 - **Distance Grab** *(default: true)* – Enables grabbing objects from a distance.
+- **Height Adjust** *(default: 0.0)* – Adjusts the height of the HMD.
+- **Static UI Position** *(default: true)* – If UI should stay in one place in the world, or follow the camera.
 
 ## Known Issues
 
