@@ -88,8 +88,8 @@ namespace SRVR.Patches
                 });
             });
             uninstallObj.name = "UninstallVRButton VR";
-            
-            var leftHand = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+
+            /*var leftHand = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
             leftHand.name = "SwitchHandsButton VR";
             leftHand.SetSiblingIndex(7);
             leftHand.GetComponentInChildren<XlateText>().SetKey("b.switch_hands");
@@ -104,25 +104,15 @@ namespace SRVR.Patches
                 }
                 VRConfig.SaveConfig();
             });
-            srToggleHand.isOn = VRConfig.SWITCH_HANDS;
-            
-            var snap_turn = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
-            snap_turn.name = "SnapTurnButton VR";
-            snap_turn.SetSiblingIndex(8);
-            snap_turn.GetComponentInChildren<XlateText>().SetKey("b.snap_turn");
-            var srToggleSnap = snap_turn.GetComponentInChildren<SRToggle>();
-            (srToggleSnap.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
-            {
-                VRConfig.SNAP_TURN = arg0;
-                VRConfig.SaveConfig();
-            });
-            srToggleSnap.isOn = VRConfig.SNAP_TURN;
-            
-            
+            srToggleHand.isOn = VRConfig.SWITCH_HANDS;*/
+
+            vrPanel.GetComponent<VerticalLayoutGroup>().childControlHeight = false;
+            vrPanel.GetComponent<VerticalLayoutGroup>().childControlWidth = false;
+
             var distanceGrab = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
             distanceGrab.name = "DistanceGrabButton VR";
 
-            distanceGrab.SetSiblingIndex(10);
+            distanceGrab.SetSiblingIndex(8);
             distanceGrab.GetComponentInChildren<XlateText>().SetKey("b.distance_grab");
             var srToggleGrab = distanceGrab.GetComponentInChildren<SRToggle>();
             (srToggleGrab.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
@@ -131,7 +121,88 @@ namespace SRVR.Patches
                 VRConfig.SaveConfig();
             });
             srToggleGrab.isOn = VRConfig.DISTANCE_GRAB;
-            
+
+            GameObject dominantHandGroup = new GameObject("DominantHandGroup VR")
+            {
+                transform =
+                {
+                    parent = vrPanel.Find("SprintHoldToggle").parent
+                }
+            };
+            dominantHandGroup.SetActive(false);
+
+            RectTransform dominantRT = dominantHandGroup.AddComponent<RectTransform>();
+            dominantRT.SetSiblingIndex(7);
+            LayoutElement dominantLayout = dominantHandGroup.AddComponent<LayoutElement>();
+            dominantLayout.preferredHeight = 50;
+            dominantLayout.preferredWidth = 650;
+            HorizontalLayoutGroup dominantHandLayout = dominantHandGroup.AddComponent<HorizontalLayoutGroup>();
+            dominantHandLayout.spacing = 16;
+            dominantHandLayout.childAlignment = TextAnchor.MiddleCenter;
+            dominantHandLayout.childControlHeight = true;
+            dominantHandLayout.childControlWidth = true;
+            dominantHandLayout.childForceExpandHeight = false;
+            dominantHandLayout.childForceExpandHeight = false;
+            SRToggleGroup dominantToggleGroup = dominantHandGroup.AddComponent<SRToggleGroup>();
+            dominantToggleGroup.allowSwitchOff = false;
+
+            dominantRT.sizeDelta = new Vector2(650, 50);
+
+            GameObject dominantHandLabel = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject.GetComponentInChildren<XlateText>().gameObject, dominantRT);
+            dominantHandLabel.GetComponent<XlateText>().SetKey("b.dominant_hand");
+            dominantHandLabel.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
+            LayoutElement dominantHandLabelLayout = dominantHandLabel.AddComponent<LayoutElement>();
+            dominantHandLabelLayout.preferredHeight = 50;
+            dominantHandLabelLayout.preferredWidth = 250;
+
+            GameObject leftHandButton = Object.Instantiate(vrTab, dominantRT);
+            leftHandButton.name = "Left Hand";
+            leftHandButton.GetComponentInChildren<XlateText>().SetKey("b.left_handed");
+            SRToggle leftHandToggle = leftHandButton.GetComponentInChildren<SRToggle>();
+            leftHandToggle.group = dominantToggleGroup;
+            (leftHandToggle.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
+            {
+                if (!arg0)
+                    return;
+
+                VRConfig.SWITCH_HANDS = true;
+                if (HandManager.Instance && EntryPoint.EnabledVR)
+                {
+                    HandManager.Instance.dominantHand = XRNode.LeftHand;
+                    HandManager.Instance.UpdateHandStates();
+                }
+                VRConfig.SaveConfig();
+            });
+            leftHandToggle.SetIsOnWithoutNotify(VRConfig.SWITCH_HANDS);
+            LayoutElement leftHandLayout = leftHandToggle.GetComponent<LayoutElement>();
+            leftHandLayout.preferredHeight = 50;
+            leftHandLayout.preferredWidth = 250;
+
+            GameObject rightHandButton = Object.Instantiate(vrTab, dominantRT);
+            rightHandButton.name = "Right Hand";
+            rightHandButton.GetComponentInChildren<XlateText>().SetKey("b.right_handed");
+            SRToggle rightHandToggle = rightHandButton.GetComponentInChildren<SRToggle>();
+            rightHandToggle.group = dominantToggleGroup;
+            (rightHandToggle.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
+            {
+                if (!arg0)
+                    return;
+
+                VRConfig.SWITCH_HANDS = false;
+                if (HandManager.Instance && EntryPoint.EnabledVR)
+                {
+                    HandManager.Instance.dominantHand = XRNode.RightHand;
+                    HandManager.Instance.UpdateHandStates();
+                }
+                VRConfig.SaveConfig();
+            });
+            rightHandToggle.SetIsOnWithoutNotify(!VRConfig.SWITCH_HANDS);
+            LayoutElement rightHandLayout = rightHandToggle.GetComponent<LayoutElement>();
+            rightHandLayout.preferredHeight = 50;
+            rightHandLayout.preferredWidth = 250;
+
+            dominantHandGroup.SetActive(true);
+
             var pediaToggle = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
             pediaToggle.name = "PediaToggleButton VR";
 
@@ -167,6 +238,74 @@ namespace SRVR.Patches
             });
             slider.value = (VRConfig.SNAP_TURN_ANGLE / 15) - 1;
 
+            var turnSensitivity = Object.Instantiate(vrPanel.Find("OverscanRow").gameObject, vrPanel.Find("OverscanRow").parent);
+            turnSensitivity.name = "TurnSensitivity VR";
+            turnSensitivity.transform.SetSiblingIndex(14);
+            var sensSlider = turnSensitivity.GetComponentInChildren<Slider>();
+            turnSensitivity.GetComponentInChildren<XlateText>().SetKey("b.turn_sensitivity");
+            var sensSliderEvent = sensSlider.onValueChanged = new Slider.SliderEvent();
+            sensSlider.minValue = 1;
+            sensSlider.maxValue = 10;
+            sensSlider.wholeNumbers = false;
+            var sensValueLabel = turnSensitivity.transform.GetChild(2).GetComponentInChildren<TextMeshProUGUI>();
+            sensSliderEvent.AddListener(value =>
+            {
+                VRConfig.TURN_SENSITIVITY = value;
+                sensValueLabel.text = VRConfig.TURN_SENSITIVITY.ToString();
+                VRConfig.SaveConfig();
+            });
+            sensSlider.value = VRConfig.TURN_SENSITIVITY;
+
+            turnSensitivity.SetActive(!VRConfig.SNAP_TURN);
+            snapTurnAngle.SetActive(VRConfig.SNAP_TURN);
+
+            var heightAdjust = Object.Instantiate(vrPanel.Find("OverscanRow").gameObject, vrPanel.Find("OverscanRow").parent);
+            heightAdjust.name = "HeightAdjust VR";
+            heightAdjust.transform.SetSiblingIndex(15);
+            var heightSlider = heightAdjust.GetComponentInChildren<Slider>();
+            heightAdjust.GetComponentInChildren<XlateText>().SetKey("b.height_adjust");
+            var heightSliderEvent = heightSlider.onValueChanged = new Slider.SliderEvent();
+            heightSlider.minValue = -1.5f;
+            heightSlider.maxValue = 1.5f;
+            heightSlider.wholeNumbers = false;
+            var heightValueLabel = heightAdjust.transform.GetChild(2).GetComponentInChildren<TextMeshProUGUI>();
+            heightSliderEvent.AddListener(value =>
+            {
+                VRConfig.HEIGHT_ADJUSTMENT = value;
+                heightValueLabel.text = VRConfig.HEIGHT_ADJUSTMENT.ToString();
+                VRConfig.SaveConfig();
+            });
+            heightSlider.value = VRConfig.HEIGHT_ADJUSTMENT;
+
+            var snap_turn = Object.Instantiate(vrPanel.Find("SprintHoldToggle").gameObject, vrPanel.Find("SprintHoldToggle").parent).transform;
+            snap_turn.name = "SnapTurnButton VR";
+            snap_turn.SetSiblingIndex(8);
+            snap_turn.GetComponentInChildren<XlateText>().SetKey("b.snap_turn");
+            var srToggleSnap = snap_turn.GetComponentInChildren<SRToggle>();
+            (srToggleSnap.onValueChanged = new Toggle.ToggleEvent()).AddListener(arg0 =>
+            {
+                VRConfig.SNAP_TURN = arg0;
+
+                turnSensitivity.SetActive(!VRConfig.SNAP_TURN);
+                snapTurnAngle.SetActive(VRConfig.SNAP_TURN);
+                SetupVertNav(leftHandToggle, srToggleSnap, srToggleGrab, srTogglePedia, VRConfig.SNAP_TURN ? slider : sensSlider, heightSlider, uninstallObj.GetComponentInChildren<Button>(true));
+
+                VRConfig.SaveConfig();
+            });
+            srToggleSnap.isOn = VRConfig.SNAP_TURN;
+
+            leftHandToggle.navigation = leftHandToggle.navigation with
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnRight = rightHandToggle
+            };
+            rightHandToggle.navigation = rightHandToggle.navigation with
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnLeft = leftHandToggle,
+                selectOnDown = srToggleSnap,
+            };
+
             foreach (Transform vrElements in vrPanel)
             {
                 if (!vrElements.name.Contains(" VR"))
@@ -175,7 +314,31 @@ namespace SRVR.Patches
                 }
             }
 
-            __instance.SetupVertNav(srToggleHand, srToggleSnap, srToggleGrab, srTogglePedia, slider, uninstallObj.GetComponentInChildren<Button>(true));
+            SetupVertNav(leftHandToggle, srToggleSnap, srToggleGrab, srTogglePedia, VRConfig.SNAP_TURN ? slider : sensSlider, heightSlider, uninstallObj.GetComponentInChildren<Button>(true));
+        }
+
+        private static void SetupVertNav(params Selectable[] selectables)
+        {
+            List<Selectable> selectableList = new List<Selectable>();
+            foreach (Selectable selectable in selectables)
+            {
+                if (selectable.gameObject.activeSelf)
+                    selectableList.Add(selectable);
+            }
+            for (int index = 0; index < selectableList.Count; ++index)
+            {
+                Navigation navigation = selectableList[index].navigation with
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnUp = index != 0 ? selectableList[index - 1] : null,
+                    selectOnDown = index != selectableList.Count - 1 ? selectableList[index + 1] : null
+                };
+                selectableList[index].navigation = navigation;
+            }
+            if (selectableList.Count <= 0)
+                return;
+            if (!selectableList[0].GetComponent<InitSelected>())
+                selectableList[0].gameObject.AddComponent<InitSelected>();
         }
 
         [HarmonyPatch(typeof(OptionsUI), nameof(OptionsUI.DeselectAll)), HarmonyPostfix]

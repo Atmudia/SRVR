@@ -24,6 +24,8 @@ namespace SRVR
         public static bool STATIC_UI_POSITION = true;
         public static bool SNAP_TURN = false;
         public static int SNAP_TURN_ANGLE = 45;
+        public static float TURN_SENSITIVITY = 1f;
+        public static float HEIGHT_ADJUSTMENT = 0f;
         public static bool DISTANCE_GRAB = true;
         public static bool PEDIA_ON_VAC = true;
         
@@ -63,14 +65,18 @@ namespace SRVR
             {
                 EntryPoint.ConsoleInstance.LogWarning("Optimization Fixes did not work properly, please try to reinstall the game and mod.");
             }
-            
+
+            TranslationPatcher.AddUITranslation("b.vr", "VR");
             TranslationPatcher.AddUITranslation("b.uninstall_srvr", "Uninstall SRVR");
-            TranslationPatcher.AddUITranslation("b.snap_turn", "Turn Snap Turn");
-            TranslationPatcher.AddUITranslation("b.switch_hands", "Switch Hands");
+            TranslationPatcher.AddUITranslation("b.snap_turn", "Toggle Snap Turn");
+            TranslationPatcher.AddUITranslation("b.dominant_hand", "Dominant Hand:");
             TranslationPatcher.AddUITranslation("b.distance_grab", "Distance Grab");
             TranslationPatcher.AddUITranslation("b.snap_turn_angle", "Snap Turn Angle");
             TranslationPatcher.AddUITranslation("b.pedia_toggle", "Toggle Pedia on Vacpack");
-            TranslationPatcher.AddUITranslation("b.vr", "VR");
+            TranslationPatcher.AddUITranslation("b.turn_sensitivity", "Turn Sensitivity");
+            TranslationPatcher.AddUITranslation("b.height_adjust", "Height Adjustment");
+            TranslationPatcher.AddUITranslation("b.left_handed", "Left Handed");
+            TranslationPatcher.AddUITranslation("b.right_handed", "Right Handed");
 
             if (EnabledVR)
             {

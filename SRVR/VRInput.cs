@@ -126,7 +126,7 @@ namespace SRVR
                 }
                 else
                 {
-                    Patch_vp_FPInput.AdjustmentDegrees += (rightStickX * deltaTime) * SteamVR.instance.hmd_DisplayFrequency;
+                    Patch_vp_FPInput.AdjustmentDegrees += rightStickX * deltaTime * SteamVR.instance.hmd_DisplayFrequency * VRConfig.TURN_SENSITIVITY;
                     Patch_vp_FPInput.AdjustmentDegrees %= 360;
                 }
             }

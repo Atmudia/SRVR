@@ -22,7 +22,7 @@ namespace SRVR.Components
 
             var rotHMDPos = (Quaternion.AngleAxis(Patch_vp_FPInput.AdjustmentDegrees, Vector3.up) * Patch_vp_FPInput.HMDPosition);
             rotHMDPos.y = 0;
-            transform.position = transform.parent.position + (Quaternion.AngleAxis(Patch_vp_FPInput.AdjustmentDegrees, Vector3.up) * pose.pos) - rotHMDPos;
+            transform.position = transform.parent.position + (Quaternion.AngleAxis(Patch_vp_FPInput.AdjustmentDegrees, Vector3.up) * pose.pos) - rotHMDPos + (Vector3.up * VRConfig.HEIGHT_ADJUSTMENT);
 
             transform.rotation = Quaternion.Euler(pose.rot.eulerAngles + (Vector3.up * Patch_vp_FPInput.AdjustmentDegrees));
         }
