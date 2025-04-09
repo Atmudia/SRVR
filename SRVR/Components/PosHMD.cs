@@ -33,7 +33,7 @@ namespace SRVR.Components
             Vector3 rotatedPos = Quaternion.Euler(0, Patch_vp_FPInput.AdjustmentDegrees, 0) * difference;
             rotatedPos.y = 0;
             baseCam.Parent.position += rotatedPos;
-            baseCam.transform.position = baseCam.Parent.position + new Vector3(0, pos.y, 0);
+            baseCam.transform.position = baseCam.Parent.position + new Vector3(0, pos.y + VRConfig.HEIGHT_ADJUSTMENT, 0);
 
             Patch_vp_FPInput.HMDPosition = pose.pos;
         }

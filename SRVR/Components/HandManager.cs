@@ -32,6 +32,9 @@ namespace SRVR.Components
 
         public bool vacShown = true;
         public Dictionary<Vacuumable, PickupVacuumable> heldVacuumables = new Dictionary<Vacuumable, PickupVacuumable>();
+        
+        public UIDetector dominantUIDetector;
+        public Collider pediaInteractable;
 
         public void OnEnable()
         {
@@ -131,6 +134,8 @@ namespace SRVR.Components
             UI.transform.SetParent(dominantHand == XRNode.LeftHand ? leftController.transform : rightController.transform, false);
             UI.transform.localRotation = dominantHand == XRNode.LeftHand ? Quaternion.Euler(34, 15f, 11) : Quaternion.Euler(34, -15, -11);
             UI.transform.localPosition = new Vector3(0f, 0.2563f, 0.1197f);
+
+            dominantUIDetector = dominantHand == XRNode.LeftHand ? leftController.GetComponentInChildren<UIDetector>() : rightController.GetComponentInChildren<UIDetector>();
 
             UpdateVacVisibility();
         }

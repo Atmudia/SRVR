@@ -24,6 +24,8 @@ namespace SRVR
         public static bool STATIC_UI_POSITION = true;
         public static bool SNAP_TURN = false;
         public static int SNAP_TURN_ANGLE = 45;
+        public static float TURN_SENSITIVITY = 1f;
+        public static float HEIGHT_ADJUSTMENT = 0f;
         public static bool DISTANCE_GRAB = true;
         public static bool PEDIA_ON_VAC = true;
         
@@ -42,7 +44,8 @@ namespace SRVR
         public new static Console.ConsoleInstance ConsoleInstance = new Console.ConsoleInstance("SRVR");
         public static AssetBundle VRHands = AssetBundle.LoadFromStream(typeof(EntryPoint).Assembly.GetManifestResourceStream("SRVR.newvrhands"));
         public static bool EnabledVR = true;
-        
+        public static GameObject pediaModel;
+
         public EntryPoint()
         {
             VRInstaller.Install();
@@ -63,14 +66,19 @@ namespace SRVR
             {
                 EntryPoint.ConsoleInstance.LogWarning("Optimization Fixes did not work properly, please try to reinstall the game and mod.");
             }
-            
+
+            TranslationPatcher.AddUITranslation("b.vr", "VR");
             TranslationPatcher.AddUITranslation("b.uninstall_srvr", "Uninstall SRVR");
-            TranslationPatcher.AddUITranslation("b.snap_turn", "Turn Snap Turn");
-            TranslationPatcher.AddUITranslation("b.switch_hands", "Switch Hands");
+            TranslationPatcher.AddUITranslation("b.snap_turn", "Toggle Snap Turn");
+            TranslationPatcher.AddUITranslation("b.dominant_hand", "Dominant Hand:");
             TranslationPatcher.AddUITranslation("b.distance_grab", "Distance Grab");
             TranslationPatcher.AddUITranslation("b.snap_turn_angle", "Snap Turn Angle");
             TranslationPatcher.AddUITranslation("b.pedia_toggle", "Toggle Pedia on Vacpack");
-            TranslationPatcher.AddUITranslation("b.vr", "VR");
+            TranslationPatcher.AddUITranslation("b.turn_sensitivity", "Turn Sensitivity");
+            TranslationPatcher.AddUITranslation("b.height_adjust", "Height Adjustment");
+            TranslationPatcher.AddUITranslation("b.left_handed", "Left Handed");
+            TranslationPatcher.AddUITranslation("b.right_handed", "Right Handed");
+            TranslationPatcher.AddUITranslation("b.static_ui", "Static UI Position");
 
             if (EnabledVR)
             {
@@ -103,7 +111,7 @@ namespace SRVR
                 return;
             }
 
-            var pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
+            pediaModel = GameObject.Find("Art").transform.Find("BeatrixMainMenu/slimepedia").gameObject.Instantiate();
             pediaModel.DontDestroyOnLoad();
             pediaModel.name = "PediaInteract";
             pediaModel.AddComponent<MeshRenderer>().material = pediaModel.GetComponent<SkinnedMeshRenderer>().material;
@@ -113,7 +121,6 @@ namespace SRVR
             var pediaColObj = new GameObject("Collision") { transform = { parent = pediaModel.transform } };
             
             pediaColObj.AddComponent<BoxCollider>().isTrigger = true;
-            pediaColObj.AddComponent<PediaInteract>();
             pediaColObj.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             
             pediaColObj.transform.localScale = new Vector3(0.35f, 0.1f, 0.35f);
@@ -126,8 +133,6 @@ namespace SRVR
             lineMat.name = "line";
             lineMat.hideFlags = HideFlags.HideAndDontSave;
             HandManager.lineMat = lineMat;
-
-            PediaInteract.pediaModel = pediaModel;
             
             SRCallbacks.OnMainMenuLoaded += menu =>
             {
