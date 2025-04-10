@@ -49,6 +49,7 @@
     <Compile Include="Files\fist_Pose.cs" />
     <Compile Include="Files\relaxed_Pose.cs" />
     <Compile Include="Patches\Patch_CameraDisabler.cs" />
+    <Compile Include="Patches\Patch_IMGUI.cs" />
     <Compile Include="Patches\Patch_UI.cs" />
     <Compile Include="Patches\Patch_LoadingUI.cs" />
     <Compile Include="Patches\Patch_RecenterableScroll.cs" />

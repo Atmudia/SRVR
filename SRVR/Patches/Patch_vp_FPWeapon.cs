@@ -261,7 +261,7 @@ namespace SRVR.Patches
             Vector3 endPoint = controller.position + controller.forward;
 
             // this looks REALLY cursed but. this is how the game does it. genuinely.
-            if (Physics.Raycast(startPoint, controller.forward, out var hit, 3, -1, QueryTriggerInteraction.Collide) && 
+            if (Physics.Raycast(startPoint, controller.forward, out var hit, 3, Patch_UIDetector.UIDETECTOR_SEARCH, QueryTriggerInteraction.Collide) && 
                 (detector != HandManager.Instance.dominantUIDetector || hit.collider != HandManager.Instance.pediaInteractable) && (hit.collider.GetComponent<UIActivator>()
                 || hit.collider.GetComponent<SlimeGateActivator>() || hit.collider.GetComponent<TreasurePod>() || hit.collider.GetComponent<TechActivator>() != null ||
                     hit.collider.GetComponentInParent<GadgetInteractor>() != null || (playerState.InGadgetMode && hit.collider.GetComponentInParent<GadgetSite>())))
