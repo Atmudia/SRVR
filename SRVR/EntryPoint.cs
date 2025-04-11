@@ -57,14 +57,12 @@ namespace SRVR
                 SRCallbacks.OnMainMenuLoaded += _ =>
                 {
                     var uiTemplates = Object.FindObjectOfType<UITemplates>();
-                    VRInstaller.UninstallDLC(uiTemplates);
+                    if (!VRInstaller.installed)
+                        VRInstaller.UninstallDLC(uiTemplates);
+                    else
+                        VRInstaller.Shutdown(uiTemplates);
                 };
                 return;
-            }
-
-            if (typeof(ConsoleWindow).GetMethod("OnGUI", AccessTools.all) != null)
-            {
-                EntryPoint.ConsoleInstance.LogWarning("Optimization Fixes did not work properly, please try to reinstall the game and mod.");
             }
 
             TranslationPatcher.AddUITranslation("b.vr", "VR");

@@ -10,6 +10,8 @@ namespace SRVR.Patches
     [HarmonyPatch(typeof(UIDetector))]
     internal static class Patch_UIDetector
     {
+        public const int UIDETECTOR_SEARCH = ~(1 << 31 | 1 << 18);
+
         [HarmonyPostfix, HarmonyPatch(nameof(UIDetector.Start))]
         public static void Start(UIDetector __instance)
         {
@@ -38,7 +40,7 @@ namespace SRVR.Patches
             Vector3 startPoint = instance.transform.position;
             Vector3 endPoint = instance.transform.position + instance.transform.forward;
 
-            var capsuleCast = Physics.Raycast(startPoint, instance.transform.forward, out hitInfo, 3, -1, QueryTriggerInteraction.Collide) &&
+            var capsuleCast = Physics.Raycast(startPoint, instance.transform.forward, out hitInfo, 3, UIDETECTOR_SEARCH, QueryTriggerInteraction.Collide) &&
                 (instance != HandManager.Instance?.dominantUIDetector || hitInfo.collider != HandManager.Instance?.pediaInteractable);
             
             return capsuleCast;

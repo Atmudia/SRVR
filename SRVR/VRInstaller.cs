@@ -19,6 +19,10 @@ namespace SRVR
         public static string VRInstallerPath;
         private static readonly List<Assembly> Assemblies = new List<Assembly>();
         private static bool _applyPatches = false;
+
+        internal static int inputVersion = 1;
+        internal static bool installed = false;
+
         public static bool TypeByNamePatch(string className, ref Type __result)
         {
             __result = AccessTools.TypeByName(className);
@@ -39,10 +43,16 @@ namespace SRVR
             var unitySubsystemsDirectory = new DirectoryInfo(Path.Combine(Application.dataPath, "UnitySubsystems"));
             var pluginsDirectory = new DirectoryInfo(Path.Combine(Application.dataPath, "Plugins", "x86_64"));
             var streamingAssetsDirectory = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "SteamVR"));
+            var timestampFile = new FileInfo(Path.Combine(streamingAssetsDirectory.FullName, "inputversion.txt"));
 
             var execAssembly = typeof(EntryPoint).Assembly;
+
             VRInstallerPath = Path.Combine(Application.dataPath, "SRVRInstaller.exe");
-            if (unitySubsystemsDirectory.Exists && File.Exists(Path.Combine(pluginsDirectory.FullName, "openvr_api.dll")) && streamingAssetsDirectory.Exists && File.Exists(VRInstallerPath))
+
+            installed = unitySubsystemsDirectory.Exists && File.Exists(Path.Combine(pluginsDirectory.FullName, "openvr_api.dll")) && streamingAssetsDirectory.Exists && File.Exists(VRInstallerPath);
+            bool outdated = !timestampFile.Exists || File.ReadAllText(timestampFile.FullName) != inputVersion.ToString();
+
+            if (installed && !outdated)
             {
                 IsAfterInstall = true;
             }
@@ -118,6 +128,8 @@ namespace SRVR
                     }
 
                 }
+
+                File.WriteAllText(timestampFile.FullName, inputVersion.ToString());
             }
             foreach (var manifestResourceName in execAssembly.GetManifestResourceNames())
             {
@@ -210,7 +222,7 @@ namespace SRVR
                 typeof(GameController).GetMethod("OnGUI", AccessTools.all) != null)
             {
                 var confirmDialog = uiTemplates.CreateConfirmDialog(
-                    "Do you want to install patches to base game files to make the game more performance? This will disable SRML Console. This may cause Anti-Virus False Flag",
+                    "Do you want to install patches to base game files? This may improve performance on lower-end systems.\nThis will disable the SRML Console, and may cause a false-positive in your antivirus.",
                     () =>
                     {
                         _applyPatches = true;
@@ -221,7 +233,11 @@ namespace SRVR
                 {
                     var buttonClickedEvent = new Button.ButtonClickedEvent();
                     cancelButton.onClick = buttonClickedEvent;
-                    cancelButton.onClick.AddListener(() => Shutdown(uiTemplates));
+                    cancelButton.onClick.AddListener(() =>
+                    {
+                        UnityEngine.Object.DestroyImmediate(confirmDialog);
+                        Shutdown(uiTemplates);
+                    });
                 }
             }
             else Shutdown(uiTemplates);
@@ -231,7 +247,7 @@ namespace SRVR
         public static void Shutdown(UITemplates UITemplates)
         {
             var errorDialog = UITemplates.CreateErrorDialog(
-                "Please restart your game to fully initialize VR. This is only on first install. The button below will quit the game.");
+                "Please restart your game to fully initialize VR. This is only on first install or update.\n\nThe button below will quit the game.");
             var button = errorDialog.transform.Find("MainPanel/OKButton").GetComponent<Button>();
             button.onClick = new Button.ButtonClickedEvent();
             button.onClick.AddListener(() =>
@@ -239,7 +255,7 @@ namespace SRVR
                 Debug.LogError("   ");
                 Debug.LogError("   ");
                 Debug.LogError(
-                    "[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation.");
+                    "[SRVR] The shutdown of the game was caused by the SRVR mod because it was installed for the first time. This only happens on the first installation or update.");
                 Debug.LogError("   ");
                 Debug.LogError("   ");
                 if (_applyPatches)

@@ -17,11 +17,11 @@
              if (!cache.ContainsKey(selected))
                  cache.Add(selected, Resources.FindObjectsOfTypeAll<T>());
  
-             T found = (T)cache[selected].FirstOrDefault(x => x.name == name);
+             T found = (T)cache[selected].FirstOrDefault(x => x && x.name == name);
              if (found == null)
              {
                  cache[selected] = Resources.FindObjectsOfTypeAll<T>();
-                 found = (T)cache[selected].FirstOrDefault(x => x.name == name);
+                 found = (T)cache[selected].FirstOrDefault(x => x && x.name == name);
              }
  
              return found;
@@ -35,11 +35,11 @@
              if (!cache.ContainsKey(selected))
                  cache.Add(selected, Resources.FindObjectsOfTypeAll<T>());
  
-             T found = (T)cache[selected].FirstOrDefault(x => x.name == name && predicate((T)x));
+             T found = (T)cache[selected].FirstOrDefault(x => x && x.name == name && predicate((T)x));
              if (found == null)
              {
                  cache[selected] = Resources.FindObjectsOfTypeAll<T>();
-                 found = (T)cache[selected].FirstOrDefault(x => x.name == name && predicate((T)x));
+                 found = (T)cache[selected].FirstOrDefault(x => x && x.name == name && predicate((T)x));
              }
  
              return found;
@@ -51,11 +51,11 @@
              if (!cache.ContainsKey(selected))
                  cache.Add(selected, Resources.FindObjectsOfTypeAll<T>());
  
-             T[] found = cache[selected].Where(x => x.name == name).Select(y => (T)y).ToArray();
+             T[] found = cache[selected].Where(x => x && x.name == name).Select(y => (T)y).ToArray();
              if (found.Length == 0)
              {
                  cache[selected] = Resources.FindObjectsOfTypeAll<T>();
-                 found = cache[selected].Where(x => x.name == name).Select(y => (T)y).ToArray();
+                 found = cache[selected].Where(x => x && x.name == name).Select(y => (T)y).ToArray();
              }
  
              return found;
