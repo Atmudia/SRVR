@@ -221,6 +221,7 @@ namespace SRVR
                     return result == null;
                 }
 
+                // my below comment is completely incorrect for obvious reasons, but it shall be left as a testiment to why you don't program while barely conscious because head ow ow head ow
                 Sprite icon; // yells about not being inlined, but I'm fairly sure that'd crash the entire runtime
                 if ((actionInfo[0].rchDevicePathName == "/user/hand/left" && VRInput.leftControllerIcons.TryGetValue(actionInfo[0].rchInputPathName, out icon))
                     || (actionInfo[0].rchDevicePathName == "/user/hand/right" && VRInput.rightControllerIcons.TryGetValue(actionInfo[0].rchInputPathName, out icon)))
