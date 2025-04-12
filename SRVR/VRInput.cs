@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using InControl;
 using SRVR.Components;
 using SRVR.Patches;
+using Steamworks;
+using Unity.XR.OpenVR;
 using UnityEngine;
 using Valve.VR;
 using InputDevice = InControl.InputDevice;
@@ -14,6 +16,13 @@ namespace SRVR
         public static VRInput Instance;
         public static SRInput.InputMode Mode;
         public static float repauseDelay = 0.0f;
+
+        public static Dictionary<string, SteamVR_Action> actionsForKey;
+
+        public static Dictionary<string, Sprite> leftControllerIcons = new Dictionary<string, Sprite>();
+        public static Dictionary<string, Sprite> rightControllerIcons = new Dictionary<string, Sprite>();
+
+        private static Dictionary<SteamVR_Action, Sprite> iconCache = new Dictionary<SteamVR_Action, Sprite>();
 
         public const float REPAUSE_DELAY = 0.25f;
 
@@ -43,6 +52,41 @@ namespace SRVR
             this.AddControl(InputControlType.LeftStickButton, "Left Stick Button");
             this.AddControl(InputControlType.Action3, "Action3");
             this.AddControl(InputControlType.Action2, "Action2");
+
+            actionsForKey = new Dictionary<string, SteamVR_Action>()
+            {
+                { "Attack", SteamVR_Actions.slimecontrols.shoot },
+                { "Vac", SteamVR_Actions.slimecontrols.vac },
+                { "NextSlot", SteamVR_Actions.slimecontrols.nextslot },
+                { "PrevSlot", SteamVR_Actions.slimecontrols.prevslot },
+                { "Jump", SteamVR_Actions.slimecontrols.jump },
+                { "Run", SteamVR_Actions.slimecontrols.sprint },
+                { "Interact", SteamVR_Actions.slimecontrols.interact },
+                { "Burst", SteamVR_Actions.slimecontrols.pulse },
+                { "OpenMap", SteamVR_Actions.slimecontrols.map },
+                { "Pedia", SteamVR_Actions.slimecontrols.slimepedia },
+                { "Light", SteamVR_Actions.slimecontrols.flashlight },
+                { "RadarToggle", SteamVR_Actions.slimecontrols.radar },
+                { "ToggleGadgetMode", SteamVR_Actions.slimecontrols.gadgetmode },
+                { "Menu", SteamVR_Actions.slimecontrols.pause },
+                { "Submit", SteamVR_Actions.ui.submit },
+                { "AltSubmit", SteamVR_Actions.ui.alt_submit },
+                { "Cancel", SteamVR_Actions.ui.cancel },
+                { "CloseMap", SteamVR_Actions.ui.close },
+                { "MenuTabLeft", SteamVR_Actions.ui.next_tab },
+                { "MenuTabRight", SteamVR_Actions.ui.prev_tab },
+                { "Unmenu", SteamVR_Actions.ui.close }
+            };
+
+            foreach (SteamVR_Action action in actionsForKey.Values)
+            {
+                if (action is SteamVR_Action_Boolean actionBool)
+                    actionBool.onActiveBindingChange += (x, y, z) => GameContext.Instance?.InputDirector?.onKeysChanged?.Invoke();
+                else if (action is SteamVR_Action_Single actionSingle)
+                    actionSingle.onActiveBindingChange += (x, y, z) => GameContext.Instance?.InputDirector?.onKeysChanged?.Invoke();
+                else if (action is SteamVR_Action_Vector2 actionVector)
+                    actionVector.onActiveBindingChange += (x, y, z) => GameContext.Instance?.InputDirector?.onKeysChanged?.Invoke();
+            }
 
             SteamVR_Actions.global.Activate();
         }
@@ -131,149 +175,71 @@ namespace SRVR
                 }
             }
         }
-        
 
         public static void RegisterCallbacks()
         {
             Instance = new VRInput();
             InputManager.AttachDevice(Instance);
         }
-        public enum SteamVRLocalizedOrigin
+
+        public static bool GetVRButton(string actionKey, out Sprite result)
         {
-            None,
-            // Generic Hand Assignments
-            LeftHand,
-            RightHand,
-            Trigger,
-            Grip,
+            if (actionsForKey.TryGetValue(actionKey, out SteamVR_Action action))
+                return GetVRButton(action, out result);
 
-            // Oculus Touch Controllers
-            LeftIndexTrigger,
-            RightIndexTrigger,
-            LeftThumbstick,
-            RightThumbstick,
-            AButton,
-            BButton,
-            XButton,
-            YButton,
-
-            // Valve Index (Knuckles) Controllers
-            LeftTrigger,
-            RightTrigger,
-            LeftTrackpad,
-            RightTrackpad,
-            LeftGrip,
-            RightGrip,
-
-            // HTC Vive Controllers
-            LeftMenuButton,
-            RightMenuButton,
-
-            // Windows Mixed Reality Controllers
-            LeftMenu,
-            RightMenu
+            result = null;
+            return false;
         }
 
-        public static bool GetLocalizedOriginEnum(string localizedOrigin, out SteamVRLocalizedOrigin result)
+        public static bool GetVRButton(SteamVR_Action action, out Sprite result)
         {
-            return Enum.TryParse(localizedOrigin.Replace(" ", string.Empty), true, out result);
-        }
-        public static bool GetVRButton(UITemplates uiTemplates, SteamVR_Action_In_Source action , out Sprite result)
-        {
-            string inputSource = action.GetLocalizedOriginPart(EVRInputStringBits.VRInputString_InputSource);
-            string controllerType = action.GetLocalizedOriginPart(EVRInputStringBits.VRInputString_ControllerType);
-            
-            if (GetLocalizedOriginEnum(inputSource, out var localizedOrigin))
+            result = null;
+
+            if (action.activeBinding)
             {
-                switch (localizedOrigin)
+                InputBindingInfo_t[] actionInfo;
+                if (action is SteamVR_Action_Boolean actionBool)
+                    actionInfo = actionBool.GetActionBindingInfo();
+                else if (action is SteamVR_Action_Single actionSingle)
+                    actionInfo = actionSingle.GetActionBindingInfo();
+                else if (action is SteamVR_Action_Vector2 actionVector)
+                    actionInfo = actionVector.GetActionBindingInfo();
+                else
                 {
-                    case SteamVRLocalizedOrigin.AButton:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action1"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.BButton:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action2"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.XButton:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action3"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.YButton:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Action4"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.Trigger:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Trigger"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.RightTrigger:
-                    case SteamVRLocalizedOrigin.RightIndexTrigger:
-                    case SteamVRLocalizedOrigin.RightTrackpad:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightTrigger"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.RightThumbstick:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightStickMove"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.LeftTrackpad:
-                    case SteamVRLocalizedOrigin.LeftTrigger:
-                    case SteamVRLocalizedOrigin.LeftIndexTrigger:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftTrigger"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.LeftThumbstick:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftStickMove"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.Grip:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["Grip"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.LeftGrip:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["RightBumper"];
-                        break;
-                    }
-                    case SteamVRLocalizedOrigin.RightGrip:
-                    {
-                        result = uiTemplates.deviceButtonIconDict[InputDeviceStyle.XboxOne]["LeftBumper"];
-                        break;
-                    }
-                  
-                    
-                    case SteamVRLocalizedOrigin.LeftHand:
-                    case SteamVRLocalizedOrigin.RightHand:
-                    case SteamVRLocalizedOrigin.LeftMenuButton:
-                    case SteamVRLocalizedOrigin.RightMenuButton:
-                    case SteamVRLocalizedOrigin.LeftMenu:
-                    case SteamVRLocalizedOrigin.RightMenu:
-                    case SteamVRLocalizedOrigin.None:
-                    default:
-                    {
-                        result = null;
-                        return false;
-                    }
+                    EntryPoint.ConsoleInstance.LogError($"Unimplemented action type: {action.GetType()}");
+                    if (iconCache.TryGetValue(action, out Sprite value))
+                        result = value;
+                    return result == null;
                 }
 
-                return true;
-            }
-            
-            EntryPoint.ConsoleInstance.Log($"Can't parsed localized origin: {controllerType}, {inputSource} " );
-            result = uiTemplates.unknownButtonIcon;
-            return true;
-        }
+                if (actionInfo.Length <= 0)
+                {
+                    EntryPoint.ConsoleInstance.LogError($"Action unbound: {action.fullPath}");
+                    if (iconCache.TryGetValue(action, out Sprite value))
+                        result = value;
 
+                    return result == null;
+                }
+
+                Sprite icon; // yells about not being inlined, but I'm fairly sure that'd crash the entire runtime
+                if ((actionInfo[0].rchDevicePathName == "/user/hand/left" && VRInput.leftControllerIcons.TryGetValue(actionInfo[0].rchInputPathName, out icon))
+                    || (actionInfo[0].rchDevicePathName == "/user/hand/right" && VRInput.rightControllerIcons.TryGetValue(actionInfo[0].rchInputPathName, out icon)))
+                {
+                    result = icon;
+                    iconCache[action] = icon;
+                }
+                else
+                {
+                    EntryPoint.ConsoleInstance.LogError($"Input {actionInfo[0].rchDevicePathName}{actionInfo[0].rchInputPathName} does not have a valid icon, what are you doing?");
+                    if (iconCache.TryGetValue(action, out Sprite value))
+                        result = value;
+                    return result != null;
+                }
+            }
+            else if (iconCache.TryGetValue(action, out Sprite value))
+                result = value;
+
+            return result != null;
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace SRVR
         private static readonly List<Assembly> Assemblies = new List<Assembly>();
         private static bool _applyPatches = false;
 
-        internal static int inputVersion = 1;
+        internal static int inputVersion = 2;
         internal static bool installed = false;
 
         public static bool TypeByNamePatch(string className, ref Type __result)
