@@ -73,6 +73,7 @@
   <ItemGroup>
     <Publicize Include="Assembly-CSharp" IncludeCompilerGeneratedMembers="false" />
     <Publicize Include="SRML" IncludeCompilerGeneratedMembers="false" />
+	<Publicize Include="UnityEngine.IMGUIModule" IncludeCompilerGeneratedMembers="false" />
     <Reference Include="0Harmony">
       <HintPath>.\Libs\0Harmony.dll</HintPath>
     </Reference>

@@ -90,4 +90,8 @@ Check [AG4VR's video](https://www.youtube.com/watch?v=9egH_BYz-pU) to check how 
 
 ### 1.0 - Initial Release
 - First official release of SRVR.
+### 1.1 - Revamp of Input and small fixes
+- [Pull Request](https://github.com/Atmudia/SRVR/pull/15) by **Lionmeow**
+- Fixes issue with opening slimepedia
+- Adds seated mode, turn sensitivity, static ui position
 
