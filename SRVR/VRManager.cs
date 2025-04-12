@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SRVR.Components;
 using SRVR.Files;
 using Unity.XR.OpenVR;
@@ -41,7 +42,7 @@ namespace SRVR
         public static bool InitializeSteamVR()
         {
             EntryPoint.ConsoleInstance.Log("Initializing SteamVR...");
-            SteamVR.Initialize();
+            SteamVR.Initialize(true);
             if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
             {
                 EntryPoint.ConsoleInstance.LogError("Problem Initializing SteamVR");
@@ -147,6 +148,42 @@ namespace SRVR
         {
             HandsMaterial = EntryPoint.VRHands.LoadAsset<Material>("Hands Material 1");
             HandsMaterial.shader = Shader.Find("SR/Actor, Vac (Hands)");
+
+            Sprite[] sp = EntryPoint.VRHands.LoadAssetWithSubAssets<Sprite>("steambuttons");
+            VRInput.leftControllerIcons = new Dictionary<string, Sprite>()
+            {
+                { "/input/a", sp.First(x => x.name == "steam_a_l") },
+                { "/input/b", sp.First(x => x.name == "steam_b_l") },
+                { "/input/x", sp.First(x => x.name == "steam_x_l") },
+                { "/input/y", sp.First(x => x.name == "steam_y_l") },
+                { "/input/system", sp.First(x => x.name == "steam_menu_l") },
+                { "/input/thumbstick/move", sp.First(x => x.name == "steam_left_joystick_move") },
+                { "/input/thumbstick", sp.First(x => x.name == "steam_left_joystick_press") },
+                { "/input/trackpad", sp.First(x => x.name == "steam_left_pad") },
+                { "/input/trackpad/up", sp.First(x => x.name == "steam_left_pad_up") },
+                { "/input/trackpad/down", sp.First(x => x.name == "steam_left_pad_down") },
+                { "/input/trackpad/left", sp.First(x => x.name == "steam_left_pad_left") },
+                { "/input/trackpad/right", sp.First(x => x.name == "steam_left_pad_right") },
+                { "/input/trigger", sp.First(x => x.name == "steam_left_trigger") },
+                { "/input/grip", sp.First(x => x.name == "steam_left_grip") }
+            };
+            VRInput.rightControllerIcons = new Dictionary<string, Sprite>()
+            {
+                { "/input/a", sp.First(x => x.name == "steam_a_r") },
+                { "/input/b", sp.First(x => x.name == "steam_b_r") },
+                { "/input/x", sp.First(x => x.name == "steam_x_r") },
+                { "/input/y", sp.First(x => x.name == "steam_y_r") },
+                { "/input/system", sp.First(x => x.name == "steam_menu_r") },
+                { "/input/thumbstick/move", sp.First(x => x.name == "steam_right_joystick_move") },
+                { "/input/thumbstick", sp.First(x => x.name == "steam_right_joystick_press") },
+                { "/input/trackpad", sp.First(x => x.name == "steam_right_pad") },
+                { "/input/trackpad/up", sp.First(x => x.name == "steam_right_pad_up") },
+                { "/input/trackpad/down", sp.First(x => x.name == "steam_right_pad_down") },
+                { "/input/trackpad/left", sp.First(x => x.name == "steam_right_pad_left") },
+                { "/input/trackpad/right", sp.First(x => x.name == "steam_right_pad_right") },
+                { "/input/trigger", sp.First(x => x.name == "steam_right_trigger") },
+                { "/input/grip", sp.First(x => x.name == "steam_right_grip") }
+            };
         }
         public static Transform InstantiateVRRig()
         {

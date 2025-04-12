@@ -20,6 +20,7 @@ namespace SRVR.Patches
         {
             if (!EntryPoint.EnabledVR)
                 return;
+
             EntryPoint.ConsoleInstance.Log("SetInputMode: " + mode);
             VRInput.Mode = mode;
 
@@ -95,84 +96,23 @@ namespace SRVR.Patches
             return false;
         }
 
-        [HarmonyPatch(typeof(UITemplates), nameof(UITemplates.GetButtonIcon)), HarmonyPrefix]
-        public static bool GetButtonIcon(UITemplates __instance, string keyStr, ref bool iconFound, ref Sprite __result)
+        [HarmonyPatch(typeof(InputDirector), "GetActiveDeviceString"), HarmonyPrefix]
+        public static bool ActiveDeviceStringPatch(string actionStr, ref string __result)
         {
-            if (!SteamVR_Actions.slimecontrols.interact.active)
+            // will be overwritten if not in VR
+            __result = actionStr;
+            return !EntryPoint.EnabledVR;
+        }
+
+
+        [HarmonyPatch(typeof(InputDirector), nameof(InputDirector.GetDefaultDeviceIcon)), HarmonyPrefix]
+        public static bool GetButtonIcon(InputDirector __instance, string actionStr, ref bool iconFound, ref Sprite __result)
+        {
+            if (!EntryPoint.EnabledVR)
                 return true;
-            switch (keyStr)
-            {
-                case "RightTrigger":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.shoot[SteamVR_Input_Sources.Any],  out __result);
-                    break;
-                }
-                case "LeftTrigger":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.vac[SteamVR_Input_Sources.Any],  out __result);
-                    break;
-                }
-                case "Action1":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.jump[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "LeftStickButton":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.sprint[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "Action3":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.interact[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "Start":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.pause[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "RightStickButton":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.radar[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "DPadRight":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.map[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "DPadUp":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.slimepedia[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "LeftBumper":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.prevslot[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "RightBumper":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.nextslot[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                case "DPadDown":
-                {
-                    iconFound = VRInput.GetVRButton(__instance, SteamVR_Actions.slimecontrols.gadgetmode[SteamVR_Input_Sources.Any], out __result);
-                    break;
-                }
-                default:
-                {
-                    return true;
-                }
-                    
-            }
+
+            iconFound = VRInput.GetVRButton(actionStr, out __result);
             return !iconFound;
         }
-        
-
-        
-        
     }
 }

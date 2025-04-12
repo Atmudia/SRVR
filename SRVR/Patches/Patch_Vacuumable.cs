@@ -39,7 +39,7 @@ namespace SRVR.Patches
             {
                 originalScale[__instance] = __instance.transform.localScale;
 
-                if (!doNotParent)
+                if (!doNotParent && HandManager.Instance?.FPWeapon)
                 {
                     __instance.transform.SetParent(HandManager.Instance.FPWeapon.Find("bone_vac/Scaler")); // this is necessary to make the object stay attached even when you pause the game
                     __instance.transform.localScale *= 0.646875f;
