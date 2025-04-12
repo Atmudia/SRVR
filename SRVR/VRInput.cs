@@ -73,8 +73,8 @@ namespace SRVR
                 { "AltSubmit", SteamVR_Actions.ui.alt_submit },
                 { "Cancel", SteamVR_Actions.ui.cancel },
                 { "CloseMap", SteamVR_Actions.ui.close },
-                { "MenuTabLeft", SteamVR_Actions.ui.next_tab },
-                { "MenuTabRight", SteamVR_Actions.ui.prev_tab },
+                { "MenuTabLeft", SteamVR_Actions.ui.prev_tab },
+                { "MenuTabRight", SteamVR_Actions.ui.next_tab },
                 { "Unmenu", SteamVR_Actions.ui.close }
             };
 
