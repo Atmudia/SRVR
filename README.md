@@ -22,7 +22,7 @@ SRVR is a modification that brings full Virtual Reality support to Slime Rancher
 ## Installation
 
 1. Ensure Slime Rancher is installed and updated to the latest version.
-2. Install SRML.
+2. Install [SRML](https://github.com/SlimeRancherModding/SRML).
 3. Install SteamVR if you haven't already.
 4. Download the latest release of SRVR from the releases page or via nexusmods.
 5. Copy the DLL file to your SRML mods directory.
