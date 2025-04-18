@@ -57,7 +57,9 @@ SRVR includes several configurable VR settings which are adjustable in Other Tab
 
 ## Known Issues
 
-- Please report any bugs or issues on the GitHub Issues page.
+- Input glyphs currently don't work on the Monado runtime.
+
+Please report any bugs or issues on the GitHub Issues page.
 
 ## Contributing
 
